@@ -1,0 +1,38 @@
+{
+  "id": "level_01",
+  "title": "Hello, rEx",
+  "chapter": 1,
+  "story": "[Signal Fragment #1] 系统检测到一段微弱信号。在大量随机字符中，反复出现同一个词——\"hello\"。这是 rEx 发出的第一个可识别信号。你的任务：从噪声中定位它。",
+  "difficulty": "easy",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配包含 \"hello\" 的行的正则表达式",
+  "input": [
+    "hello world",
+    "say hello to rEx",
+    "goodbye cruel world",
+    "HELLO there",
+    "help me",
+    "hello",
+    "helicopter landing"
+  ],
+  "expected": [
+    "hello world",
+    "say hello to rEx",
+    "hello"
+  ],
+  "hints": [
+    "[Hint] 信号中的关键词是小写的",
+    "[Hint] 你需要精确匹配 \"hello\" 这个词",
+    "[Hint] 注意：HELLO 和 hello 是不同的信号频率"
+  ],
+  "promptHints": [
+    "直接告诉 AI 你要匹配什么内容",
+    "提示 AI 区分大小写",
+    "告诉 AI 只匹配小写的 hello"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 信号已锁定。\"hello\" —— 这是 rEx 的第一个词。",
+    "onFail": "[Parse Failed] 信号未捕获。检查你的指令是否精确描述了目标。",
+    "onPerfect": "[Decryption Success] 一次命中。信号清晰。你和 rEx 的第一次接触。",
+    "onDirectWrite": "[Manual Override] 你不需要协助系统。你就是规则。"
+  }
+}

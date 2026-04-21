@@ -1,0 +1,39 @@
+{
+  "id": "level_05",
+  "title": "Still There?",
+  "chapter": 1,
+  "story": "[Signal Fragment #5] 信号逐渐减弱。最后一批数据中，你需要筛选出以特定标记结尾的行——以 \".signal\" 结尾的数据行。这可能是 rEx 的签名格式。",
+  "difficulty": "medium",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配以 \".signal\" 结尾的行的正则表达式",
+  "input": [
+    "data.signal",
+    "noise.txt",
+    "rEx.transmission.signal",
+    "signal.lost",
+    "incoming.signal",
+    "false.signals",
+    "end.signal"
+  ],
+  "expected": [
+    "data.signal",
+    "rEx.transmission.signal",
+    "incoming.signal",
+    "end.signal"
+  ],
+  "hints": [
+    "[Hint] 你关注的是行的 \"结尾\"",
+    "[Hint] 正则中有一个符号代表 \"行尾\"",
+    "[Hint] 注意：\".signals\" 和 \".signal\" 不同"
+  ],
+  "promptHints": [
+    "告诉 AI 你要匹配以某个特定后缀结尾的字符串",
+    "明确后缀是 \".signal\" 而不是 \"signal\"",
+    "提示 AI 使用行尾锚点"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 签名格式已确认。rEx 的信号有固定的结尾标记。",
+    "onFail": "[Parse Failed] 签名未识别。结尾匹配需要更精确的规则。",
+    "onPerfect": "[Decryption Success] 第一章信号全部解析完成。rEx 的语言开始显现。",
+    "onDirectWrite": "[Manual Override] 手动识别签名。第一章，完美收官。"
+  }
+}

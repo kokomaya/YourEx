@@ -198,11 +198,11 @@ interface Achievement {
 
 | # | 任务 | 状态 | 产出文件 | 验证方式 |
 |---|------|------|----------|----------|
-| 1.1 | 编写第一章 5 个关卡 JSON 数据文件 | ⬜ | `data/levels/ch1-signal-contact/level_01~05.json` | JSON 合法，符合 `Level` 类型 |
-| 1.2 | 实现 `levelLoader.ts` — 加载指定章节关卡 | ⬜ | `engine/levelLoader.ts` | 单测：加载 ch1 返回 5 个 Level 对象 |
-| 1.3 | 实现 `levelLoader.ts` — 获取关卡列表（含解锁状态） | ⬜ | 同上 | 单测：第一章默认解锁，第二章锁定 |
-| 1.4 | 实现 `gameState.ts` — 全局状态管理（内存版） | ⬜ | `state/gameState.ts` | 单测：读写关卡完成状态、XP、combo |
-| 1.5 | 实现 `gameState.ts` — 持久化到 `context.globalState` | ⬜ | 同上 | F5 运行后关闭再打开，状态保留 |
+| 1.1 | 编写第一章 5 个关卡 JSON 数据文件 | ✅ | `data/levels/ch1-signal-contact/level_01~05.json` | JSON 合法，符合 `Level` 类型 |
+| 1.2 | 实现 `levelLoader.ts` — 加载指定章节关卡 | ✅ | `engine/levelLoader.ts` | 单测：加载 ch1 返回 5 个 Level 对象 |
+| 1.3 | 实现 `levelLoader.ts` — 获取关卡列表（含解锁状态） | ✅ | 同上 | 单测：第一章默认解锁，第二章锁定 |
+| 1.4 | 实现 `gameState.ts` — 全局状态管理（内存版） | ✅ | `state/gameState.ts` | 单测：读写关卡完成状态、XP、combo |
+| 1.5 | 实现 `gameState.ts` — 持久化到 `context.globalState` | ✅ | 同上 | F5 运行后关闭再打开，状态保留 |
 
 ### 1.1 关卡数据设计参考
 
@@ -406,9 +406,9 @@ Phase 0 (初始化)
 | Phase | 任务数 | 完成 | 进度 |
 |-------|--------|------|------|
 | Phase 0: 初始化 | 9 | 9 | █████ 100% |
-| Phase 1: 数据层 | 5 | 0 | ░░░░░ 0% |
+| Phase 1: 数据层 | 5 | 5 | █████ 100% |
 | Phase 2: 引擎层 | 7 | 0 | ░░░░░ 0% |
 | Phase 3: UI 层 | 11 | 0 | ░░░░░ 0% |
 | Phase 4: 竞赛 | 10 | 0 | ░░░░░ 0% |
 | Phase 5: 活动 | 5 | 0 | ░░░░░ 0% |
-| **合计** | **47** | **9** | **█░░░░ 19%** |
+| **合计** | **47** | **14** | **█░░░░ 30%** |

@@ -1,0 +1,38 @@
+{
+  "id": "level_03",
+  "title": "Fragment Found",
+  "chapter": 1,
+  "story": "[Signal Fragment #3] 在截获的通信数据中，混杂着大量噪声。你需要从中提取出所有合法的邮箱地址——它们可能是 rEx 信号源的坐标标识。",
+  "difficulty": "medium",
+  "promptChallenge": "写一个 prompt，让 AI 生成能精确匹配合法邮箱地址的正则表达式",
+  "input": [
+    "test@example.com",
+    "bad@@example",
+    "user@mail.co",
+    "not-an-email",
+    "signal@rex.org",
+    "@missing.user",
+    "spaces in@name.com"
+  ],
+  "expected": [
+    "test@example.com",
+    "user@mail.co",
+    "signal@rex.org"
+  ],
+  "hints": [
+    "[Hint] 这种标识符中只包含一个 @ 符号",
+    "[Hint] 域名部分包含至少一个分隔符",
+    "[Hint] 你的指令需要明确描述标识符的结构"
+  ],
+  "promptHints": [
+    "试试在 prompt 里描述邮箱的组成部分",
+    "告诉 AI：用户名部分可以包含什么字符？",
+    "别忘了让 AI 处理边界情况"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 信号片段已解密。新的结构正在浮现。",
+    "onFail": "[Parse Failed] 结构不完整。信号仍处于混乱状态。",
+    "onPerfect": "[Decryption Success] 这不只是匹配。你开始理解它了。",
+    "onDirectWrite": "[Manual Override] 你不需要协助系统。你就是规则。"
+  }
+}

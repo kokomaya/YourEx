@@ -1,0 +1,37 @@
+{
+  "id": "level_02",
+  "title": "Signal in Noise",
+  "chapter": 1,
+  "story": "[Signal Fragment #2] 信号开始变得复杂。rEx 传输的数据中混杂着大量文字和数字。你注意到：凡是包含数字的行，都携带有效信息。从噪声中提取它们。",
+  "difficulty": "easy",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配包含至少一个数字的行的正则表达式",
+  "input": [
+    "signal received at 0800",
+    "no data here",
+    "frequency 42.7 MHz",
+    "static noise",
+    "code 3 confirmed",
+    "all quiet"
+  ],
+  "expected": [
+    "signal received at 0800",
+    "frequency 42.7 MHz",
+    "code 3 confirmed"
+  ],
+  "hints": [
+    "[Hint] 有效信号中都包含数字",
+    "[Hint] 正则中有专门匹配数字的简写",
+    "[Hint] 你只需要行中 \"包含\" 数字即可"
+  ],
+  "promptHints": [
+    "告诉 AI 你要匹配 \"包含数字\" 的行",
+    "用 \"至少一个数字\" 来描述条件",
+    "不需要描述整行的格式，只需要有数字"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 有效信号已过滤。数字是 rEx 数据的骨架。",
+    "onFail": "[Parse Failed] 信号筛选失败。你的规则是否遗漏了某些数据行？",
+    "onPerfect": "[Decryption Success] 噪声中的信号，被你一次性捕获。",
+    "onDirectWrite": "[Manual Override] 手动过滤噪声。效率惊人。"
+  }
+}

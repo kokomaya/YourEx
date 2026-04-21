@@ -11,6 +11,11 @@ export function activate(context: vscode.ExtensionContext) {
 
   // --- Dependency assembly (thin layer) ---
   const gameState = new GameStateManager();
+  gameState.bindStorage(
+    (key, value) => context.globalState.update(key, value),
+    (key) => context.globalState.get<string>(key)
+  );
+
   const sidebarProvider = new SidebarProvider();
   const promptPanel = new PromptPanelProvider(context.extensionUri);
   const welcomeProvider = new WelcomeProvider(context.extensionUri);
