@@ -8,7 +8,9 @@
     "vscode": "^1.85.0"
   },
   "categories": ["Other"],
-  "activationEvents": [],
+  "activationEvents": [
+    "onView:yourex-levels"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -55,7 +57,13 @@
           "type": "tree"
         }
       ]
-    }
+    },
+    "viewsWelcome": [
+      {
+        "view": "yourex-levels",
+        "contents": "📡 接入未知信号源…\n\n检测到异常信号标记：rEx\n\n[开始解密](command:yourex.startDecryption)\n\n或点击下方关卡列表直接进入。"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run build",
