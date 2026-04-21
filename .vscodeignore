@@ -1,0 +1,13 @@
+.vscode/**
+.vscode-test/**
+src/**
+webview-ui/src/**
+webview-ui/node_modules/**
+test/**
+node_modules/**
+out/test/**
+.gitignore
+.eslintrc.json
+tsconfig.json
+vitest.config.ts
+**/*.map

@@ -1,0 +1,74 @@
+{
+  "name": "yourex",
+  "displayName": "YourEx",
+  "description": "Your little game of rEgular eXpression — Match the pattern. Understand the language.",
+  "version": "0.0.1",
+  "publisher": "kokomaya",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "yourex.startDecryption",
+        "title": "Start Decryption",
+        "category": "YourEx"
+      },
+      {
+        "command": "yourex.signalProgress",
+        "title": "Signal Progress",
+        "category": "YourEx"
+      },
+      {
+        "command": "yourex.leaderboard",
+        "title": "Leaderboard",
+        "category": "YourEx"
+      },
+      {
+        "command": "yourex.promptReplay",
+        "title": "Prompt Replay",
+        "category": "YourEx"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "yourex-sidebar",
+          "title": "YourEx — Signal Decryption",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "yourex-sidebar": [
+        {
+          "id": "yourex-levels",
+          "name": "Signal Decryption",
+          "type": "tree"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile && npm run build:webview",
+    "compile": "tsc -p ./tsconfig.json",
+    "watch": "tsc -watch -p ./tsconfig.json",
+    "pretest": "npm run compile",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build:webview": "cd webview-ui && npm run build",
+    "dev:webview": "cd webview-ui && npm run dev"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.56.0"
+  }
+}
