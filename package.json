@@ -18,6 +18,11 @@
         "category": "YourEx"
       },
       {
+        "command": "yourex.openLevel",
+        "title": "Open Level",
+        "category": "YourEx"
+      },
+      {
         "command": "yourex.signalProgress",
         "title": "Signal Progress",
         "category": "YourEx"

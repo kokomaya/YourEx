@@ -1,0 +1,253 @@
+.prompt-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.signal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.signal-header h2 {
+  margin: 0;
+}
+
+.difficulty-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  border: 1px solid var(--border);
+}
+
+.difficulty-badge[data-difficulty="easy"] {
+  color: var(--accent-green);
+  border-color: var(--accent-green);
+}
+
+.difficulty-badge[data-difficulty="medium"] {
+  color: var(--accent-yellow);
+  border-color: var(--accent-yellow);
+}
+
+.difficulty-badge[data-difficulty="hard"] {
+  color: var(--accent-red);
+  border-color: var(--accent-red);
+}
+
+.signal-story p {
+  font-style: italic;
+  line-height: 1.8;
+}
+
+.signal-challenge h3,
+.test-data h3,
+.prompt-input h3 {
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.data-list {
+  list-style: none;
+  padding: 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 12px;
+}
+
+.data-list li {
+  padding: 3px 0;
+  font-size: 12px;
+  transition: background 0.15s;
+}
+
+.data-list li .data-marker {
+  color: var(--accent-cyan);
+  margin-right: 6px;
+}
+
+.data-list li .match-indicator {
+  color: var(--accent-green);
+  font-weight: bold;
+}
+
+.data-list li.match-correct {
+  color: var(--accent-green);
+}
+
+.data-list li.match-extra {
+  color: var(--accent-red);
+  text-decoration: line-through;
+}
+
+.data-list li.match-missed {
+  color: var(--accent-yellow);
+}
+
+.expected-label {
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+.expected-item {
+  background: var(--bg-tertiary);
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin: 0 3px;
+  font-size: 11px;
+}
+
+.prompt-input {
+  position: relative;
+}
+
+.char-count {
+  text-align: right;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-primary {
+  background: var(--accent-cyan);
+  color: var(--bg-primary);
+  border-color: var(--accent-cyan);
+  font-weight: 600;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #06b6d4;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  border-color: var(--accent-yellow);
+  color: var(--accent-yellow);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--accent-yellow);
+  color: var(--bg-primary);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.result-panel {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px;
+  background: var(--bg-secondary);
+}
+
+.result-panel[data-status="perfect"],
+.result-panel[data-status="pass"] {
+  border-color: var(--accent-green);
+}
+
+.result-panel[data-status="partial"] {
+  border-color: var(--accent-yellow);
+}
+
+.result-panel[data-status="fail"] {
+  border-color: var(--accent-red);
+}
+
+.result-panel[data-status="error"] {
+  border-color: var(--accent-red);
+}
+
+.result-panel h3 {
+  margin-bottom: 8px;
+}
+
+.feedback-text {
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.regex-display {
+  background: var(--bg-tertiary);
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  word-break: break-all;
+}
+
+.regex-display code {
+  color: var(--accent-cyan);
+}
+
+.match-stats {
+  font-size: 13px;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.score-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.score-row > span:first-child {
+  width: 80px;
+  flex-shrink: 0;
+}
+
+.score-row > span:last-child {
+  width: 30px;
+  text-align: right;
+  flex-shrink: 0;
+  color: var(--accent-cyan);
+}
+
+.score-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.score-bar > div {
+  height: 100%;
+  background: var(--accent-cyan);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.hint {
+  margin-top: 16px;
+  font-size: 12px;
+}

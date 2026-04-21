@@ -42,11 +42,12 @@ export type WebViewType = 'promptPanel' | 'welcome' | 'leaderboard' | 'scoreDeta
 export type WebViewMessage =
   | { command: 'executePrompt'; prompt: string; levelId: string }
   | { command: 'manualMode'; levelId: string }
-  | { command: 'requestLevel'; levelId: string };
+  | { command: 'requestLevel'; levelId: string }
+  | { command: 'ready' };
 
 // Extension → WebView
 export type ExtensionMessage =
   | { command: 'loadLevel'; level: Level }
-  | { command: 'showResult'; result: JudgeResult; score?: PromptScore; feedback: string }
+  | { command: 'showResult'; result: JudgeResult; score?: PromptScore; feedback: string; rawRegex?: string }
   | { command: 'showError'; message: string }
-  | { command: 'setViewType'; viewType: WebViewType };
+  | { command: 'setLoading'; loading: boolean };

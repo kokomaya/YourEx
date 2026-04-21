@@ -5,22 +5,48 @@ import { WelcomeProvider } from './ui/webview/welcomeProvider';
 import { LeaderboardProvider } from './ui/webview/leaderboardProvider';
 import { StatusBarManager } from './ui/statusbar';
 import { GameStateManager } from './state/gameState';
+import { MockProvider } from './ai/mockProvider';
+import { CopilotProvider } from './ai/copilotProvider';
+import type { IAIProvider } from './ai/IAIProvider';
+import { setDataRoot } from './engine/levelLoader';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('[YourEx] System Booting…');
 
-  // --- Dependency assembly (thin layer) ---
+  // --- Data root ---
+  const dataRoot = vscode.Uri.joinPath(context.extensionUri, 'out', 'data', 'levels').fsPath;
+  setDataRoot(dataRoot);
+
+  // --- Dependency assembly ---
   const gameState = new GameStateManager();
   gameState.bindStorage(
     (key, value) => context.globalState.update(key, value),
     (key) => context.globalState.get<string>(key)
   );
 
+  // AI Provider: prefer Copilot, fallback to Mock
+  const aiProvider: IAIProvider = new CopilotProvider();
+  const mockFallback = new MockProvider();
+
   const sidebarProvider = new SidebarProvider();
+  sidebarProvider.setGameState(gameState);
+
   const promptPanel = new PromptPanelProvider(context.extensionUri);
+  promptPanel.setDependencies(aiProvider, gameState);
+
   const welcomeProvider = new WelcomeProvider(context.extensionUri);
   const leaderboardProvider = new LeaderboardProvider(context.extensionUri);
   const statusBar = new StatusBarManager();
+
+  // --- UI refresh helper ---
+  function refreshUI() {
+    sidebarProvider.refresh();
+    const percent = promptPanel.getDecryptPercent();
+    statusBar.update(gameState.state.xp, gameState.state.combo, percent);
+  }
+
+  // Listen to prompt panel updates (level completed, etc.)
+  promptPanel.onDidUpdate(() => refreshUI());
 
   // --- TreeView ---
   const treeView = vscode.window.createTreeView('yourex-levels', {
@@ -33,13 +59,20 @@ export function activate(context: vscode.ExtensionContext) {
     treeView,
 
     vscode.commands.registerCommand('yourex.startDecryption', () => {
+      gameState.startTimer();
       promptPanel.show();
     }),
 
+    vscode.commands.registerCommand('yourex.openLevel', (levelId: string) => {
+      gameState.startTimer();
+      promptPanel.show(levelId);
+    }),
+
     vscode.commands.registerCommand('yourex.signalProgress', () => {
-      // TODO: Phase 3 - show progress panel
+      const percent = promptPanel.getDecryptPercent();
+      const completed = gameState.getCompletedLevelIds().length;
       vscode.window.showInformationMessage(
-        `[YourEx] Decrypt: ${gameState.state.xp} XP | Combo: x${gameState.state.combo}`
+        `[YourEx] XP: ${gameState.state.xp} | Combo: x${gameState.state.combo} | Levels: ${completed} | Decrypt: ${percent}%`
       );
     }),
 
@@ -53,8 +86,20 @@ export function activate(context: vscode.ExtensionContext) {
     }),
   );
 
-  // --- Status bar ---
-  statusBar.update(gameState.state.xp, gameState.state.combo, 0);
+  // --- Manual mode: auto-judge on file save (Task 3.6) ---
+  context.subscriptions.push(
+    vscode.workspace.onDidSaveTextDocument((document) => {
+      promptPanel.handleFileSave(document);
+    })
+  );
+
+  // --- First activation: show welcome if never played ---
+  if (gameState.state.startTime === null) {
+    welcomeProvider.show();
+  }
+
+  // --- Status bar init ---
+  refreshUI();
 
   // --- Cleanup ---
   context.subscriptions.push({

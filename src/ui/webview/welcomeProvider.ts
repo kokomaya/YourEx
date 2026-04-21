@@ -30,6 +30,13 @@ export class WelcomeProvider {
       'welcome'
     );
 
+    this._panel.webview.onDidReceiveMessage((message: { command: string }) => {
+      if (message.command === 'startDecryption') {
+        this._panel?.dispose();
+        vscode.commands.executeCommand('yourex.startDecryption');
+      }
+    });
+
     this._panel.onDidDispose(() => {
       this._panel = undefined;
     });

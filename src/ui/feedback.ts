@@ -1,19 +1,29 @@
 import * as vscode from 'vscode';
-import type { JudgeResult } from '../types';
+import type { JudgeResult, Level } from '../types';
+
+export function getFeedbackText(result: JudgeResult, level: Level, mode: 'prompt' | 'manual'): string {
+  if (mode === 'manual' && (result.status === 'perfect' || result.status === 'pass')) {
+    return level.feedback.onDirectWrite;
+  }
+  switch (result.status) {
+    case 'perfect': return level.feedback.onPerfect;
+    case 'pass': return level.feedback.onPass;
+    case 'error': return result.errorMessage ?? '[System Error] 协助系统输出无效。优化你的指令。';
+    default: return level.feedback.onFail;
+  }
+}
 
 export function showJudgeFeedback(result: JudgeResult, feedback: string): void {
-  // TODO: Phase 3 - Task 3.7
   if (result.status === 'perfect' || result.status === 'pass') {
-    vscode.window.showInformationMessage(feedback);
+    vscode.window.showInformationMessage(`✅ ${feedback}`);
   } else if (result.status === 'error') {
-    vscode.window.showErrorMessage(feedback);
+    vscode.window.showErrorMessage(`🚫 ${feedback}`);
   } else {
-    vscode.window.showWarningMessage(feedback);
+    vscode.window.showWarningMessage(`❌ ${feedback}`);
   }
 }
 
 export function showAchievementUnlocked(name: string, description: string): void {
-  // TODO: Phase 4 - Task 4.3
   vscode.window.showInformationMessage(`🏅 ${name} — ${description}`);
 }
 

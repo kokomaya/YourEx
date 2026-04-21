@@ -1,11 +1,14 @@
 import type { GameState } from '../types';
 
 export function incrementCombo(state: GameState): GameState {
-  // TODO: Phase 3 - Task 3.10
-  return { ...state };
+  const newCombo = state.combo + 1;
+  return {
+    ...state,
+    combo: newCombo,
+    maxCombo: Math.max(state.maxCombo, newCombo),
+  };
 }
 
 export function resetCombo(state: GameState): GameState {
-  // TODO: Phase 3 - Task 3.10
-  return { ...state };
+  return { ...state, combo: 0 };
 }

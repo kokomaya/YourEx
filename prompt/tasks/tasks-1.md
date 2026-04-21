@@ -220,13 +220,13 @@ Level 5 "Still There?"    — 匹配以特定后缀结尾的行（$）
 
 | # | 任务 | 状态 | 产出文件 | 验证方式 |
 |---|------|------|----------|----------|
-| 2.1 | 实现 `regexExtractor.ts` — 从 AI 回复文本中提取正则 | ⬜ | `engine/regexExtractor.ts` | 单测：各种 AI 回复格式均能正确提取 |
-| 2.2 | 实现 `judge.ts` — 纯 regex 判题（输入 regex + testCases + expected → JudgeResult） | ⬜ | `engine/judge.ts` | 单测：perfect/pass/partial/fail/error 五种情况 |
-| 2.3 | 实现 `promptScorer.ts` — Prompt 评分（输入 prompt + attemptNumber + regexLength → PromptScore） | ⬜ | `engine/promptScorer.ts` | 单测：短 prompt 高分、长 prompt 低分、多次尝试扣分 |
-| 2.4 | 定义 `IAIProvider.ts` 接口 | ⬜ | `ai/IAIProvider.ts` | TS 编译通过 |
-| 2.5 | 实现 `mockProvider.ts` — 返回预设正则（开发测试用） | ⬜ | `ai/mockProvider.ts` | 单测：输入任意 prompt 返回预设 regex |
-| 2.6 | 实现 `copilotProvider.ts` — 对接 VS Code Copilot Chat API | ⬜ | `ai/copilotProvider.ts` | F5 运行：发 prompt 能收到 AI 回复 |
-| 2.7 | 串联：prompt → AIProvider → regexExtractor → judge → promptScorer 完整流程 | ⬜ | 可在 extension.ts 中临时调用验证 | F5 运行：输入 prompt，能看到完整 JudgeResult + PromptScore |
+| 2.1 | 实现 `regexExtractor.ts` — 从 AI 回复文本中提取正则 | ✅ | `engine/regexExtractor.ts` | 单测：各种 AI 回复格式均能正确提取 |
+| 2.2 | 实现 `judge.ts` — 纯 regex 判题（输入 regex + testCases + expected → JudgeResult） | ✅ | `engine/judge.ts` | 单测：perfect/pass/partial/fail/error 五种情况 |
+| 2.3 | 实现 `promptScorer.ts` — Prompt 评分（输入 prompt + attemptNumber + regexLength → PromptScore） | ✅ | `engine/promptScorer.ts` | 单测：短 prompt 高分、长 prompt 低分、多次尝试扣分 |
+| 2.4 | 定义 `IAIProvider.ts` 接口 | ✅ | `ai/IAIProvider.ts` | TS 编译通过 |
+| 2.5 | 实现 `mockProvider.ts` — 返回预设正则（开发测试用） | ✅ | `ai/mockProvider.ts` | 单测：输入任意 prompt 返回预设 regex |
+| 2.6 | 实现 `copilotProvider.ts` — 对接 VS Code Copilot Chat API | ✅ | `ai/copilotProvider.ts` | F5 运行：发 prompt 能收到 AI 回复 |
+| 2.7 | 串联：prompt → AIProvider → regexExtractor → judge → promptScorer 完整流程 | ✅ | 可在 extension.ts 中临时调用验证 | F5 运行：输入 prompt，能看到完整 JudgeResult + PromptScore |
 
 ### 2.1 regexExtractor 需覆盖的 AI 回复格式
 
@@ -255,17 +255,17 @@ interface IAIProvider {
 
 | # | 任务 | 状态 | 产出文件 | 验证方式 |
 |---|------|------|----------|----------|
-| 3.1 | 实现 Sidebar TreeView — 章节+关卡树（含锁定/解锁/完成状态图标） | ⬜ | `ui/sidebar/sidebarProvider.ts` | F5：侧边栏显示 5 章关卡树，第一章展开 |
-| 3.2 | Sidebar 点击关卡 → 打开 Prompt Panel WebView | ⬜ | 同上 + `ui/webview/promptPanelProvider.ts` | F5：点击关卡打开 React WebView 面板 |
-| 3.3 | 实现 PromptPanel React 组件 — 信号描述 + 测试数据 + prompt 输入框 + 两个按钮 | ⬜ | `webview-ui/src/components/PromptPanel/` | F5：WebView 正确渲染关卡信息 |
-| 3.4 | PromptPanel — "Execute Parse" 按钮 → postMessage → Extension 调 AI → 判题 → 回传结果 | ⬜ | 同上 + `ui/webview/promptPanelProvider.ts` | F5：输入 prompt，点击按钮，看到判题结果 |
-| 3.5 | PromptPanel — "Manual" 按钮 → postMessage → Extension 打开 .regex.js 文件 | ⬜ | 同上 | F5：点击按钮，编辑器打开关卡文件 |
-| 3.6 | 手写模式 — 保存 .regex.js 文件 → 自动判题 → 显示结果 | ⬜ | `extension.ts` 中注册 onDidSaveTextDocument | F5：保存文件触发判题 |
-| 3.7 | 实现 feedback.ts — 通关/失败/错误三种反馈通知（VS Code Notification） | ⬜ | `ui/feedback.ts` | F5：判题后弹出对应反馈 |
-| 3.8 | 实现 Status Bar — 等级 + XP + combo + 解密进度 | ⬜ | `ui/statusbar.ts` | F5：状态栏显示信息，通关后更新 |
-| 3.9 | 实现 Welcome React 组件 — 首次启动显示开场白 WebView | ⬜ | `webview-ui/src/components/Welcome/`, `ui/webview/welcomeProvider.ts` | F5：首次启动展示开场白 |
-| 3.10 | 实现 XP 系统 — 通关后更新 XP + 解密进度 + combo | ⬜ | `engine/xpTracker.ts`, `engine/comboTracker.ts` | 单测 + F5：通关后 XP 变化正确 |
-| 3.11 | 实现关卡解锁逻辑 — 通关当前章最后一关 → 解锁下一章 | ⬜ | `engine/levelLoader.ts` 扩展 | F5：通关第 5 关后第二章解锁 |
+| 3.1 | 实现 Sidebar TreeView — 章节+关卡树（含锁定/解锁/完成状态图标） | ✅ | `ui/sidebar/sidebarProvider.ts` | F5：侧边栏显示 5 章关卡树，第一章展开 |
+| 3.2 | Sidebar 点击关卡 → 打开 Prompt Panel WebView | ✅ | 同上 + `ui/webview/promptPanelProvider.ts` | F5：点击关卡打开 React WebView 面板 |
+| 3.3 | 实现 PromptPanel React 组件 — 信号描述 + 测试数据 + prompt 输入框 + 两个按钮 | ✅ | `webview-ui/src/components/PromptPanel/` | F5：WebView 正确渲染关卡信息 |
+| 3.4 | PromptPanel — "Execute Parse" 按钮 → postMessage → Extension 调 AI → 判题 → 回传结果 | ✅ | 同上 + `ui/webview/promptPanelProvider.ts` | F5：输入 prompt，点击按钮，看到判题结果 |
+| 3.5 | PromptPanel — "Manual" 按钮 → postMessage → Extension 打开 .regex.js 文件 | ✅ | 同上 | F5：点击按钮，编辑器打开关卡文件 |
+| 3.6 | 手写模式 — 保存 .regex.js 文件 → 自动判题 → 显示结果 | ✅ | `extension.ts` 中注册 onDidSaveTextDocument | F5：保存文件触发判题 |
+| 3.7 | 实现 feedback.ts — 通关/失败/错误三种反馈通知（VS Code Notification） | ✅ | `ui/feedback.ts` | F5：判题后弹出对应反馈 |
+| 3.8 | 实现 Status Bar — 等级 + XP + combo + 解密进度 | ✅ | `ui/statusbar.ts` | F5：状态栏显示信息，通关后更新 |
+| 3.9 | 实现 Welcome React 组件 — 首次启动显示开场白 WebView | ✅ | `webview-ui/src/components/Welcome/`, `ui/webview/welcomeProvider.ts` | F5：首次启动展示开场白 |
+| 3.10 | 实现 XP 系统 — 通关后更新 XP + 解密进度 + combo | ✅ | `engine/xpTracker.ts`, `engine/comboTracker.ts` | 单测 + F5：通关后 XP 变化正确 |
+| 3.11 | 实现关卡解锁逻辑 — 通关当前章最后一关 → 解锁下一章 | ✅ | `engine/levelLoader.ts` 扩展 | F5：通关第 5 关后第二章解锁 |
 
 ### 3.3 Prompt Panel WebView 通信协议
 
@@ -407,8 +407,8 @@ Phase 0 (初始化)
 |-------|--------|------|------|
 | Phase 0: 初始化 | 9 | 9 | █████ 100% |
 | Phase 1: 数据层 | 5 | 5 | █████ 100% |
-| Phase 2: 引擎层 | 7 | 0 | ░░░░░ 0% |
-| Phase 3: UI 层 | 11 | 0 | ░░░░░ 0% |
+| Phase 2: 引擎层 | 7 | 7 | █████ 100% |
+| Phase 3: UI 层 | 11 | 11 | █████ 100% |
 | Phase 4: 竞赛 | 10 | 0 | ░░░░░ 0% |
 | Phase 5: 活动 | 5 | 0 | ░░░░░ 0% |
-| **合计** | **47** | **14** | **█░░░░ 30%** |
+| **合计** | **47** | **32** | **███░░ 68%** |

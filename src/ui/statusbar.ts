@@ -12,7 +12,8 @@ export class StatusBarManager {
   }
 
   update(xp: number, combo: number, decryptPercent: number): void {
-    this._item.text = `$(radio-tower) XP: ${xp} | $(zap) x${combo} | Decrypt: ${decryptPercent}%`;
+    const comboText = combo > 0 ? ` | $(zap) x${combo}` : '';
+    this._item.text = `$(radio-tower) XP: ${xp}${comboText} | Decrypt: ${decryptPercent}%`;
     this._item.tooltip = 'YourEx — Signal Progress';
     this._item.show();
   }
