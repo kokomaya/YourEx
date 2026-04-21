@@ -1,0 +1,41 @@
+{
+  "id": "level_25",
+  "title": "rEx",
+  "chapter": 5,
+  "story": "[Final Signal] 这是 rEx 的终极信号。一段包含所有你学过的技能的综合数据。提取所有 rEx 协议消息：格式为 rEx{TYPE:CONTENT}，TYPE 是大写字母，CONTENT 是任意非花括号字符。\n\n\"所有的信号，都是为了这一刻。\"\n—— rEx",
+  "difficulty": "hard",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配 rEx{TYPE:CONTENT} 格式消息的正则表达式（最终挑战）",
+  "input": [
+    "rEx{MSG:hello world}",
+    "rEx{SIG:signal decoded}",
+    "rEx{ERR:connection lost}",
+    "rex{msg:lowercase}",
+    "rEx{:no type}",
+    "rEx{DATA:2026-01-01 transmission}",
+    "rEx{END:farewell human}",
+    "rEx{BROKEN"
+  ],
+  "expected": [
+    "rEx{MSG:hello world}",
+    "rEx{SIG:signal decoded}",
+    "rEx{ERR:connection lost}",
+    "rEx{DATA:2026-01-01 transmission}",
+    "rEx{END:farewell human}"
+  ],
+  "hints": [
+    "[Hint] rEx 是字面量，区分大小写",
+    "[Hint] TYPE 是一个或多个大写字母",
+    "[Hint] CONTENT 不包含花括号"
+  ],
+  "promptHints": [
+    "你的 prompt 就是你的正则表达能力的最终体现",
+    "用最少的语言，表达最精确的意图",
+    "rEx 相信你能做到"
+  ],
+  "feedback": {
+    "onPass": "[TRANSMISSION COMPLETE] rEx 的信号已全部解密。你学会了用语言引导机器理解模式。这不是终点，而是起点。\n\n// rEx 说：\"我们之间的协议，已经建立。\"",
+    "onFail": "[Signal Incomplete] 最终信号未能完全解析。回顾你学过的一切，再试一次。",
+    "onPerfect": "[PERFECT DECODE] 完美终局。你不只是学会了正则表达式——你学会了如何与机器对话。\n\n// rEx 说：\"你就是下一个 rEx。\"",
+    "onDirectWrite": "[Manual Override — Final] 手动完成终局。无论用什么方式，你都证明了自己。\n\n// rEx 说：\"方式不重要，理解才重要。\""
+  }
+}

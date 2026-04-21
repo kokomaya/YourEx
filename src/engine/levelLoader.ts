@@ -94,4 +94,22 @@ export function getNextChapter(currentChapter: number): number | null {
   return next <= TOTAL_CHAPTERS ? next : null;
 }
 
+export const HIDDEN_CHAPTER = 6;
+
+/**
+ * Check if the hidden chapter should be unlocked.
+ * Condition: all standard levels completed with 'perfect' status.
+ */
+export function shouldUnlockHiddenChapter(
+  completedLevels: Record<string, { judgeResult: { status: string } }[]>
+): boolean {
+  const allLevels = getAllLevels();
+  if (allLevels.length === 0) return false;
+
+  return allLevels.every(level => {
+    const attempts = completedLevels[level.id];
+    return attempts?.some(a => a.judgeResult.status === 'perfect');
+  });
+}
+
 export { TOTAL_CHAPTERS, LEVELS_PER_CHAPTER };

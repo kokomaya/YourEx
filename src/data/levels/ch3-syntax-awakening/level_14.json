@@ -1,0 +1,41 @@
+{
+  "id": "level_14",
+  "title": "Either / Or",
+  "chapter": 3,
+  "story": "[Signal Fragment #14] rEx 的协议支持多种传输格式。你需要提取使用 HTTP 或 HTTPS 协议的 URL。选择（alternation）是处理多种模式的关键。",
+  "difficulty": "hard",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配 http:// 或 https:// 开头的 URL 的正则表达式",
+  "input": [
+    "http://example.com",
+    "https://rex.signal.org/data",
+    "ftp://files.server.net",
+    "https://api.test.io:8080/path",
+    "http://localhost",
+    "just-text",
+    "mailto:user@test.com",
+    "http://192.168.1.1"
+  ],
+  "expected": [
+    "http://example.com",
+    "https://rex.signal.org/data",
+    "https://api.test.io:8080/path",
+    "http://localhost",
+    "http://192.168.1.1"
+  ],
+  "hints": [
+    "[Hint] URL 以 http:// 或 https:// 开头",
+    "[Hint] s 是可选的（http 或 https）",
+    "[Hint] 协议后面的内容可以是任意非空白字符"
+  ],
+  "promptHints": [
+    "告诉 AI URL 的协议部分有两种变体",
+    "提示 AI 使用 ? 量词让 s 可选",
+    "或者使用 | 来表示\"或\"的关系"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 协议已识别。多种格式统一处理。",
+    "onFail": "[Parse Failed] 协议匹配失败。你需要同时覆盖两种变体。",
+    "onPerfect": "[Decryption Success] 选择运算完美应用。灵活而精确。",
+    "onDirectWrite": "[Manual Override] 手动处理多协议。选择对你来说不是问题。"
+  }
+}

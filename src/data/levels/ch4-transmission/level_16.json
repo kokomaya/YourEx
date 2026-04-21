@@ -1,0 +1,40 @@
+{
+  "id": "level_16",
+  "title": "Message Header",
+  "chapter": 4,
+  "story": "[Signal Fragment #16] rEx 的正式通信开始了。每条消息都有标准头部格式：[TYPE-CODE] 后跟内容。TYPE 是大写字母，CODE 是数字。你需要提取所有格式合法的消息头。",
+  "difficulty": "medium",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配 [TYPE-CODE] 格式（如 [ERR-404], [MSG-001]）的消息头的正则表达式",
+  "input": [
+    "[ERR-404] Not Found",
+    "[MSG-001] Hello",
+    "[SIG-12] Signal",
+    "[err-404] lowercase",
+    "ERR-404 no brackets",
+    "[DATA-9999] Big code",
+    "[A-1] Minimal"
+  ],
+  "expected": [
+    "[ERR-404] Not Found",
+    "[MSG-001] Hello",
+    "[SIG-12] Signal",
+    "[DATA-9999] Big code",
+    "[A-1] Minimal"
+  ],
+  "hints": [
+    "[Hint] 消息头被方括号包围",
+    "[Hint] TYPE 是一个或多个大写字母",
+    "[Hint] CODE 是一个或多个数字"
+  ],
+  "promptHints": [
+    "描述消息头的精确结构",
+    "用分步方式描述：括号 → 大写字母 → 连字符 → 数字 → 括号",
+    "告诉 AI 大写字母和数字各至少一个"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 消息头已解析。通信协议结构正在浮现。",
+    "onFail": "[Parse Failed] 消息头格式错误。结构化描述是关键。",
+    "onPerfect": "[Decryption Success] 协议头完美解析。结构化指令的力量。",
+    "onDirectWrite": "[Manual Override] 手动解析协议。消息结构已了然于胸。"
+  }
+}

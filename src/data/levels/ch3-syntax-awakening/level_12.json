@@ -1,0 +1,41 @@
+{
+  "id": "level_12",
+  "title": "Unknown Coordinates",
+  "chapter": 3,
+  "story": "[Signal Fragment #12] rEx 发送了一组坐标数据。格式为 (数字, 数字)，每个数字可以是整数或小数。你需要从噪声中提取所有合法坐标对。",
+  "difficulty": "medium",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配坐标格式 (数字, 数字) 的正则表达式，数字可以是整数或小数",
+  "input": [
+    "(3, 4)",
+    "(12.5, 99.9)",
+    "(0, 0)",
+    "(3.14, 2.71)",
+    "3, 4",
+    "(abc, def)",
+    "(1,)",
+    "(7.0, 8.5)"
+  ],
+  "expected": [
+    "(3, 4)",
+    "(12.5, 99.9)",
+    "(0, 0)",
+    "(3.14, 2.71)",
+    "(7.0, 8.5)"
+  ],
+  "hints": [
+    "[Hint] 坐标被括号包围",
+    "[Hint] 数字可以有可选的小数部分",
+    "[Hint] 小数点和后面的数字要一起出现或都不出现"
+  ],
+  "promptHints": [
+    "描述坐标的完整格式，包括括号和逗号",
+    "告诉 AI 数字可以是整数或小数",
+    "提示 AI 小数部分是可选的 (? 量词)"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 坐标已定位。rEx 的信号有空间维度。",
+    "onFail": "[Parse Failed] 坐标解析失败。可选部分的处理是关键。",
+    "onPerfect": "[Decryption Success] 空间坐标完美捕获。量词的灵活运用。",
+    "onDirectWrite": "[Manual Override] 手动定位。每个坐标都精准无误。"
+  }
+}

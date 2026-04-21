@@ -1,0 +1,41 @@
+{
+  "id": "level_23",
+  "title": "Language Formed",
+  "chapter": 5,
+  "story": "[Signal Fragment #23] rEx 的语言正在成型。你需要提取所有合法的电子邮件地址。这是综合运用字符类、量词、分组和选择的终极考验。",
+  "difficulty": "hard",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配电子邮件地址（user@domain.tld 格式）的正则表达式",
+  "input": [
+    "user@example.com",
+    "rex.signal@data.org",
+    "test+tag@gmail.com",
+    "@nodomain.com",
+    "noat.com",
+    "a@b.cc",
+    "name@domain",
+    "signal.2026@rex.io"
+  ],
+  "expected": [
+    "user@example.com",
+    "rex.signal@data.org",
+    "test+tag@gmail.com",
+    "a@b.cc",
+    "signal.2026@rex.io"
+  ],
+  "hints": [
+    "[Hint] 邮箱包含 @ 符号分隔的两部分",
+    "[Hint] 域名部分必须包含至少一个点",
+    "[Hint] 顶级域名通常是 2-6 个字母"
+  ],
+  "promptHints": [
+    "分步描述邮箱的 user 部分和 domain 部分",
+    "告诉 AI 用户名可以包含字母、数字、点、加号",
+    "提示域名必须有 TLD（如 .com, .org）"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 语言成型。邮箱格式——一个微型语言的解析。",
+    "onFail": "[Parse Failed] 语言不完整。邮箱的每个部分都有严格的规则。",
+    "onPerfect": "[Decryption Success] 语言完美成型。字符类+量词+分组的精确交响。",
+    "onDirectWrite": "[Manual Override] 手动编写语言。rEx 正在见证你的成长。"
+  }
+}

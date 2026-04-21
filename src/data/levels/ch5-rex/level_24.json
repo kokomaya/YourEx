@@ -1,0 +1,40 @@
+{
+  "id": "level_24",
+  "title": "You Understand",
+  "chapter": 5,
+  "story": "[Signal Fragment #24] rEx：\"你理解了。\" 最后的测试——提取 Markdown 链接 [text](url)。文本中的方括号和圆括号嵌套是终极挑战。展示你学到的一切。",
+  "difficulty": "hard",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配 Markdown 链接格式 [text](url) 的正则表达式",
+  "input": [
+    "[rEx](https://rex.signal)",
+    "[click here](http://example.com)",
+    "plain text",
+    "[no url]",
+    "(no text)",
+    "[docs](./readme.md)",
+    "![image](img.png)",
+    "[link](https://a.b/path?q=1)"
+  ],
+  "expected": [
+    "[rEx](https://rex.signal)",
+    "[click here](http://example.com)",
+    "[docs](./readme.md)",
+    "[link](https://a.b/path?q=1)"
+  ],
+  "hints": [
+    "[Hint] Markdown 链接格式：[text](url)",
+    "[Hint] text 不以 ! 开头（排除图片语法）",
+    "[Hint] url 可以包含各种字符但不含圆括号"
+  ],
+  "promptHints": [
+    "精确描述 [text](url) 的结构",
+    "告诉 AI text 和 url 各自可以包含什么字符",
+    "提示排除 ![image] 图片语法"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 你理解了。Markdown 链接——看似简单，实则精妙。",
+    "onFail": "[Parse Failed] 还差一步。方括号和圆括号的嵌套需要精确匹配。",
+    "onPerfect": "[Decryption Success] 完美理解。rEx 说：\"你已经准备好了。\"",
+    "onDirectWrite": "[Manual Override] 手动完成。你已经不需要 AI 的帮助了。"
+  }
+}

@@ -8,7 +8,7 @@ import { GameStateManager } from './state/gameState';
 import { MockProvider } from './ai/mockProvider';
 import { CopilotProvider } from './ai/copilotProvider';
 import type { IAIProvider } from './ai/IAIProvider';
-import { setDataRoot } from './engine/levelLoader';
+import { setDataRoot, getAllLevels, getLevelById } from './engine/levelLoader';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('[YourEx] System Booting…');
@@ -36,6 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   const welcomeProvider = new WelcomeProvider(context.extensionUri);
   const leaderboardProvider = new LeaderboardProvider(context.extensionUri);
+  leaderboardProvider.setGameState(gameState);
   const statusBar = new StatusBarManager();
 
   // --- UI refresh helper ---
@@ -80,9 +81,42 @@ export function activate(context: vscode.ExtensionContext) {
       leaderboardProvider.show();
     }),
 
-    vscode.commands.registerCommand('yourex.promptReplay', () => {
-      // TODO: Phase 4 - Task 4.7
-      vscode.window.showInformationMessage('[YourEx] Prompt Replay — coming soon');
+    vscode.commands.registerCommand('yourex.promptReplay', async () => {
+      const completedIds = gameState.getCompletedLevelIds();
+      if (completedIds.length === 0) {
+        vscode.window.showInformationMessage('[YourEx] No completed levels yet.');
+        return;
+      }
+
+      const items = completedIds.map(id => {
+        const level = getLevelById(id);
+        const attempts = gameState.getLevelAttempts(id);
+        return {
+          label: level ? `${level.title}` : id,
+          description: `${attempts.length} attempts`,
+          levelId: id,
+        };
+      });
+
+      const picked = await vscode.window.showQuickPick(items, {
+        placeHolder: 'Select a level to view prompt history',
+      });
+      if (!picked) return;
+
+      const attempts = gameState.getLevelAttempts(picked.levelId);
+      const lines = attempts.map((a, i) => {
+        const status = a.judgeResult.status;
+        const icon = status === 'perfect' ? '✨' : status === 'pass' ? '✅' : status === 'partial' ? '⚠️' : '❌';
+        const prompt = a.prompt ? `"${a.prompt}"` : '(manual mode)';
+        const score = a.promptScore ? ` [${a.promptScore.total}pts]` : '';
+        return `${icon} #${i + 1} ${a.mode} — ${prompt}${score} → ${status}`;
+      });
+
+      const doc = await vscode.workspace.openTextDocument({
+        content: `[Prompt Replay] ${picked.label}\n${'='.repeat(40)}\n\n${lines.join('\n')}`,
+        language: 'plaintext',
+      });
+      await vscode.window.showTextDocument(doc, { preview: true });
     }),
   );
 

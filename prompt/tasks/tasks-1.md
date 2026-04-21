@@ -292,16 +292,16 @@ type ExtensionMessage =
 
 | # | 任务 | 状态 | 产出文件 | 验证方式 |
 |---|------|------|----------|----------|
-| 4.1 | 编写第 2-5 章关卡 JSON 数据（每章 5 关，共 20 关） | ⬜ | `data/levels/ch2~ch5/*.json` | JSON 合法，difficulty 递进 |
-| 4.2 | 实现成就系统 — 定义 12 个成就 + 检测逻辑 | ⬜ | `engine/achievementManager.ts` | 单测：满足条件时触发成就 |
-| 4.3 | 成就解锁通知 — 弹窗 + Sidebar 展示 | ⬜ | `ui/feedback.ts` 扩展 | F5：触发成就后弹窗 |
-| 4.4 | 实现 ScoreDetail React 组件 — 通关后展示 4 维评分 | ⬜ | `webview-ui/src/components/ScoreDetail/` | F5：通关后看到评分雷达图/详情 |
-| 4.5 | 实现排行榜（本地版）— 读写 JSON，按维度排序 | ⬜ | 新建 `engine/leaderboard.ts` | 单测：多用户数据排序正确 |
-| 4.6 | 排行榜 UI — Leaderboard React 组件 + WebView Provider | ⬜ | `webview-ui/src/components/Leaderboard/`, `ui/webview/leaderboardProvider.ts` | F5：排行榜页面正确渲染 |
-| 4.7 | 实现 Prompt 回放 — 存储每关所有 prompt 历史 | ⬜ | `state/gameState.ts` 扩展 | F5：能查看某关的 prompt 迭代历史 |
-| 4.8 | 实现剧情文案系统 — 根据状态返回对应台词 | ⬜ | `story/dialogues.ts` | 单测：不同状态返回不同文案 |
-| 4.9 | 实现 rEx 彩蛋 — 中后期通关后概率触发 incoming signal | ⬜ | `story/dialogues.ts` 扩展 | F5：通关第三章后偶尔出现彩蛋 |
-| 4.10 | 实现隐藏章节解锁检测 | ⬜ | `engine/levelLoader.ts` 扩展 | 单测：全 Perfect → 解锁隐藏章节 |
+| 4.1 | 编写第 2-5 章关卡 JSON 数据（每章 5 关，共 20 关） | ✅ | `data/levels/ch2~ch5/*.json` | JSON 合法，difficulty 递进 |
+| 4.2 | 实现成就系统 — 定义 12 个成就 + 检测逻辑 | ✅ | `engine/achievementManager.ts` | 单测：满足条件时触发成就 |
+| 4.3 | 成就解锁通知 — 弹窗 + Sidebar 展示 | ✅ | `ui/feedback.ts` 扩展 | F5：触发成就后弹窗 |
+| 4.4 | 实现 ScoreDetail React 组件 — 通关后展示 4 维评分 | ✅ | `webview-ui/src/components/ScoreDetail/` | F5：通关后看到评分雷达图/详情 |
+| 4.5 | 实现排行榜（本地版）— 读写 JSON，按维度排序 | ✅ | 新建 `engine/leaderboard.ts` | 单测：多用户数据排序正确 |
+| 4.6 | 排行榜 UI — Leaderboard React 组件 + WebView Provider | ✅ | `webview-ui/src/components/Leaderboard/`, `ui/webview/leaderboardProvider.ts` | F5：排行榜页面正确渲染 |
+| 4.7 | 实现 Prompt 回放 — 存储每关所有 prompt 历史 | ✅ | `state/gameState.ts` 扩展 | F5：能查看某关的 prompt 迭代历史 |
+| 4.8 | 实现剧情文案系统 — 根据状态返回对应台词 | ✅ | `story/dialogues.ts` | 单测：不同状态返回不同文案 |
+| 4.9 | 实现 rEx 彩蛋 — 中后期通关后概率触发 incoming signal | ✅ | `story/dialogues.ts` 扩展 | F5：通关第三章后偶尔出现彩蛋 |
+| 4.10 | 实现隐藏章节解锁检测 | ✅ | `engine/levelLoader.ts` 扩展 | 单测：全 Perfect → 解锁隐藏章节 |
 
 ---
 

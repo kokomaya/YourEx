@@ -1,0 +1,41 @@
+{
+  "id": "level_17",
+  "title": "Protocol Sync",
+  "chapter": 4,
+  "story": "[Signal Fragment #17] rEx 使用键值对传输数据。格式为 key=value，key 由小写字母组成，value 可以是数字或带引号的字符串。你需要提取所有合法的键值对。",
+  "difficulty": "medium",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配 key=value 键值对的正则表达式（key 是小写字母，value 是数字或引号字符串）",
+  "input": [
+    "name=\"rEx\"",
+    "version=42",
+    "signal=\"active\"",
+    "Name=invalid",
+    "=nokey",
+    "status=1",
+    "data=\"test data\"",
+    "bad_key=123"
+  ],
+  "expected": [
+    "name=\"rEx\"",
+    "version=42",
+    "signal=\"active\"",
+    "status=1",
+    "data=\"test data\""
+  ],
+  "hints": [
+    "[Hint] key 只由小写字母组成（无下划线、无数字）",
+    "[Hint] value 要么是纯数字，要么是带引号的字符串",
+    "[Hint] 用分组和选择来处理两种 value 格式"
+  ],
+  "promptHints": [
+    "分步描述 key 和 value 的规则",
+    "告诉 AI value 有两种可能的格式",
+    "使用 (pattern1|pattern2) 来表示选择"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 键值协议同步。数据传输格式已掌握。",
+    "onFail": "[Parse Failed] 协议不匹配。你需要同时处理两种 value 格式。",
+    "onPerfect": "[Decryption Success] 协议完美同步。分组和选择的精确组合。",
+    "onDirectWrite": "[Manual Override] 手动同步协议。组合规则对你来说是基本功。"
+  }
+}

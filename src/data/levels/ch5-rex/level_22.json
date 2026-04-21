@@ -1,0 +1,39 @@
+{
+  "id": "level_22",
+  "title": "Not Just Pattern",
+  "chapter": 5,
+  "story": "[Signal Fragment #22] rEx 开始验证密码强度。提取所有满足条件的密码：至少 8 位，包含大写、小写和数字。这不只是模式匹配——这是规则验证。",
+  "difficulty": "hard",
+  "promptChallenge": "写一个 prompt，让 AI 生成能验证密码强度（至少8位，含大写、小写和数字）的正则表达式",
+  "input": [
+    "Passw0rd",
+    "abcdefgh",
+    "ABCDEFGH",
+    "12345678",
+    "rEx2026Go",
+    "Sh0rt",
+    "GoodPass1",
+    "nouppercase1"
+  ],
+  "expected": [
+    "Passw0rd",
+    "rEx2026Go",
+    "GoodPass1"
+  ],
+  "hints": [
+    "[Hint] 密码需要同时满足三个条件",
+    "[Hint] 前瞻断言可以在同一位置检查多个条件",
+    "[Hint] (?=.*[A-Z]) 确保至少有一个大写字母"
+  ],
+  "promptHints": [
+    "列出所有密码必须满足的条件",
+    "告诉 AI 使用多个前瞻断言来并行检查条件",
+    "每个条件用一个 (?=...) 表示"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 密码验证通过。多重断言并行检查——你理解了。",
+    "onFail": "[Parse Failed] 验证失败。三个条件必须同时满足。",
+    "onPerfect": "[Decryption Success] 完美验证。多重前瞻的精确编排。",
+    "onDirectWrite": "[Manual Override] 手动验证。你已经超越了简单的模式匹配。"
+  }
+}

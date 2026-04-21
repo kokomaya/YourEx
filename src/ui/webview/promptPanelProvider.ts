@@ -3,14 +3,16 @@ import { getWebviewContent } from './webviewHelper';
 import type { IAIProvider } from '../../ai/IAIProvider';
 import type { GameStateManager } from '../../state/gameState';
 import type { Level, WebViewMessage, ExtensionMessage } from '../../types';
-import { getLevelById, shouldUnlockNextChapter, getNextChapter } from '../../engine/levelLoader';
+import { getLevelById, shouldUnlockNextChapter, getNextChapter, shouldUnlockHiddenChapter, HIDDEN_CHAPTER } from '../../engine/levelLoader';
 import { runDecryptionPipeline, runManualJudge } from '../../engine/decryptionPipeline';
 import { getFeedbackText } from '../feedback';
-import { showJudgeFeedback } from '../feedback';
+import { showJudgeFeedback, showAchievementUnlocked } from '../feedback';
 import { calculateXpGain } from '../../engine/xpTracker';
 import { incrementCombo, resetCombo } from '../../engine/comboTracker';
 import { computeDecryptPercent } from '../../engine/xpTracker';
 import { getAllLevels } from '../../engine/levelLoader';
+import { checkAchievements } from '../../engine/achievementManager';
+import { getRexSignal } from '../../story/dialogues';
 
 export class PromptPanelProvider {
   private _panel: vscode.WebviewPanel | undefined;
@@ -269,6 +271,28 @@ export class PromptPanelProvider {
           vscode.window.showInformationMessage(`🔓 [Chapter ${next} Unlocked] 新的信号频段已解锁！`);
         }
       }
+    }
+
+    // Check achievements
+    const newAchievements = checkAchievements(this._gameState.state);
+    for (const achievement of newAchievements) {
+      this._gameState.unlockAchievement(achievement.id);
+      showAchievementUnlocked(achievement.name, achievement.description);
+    }
+
+    // rEx easter egg signal (4.9)
+    const rexMsg = getRexSignal(this._gameState.state);
+    if (rexMsg) {
+      setTimeout(() => {
+        vscode.window.showInformationMessage(`[Incoming Signal…] ${rexMsg}`);
+      }, 2000);
+    }
+
+    // Hidden chapter unlock detection (4.10)
+    if (!this._gameState.isChapterUnlocked(HIDDEN_CHAPTER) &&
+        shouldUnlockHiddenChapter(this._gameState.state.completedLevels)) {
+      this._gameState.unlockChapter(HIDDEN_CHAPTER);
+      vscode.window.showInformationMessage('🌙 [Incoming Signal…] rEx 开始回应你了。隐藏章节已解锁。');
     }
   }
 
