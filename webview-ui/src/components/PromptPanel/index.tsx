@@ -1,6 +1,7 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useVSCode, useMessageListener } from '../../hooks/useVSCode';
-import type { Level, JudgeResult, PromptScore, ExtensionMessage } from '../../types/messages';
+import type { Level, JudgeResult, PromptScore, LevelRewardData, ExtensionMessage } from '../../types/messages';
+import { RewardOverlay } from '../Reward';
 import { useVisualScene } from '../../visual/hooks/useVisualScene';
 import { VisualScene } from '../../visual/components/VisualScene';
 import { useVisualPreferences } from '../../visual/hooks/useVisualPreferences';
@@ -21,6 +22,9 @@ export function PromptPanel() {
     feedback: string;
     rawRegex?: string;
   } | null>(null);
+  const [reward, setReward] = useState<LevelRewardData | null>(null);
+  const [signalFragment, setSignalFragment] = useState<string | null>(null);
+  const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const stateHint = loading
     ? 'loading'
@@ -52,7 +56,13 @@ export function PromptPanel() {
       case 'loadLevel':
         setLevel(data.level);
         setResult(null);
+        setReward(null);
+        setSignalFragment(null);
         setPrompt('');
+        if (autoAdvanceTimer.current) {
+          clearTimeout(autoAdvanceTimer.current);
+          autoAdvanceTimer.current = null;
+        }
         break;
       case 'showResult':
         setResult({
@@ -61,6 +71,20 @@ export function PromptPanel() {
           feedback: data.feedback,
           rawRegex: data.rawRegex,
         });
+        if (data.reward) {
+          const r = data.reward;
+          if (r.isChapterComplete || r.isGameComplete || r.isOriginComplete) {
+            // Major milestone: show full reward overlay
+            setReward(r);
+          } else {
+            // Normal level pass: show signal fragment + auto-advance
+            setSignalFragment(pickSignalFragment(r.chapter, r.levelId));
+            autoAdvanceTimer.current = setTimeout(() => {
+              postMessage({ command: 'nextLevel' });
+              autoAdvanceTimer.current = null;
+            }, 2200);
+          }
+        }
         setLoading(false);
         break;
       case 'showError':
@@ -244,6 +268,24 @@ export function PromptPanel() {
           )}
           </section>
         )}
+
+        {reward && (
+          <RewardOverlay reward={reward} onDismiss={() => setReward(null)} />
+        )}
+
+        {signalFragment && !reward && (
+          <div className="signal-fragment" onClick={() => {
+            setSignalFragment(null);
+            if (autoAdvanceTimer.current) {
+              clearTimeout(autoAdvanceTimer.current);
+              autoAdvanceTimer.current = null;
+            }
+            postMessage({ command: 'nextLevel' });
+          }}>
+            <span className="signal-fragment__code">{signalFragment}</span>
+            <span className="signal-fragment__hint">SIGNAL LOCKED — 自动跳转中…</span>
+          </div>
+        )}
       </div>
       </MonitorViewportShell>
     </VisualScene>
@@ -278,4 +320,22 @@ function getMatchClass(item: string, result: { judgeResult: JudgeResult } | null
   if (isMatched && !isExpected) return 'match-extra';
   if (!isMatched && isExpected) return 'match-missed';
   return '';
+}
+
+const SIGNAL_FRAGMENTS = [
+  'rEx[SIG:{0}::ACK]',
+  'rEx[FREQ:CH{1}::LOCK]',
+  'rEx[PARSE:{0}::CONFIRMED]',
+  'rEx[NODE:{0}::SYNC]',
+  'rEx[STREAM:CH{1}::{0}::PASS]',
+  'rEx[DECODE:{0}::VALID]',
+  'rEx[ECHO:CH{1}::{0}::OK]',
+  'rEx[SIGNAL:{0}::CAPTURED]',
+];
+
+function pickSignalFragment(chapter: number, levelId: string): string {
+  const idx = levelId.split('').reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+  const template = SIGNAL_FRAGMENTS[idx % SIGNAL_FRAGMENTS.length];
+  const num = levelId.replace('level_', '');
+  return template.replace('{0}', num).replace('{1}', String(chapter));
 }

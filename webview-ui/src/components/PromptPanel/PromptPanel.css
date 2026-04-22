@@ -280,3 +280,50 @@
   min-height: 55vh;
   justify-content: center;
 }
+
+/* ─── Signal Fragment (level pass auto-advance) ─── */
+
+.signal-fragment {
+  position: absolute;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.82);
+  cursor: pointer;
+  animation: signal-frag-in 0.35s ease-out;
+}
+
+@keyframes signal-frag-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.signal-fragment__code {
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: var(--scene-accent, #4fc3f7);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--scene-accent, #4fc3f7) 50%, transparent);
+  animation: signal-frag-glitch 1.8s steps(3, end) infinite;
+}
+
+@keyframes signal-frag-glitch {
+  0%, 90%, 100% { opacity: 1; transform: translateX(0); }
+  92% { opacity: 0.6; transform: translateX(-2px); }
+  95% { opacity: 0.8; transform: translateX(1px); }
+}
+
+.signal-fragment__hint {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signal-fragment { animation: none; }
+  .signal-fragment__code { animation: none; }
+}

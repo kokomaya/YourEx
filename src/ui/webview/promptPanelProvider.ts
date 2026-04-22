@@ -3,7 +3,7 @@ import { getWebviewContent, getVisualConfigFromSettings } from './webviewHelper'
 import type { IAIProvider } from '../../ai/IAIProvider';
 import type { GameStateManager } from '../../state/gameState';
 import type { Level, WebViewMessage, ExtensionMessage } from '../../types';
-import { getLevelById, shouldUnlockNextChapter, getNextChapter, shouldUnlockHiddenChapter, HIDDEN_CHAPTER } from '../../engine/levelLoader';
+import { getLevelById, loadChapterLevels, shouldUnlockNextChapter, getNextChapter, shouldUnlockHiddenChapter, HIDDEN_CHAPTER } from '../../engine/levelLoader';
 import { runDecryptionPipeline, runManualJudge } from '../../engine/decryptionPipeline';
 import { getFeedbackText } from '../feedback';
 import { showJudgeFeedback, showAchievementUnlocked } from '../feedback';
@@ -13,20 +13,23 @@ import { computeDecryptPercent } from '../../engine/xpTracker';
 import { getAllLevels } from '../../engine/levelLoader';
 import { checkAchievements } from '../../engine/achievementManager';
 import { getRexSignal } from '../../story/dialogues';
+import { buildRewardData } from '../../engine/rewardBuilder';
 
 export class PromptPanelProvider {
   private _panel: vscode.WebviewPanel | undefined;
   private _currentLevel: Level | undefined;
   private _aiProvider: IAIProvider | undefined;
   private _gameState: GameStateManager | undefined;
+  private _devMode = false;
   private _onDidUpdate = new vscode.EventEmitter<void>();
   readonly onDidUpdate = this._onDidUpdate.event;
 
   constructor(private readonly _extensionUri: vscode.Uri) {}
 
-  setDependencies(aiProvider: IAIProvider, gameState: GameStateManager): void {
+  setDependencies(aiProvider: IAIProvider, gameState: GameStateManager, devMode?: boolean): void {
     this._aiProvider = aiProvider;
     this._gameState = gameState;
+    this._devMode = devMode ?? false;
   }
 
   show(levelId?: string): void {
@@ -93,6 +96,18 @@ export class PromptPanelProvider {
       case 'manualMode':
         await this.handleManualMode(msg.levelId);
         break;
+
+      case 'nextLevel':
+        this.handleNextLevel();
+        break;
+
+      case 'replayLevel':
+        this.loadLevel(msg.levelId);
+        break;
+
+      case 'viewLeaderboard':
+        vscode.commands.executeCommand('yourex.showLeaderboard');
+        break;
     }
   }
 
@@ -109,10 +124,25 @@ export class PromptPanelProvider {
 
     try {
       const attemptNumber = this._gameState.getLevelAttempts(levelId).length + 1;
-      const result = await runDecryptionPipeline(prompt, level, this._aiProvider, attemptNumber);
+
+      // Dev mode: skip AI, fake a perfect result
+      const result = this._devMode
+        ? {
+            judgeResult: {
+              status: 'perfect' as const,
+              matched: [...level.expected],
+              expected: [...level.expected],
+              rawRegexString: '/dev-auto-pass/',
+              regex: null,
+            },
+            promptScore: { total: 95, brevityScore: 25, firstTryScore: 25, eleganceScore: 20, regexQualityScore: 25 },
+            rawRegex: '/dev-auto-pass/',
+          }
+        : await runDecryptionPipeline(prompt, level, this._aiProvider, attemptNumber);
 
       const feedback = getFeedbackText(result.judgeResult, level, 'prompt');
       const passed = result.judgeResult.status === 'perfect' || result.judgeResult.status === 'pass';
+      const wasAlreadyCompleted = this._gameState.isLevelCompleted(levelId);
 
       // Record attempt
       this._gameState.recordAttempt({
@@ -128,7 +158,7 @@ export class PromptPanelProvider {
 
       // XP + combo on success
       if (passed) {
-        this.applySuccessRewards(
+        const rewardInfo = this.applySuccessRewards(
           attemptNumber,
           'prompt',
           result.judgeResult.status === 'perfect',
@@ -136,27 +166,70 @@ export class PromptPanelProvider {
           prompt.length,
           levelId
         );
+
+        const reward = buildRewardData(
+          this._gameState,
+          level,
+          result.judgeResult.status === 'perfect',
+          result.promptScore,
+          rewardInfo.xpGained,
+          rewardInfo.combo,
+          rewardInfo.newAchievementIds,
+          wasAlreadyCompleted,
+        );
+
+        showJudgeFeedback(result.judgeResult, feedback);
+
+        this.postMessage({
+          command: 'showResult',
+          result: { ...result.judgeResult, regex: null },
+          score: result.promptScore,
+          feedback,
+          rawRegex: result.rawRegex,
+          reward,
+        });
       } else {
         // reset combo on fail
         const newState = resetCombo(this._gameState.state as any);
         this._gameState.setCombo(newState.combo);
+
+        showJudgeFeedback(result.judgeResult, feedback);
+
+        this.postMessage({
+          command: 'showResult',
+          result: { ...result.judgeResult, regex: null },
+          score: result.promptScore,
+          feedback,
+          rawRegex: result.rawRegex,
+        });
       }
-
-      showJudgeFeedback(result.judgeResult, feedback);
-
-      this.postMessage({
-        command: 'showResult',
-        result: { ...result.judgeResult, regex: null },
-        score: result.promptScore,
-        feedback,
-        rawRegex: result.rawRegex,
-      });
 
       this._onDidUpdate.fire();
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
       this.postMessage({ command: 'showError', message: msg });
       this.postMessage({ command: 'setLoading', loading: false });
+    }
+  }
+
+  private handleNextLevel(): void {
+    if (!this._currentLevel) return;
+    const chapter = this._currentLevel.chapter;
+    const chapterLevels = loadChapterLevels(chapter);
+    const currentIndex = chapterLevels.findIndex(l => l.id === this._currentLevel!.id);
+
+    // Next level in current chapter
+    if (currentIndex >= 0 && currentIndex < chapterLevels.length - 1) {
+      this.loadLevel(chapterLevels[currentIndex + 1].id);
+      return;
+    }
+
+    // Next chapter's first level
+    const nextCh = chapter + 1;
+    const nextChapterLevels = loadChapterLevels(nextCh);
+    if (nextChapterLevels.length > 0 && this._gameState?.isChapterUnlocked(nextCh)) {
+      this.loadLevel(nextChapterLevels[0].id);
+      return;
     }
   }
 
@@ -210,6 +283,7 @@ export class PromptPanelProvider {
     const judgeResult = runManualJudge(rawRegex, level);
     const feedback = getFeedbackText(judgeResult, level, 'manual');
     const passed = judgeResult.status === 'perfect' || judgeResult.status === 'pass';
+    const wasAlreadyCompleted = this._gameState.isLevelCompleted(levelId);
     const attemptNumber = this._gameState.getLevelAttempts(levelId).length + 1;
 
     this._gameState.recordAttempt({
@@ -222,23 +296,45 @@ export class PromptPanelProvider {
     });
 
     if (passed) {
-      this.applySuccessRewards(attemptNumber, 'manual', judgeResult.status === 'perfect', 0, 0, levelId);
+      const rewardInfo = this.applySuccessRewards(attemptNumber, 'manual', judgeResult.status === 'perfect', 0, 0, levelId);
+
+      const reward = buildRewardData(
+        this._gameState,
+        level,
+        judgeResult.status === 'perfect',
+        undefined,
+        rewardInfo.xpGained,
+        rewardInfo.combo,
+        rewardInfo.newAchievementIds,
+        wasAlreadyCompleted,
+      );
+
+      // Also send result to webview if open
+      if (this._panel) {
+        this.postMessage({
+          command: 'showResult',
+          result: { ...judgeResult, regex: null },
+          feedback,
+          rawRegex,
+          reward,
+        });
+      }
     } else {
       const newState = resetCombo(this._gameState.state as any);
       this._gameState.setCombo(newState.combo);
+
+      // Also send result to webview if open
+      if (this._panel) {
+        this.postMessage({
+          command: 'showResult',
+          result: { ...judgeResult, regex: null },
+          feedback,
+          rawRegex,
+        });
+      }
     }
 
     showJudgeFeedback(judgeResult, feedback);
-
-    // Also send result to webview if open
-    if (this._panel) {
-      this.postMessage({
-        command: 'showResult',
-        result: { ...judgeResult, regex: null },
-        feedback,
-        rawRegex,
-      });
-    }
 
     this._onDidUpdate.fire();
   }
@@ -250,8 +346,8 @@ export class PromptPanelProvider {
     promptScore: number,
     promptLength: number,
     levelId: string
-  ): void {
-    if (!this._gameState) return;
+  ): { xpGained: number; combo: number; newAchievementIds: string[] } {
+    if (!this._gameState) return { xpGained: 0, combo: 0, newAchievementIds: [] };
 
     // Increment combo
     const comboState = incrementCombo(this._gameState.state as any);
@@ -276,8 +372,10 @@ export class PromptPanelProvider {
 
     // Check achievements
     const newAchievements = checkAchievements(this._gameState.state);
+    const newAchievementIds: string[] = [];
     for (const achievement of newAchievements) {
       this._gameState.unlockAchievement(achievement.id);
+      newAchievementIds.push(achievement.id);
       showAchievementUnlocked(achievement.name, achievement.description);
     }
 
@@ -295,6 +393,8 @@ export class PromptPanelProvider {
       this._gameState.unlockChapter(HIDDEN_CHAPTER);
       vscode.window.showInformationMessage('🌙 [Incoming Signal…] rEx 开始回应你了。隐藏章节已解锁。');
     }
+
+    return { xpGained: xp, combo: comboState.combo, newAchievementIds };
   }
 
   getDecryptPercent(): number {

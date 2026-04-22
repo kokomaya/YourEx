@@ -97,7 +97,8 @@ export function activate(context: vscode.ExtensionContext) {
   missionMapProvider.setDataSource(mapDataSource);
 
   const promptPanel = new PromptPanelProvider(context.extensionUri);
-  promptPanel.setDependencies(aiProvider, gameState);
+  const isDevMode = getEffectiveMode(modeService.getMode()) === 'developer';
+  promptPanel.setDependencies(aiProvider, gameState, isDevMode);
 
   const welcomeProvider = new WelcomeProvider(context.extensionUri);
   const leaderboardProvider = new LeaderboardProvider(context.extensionUri);
