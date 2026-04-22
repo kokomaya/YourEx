@@ -177,11 +177,17 @@ body {
 }
 
 .visual-layer--radar {
-  inset: 10% 24% 22% 24%;
+  top: auto;
+  right: 3%;
+  bottom: 4%;
+  left: auto;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   background:
     url('../assets/visual/visual-layer--radar.png') center/contain no-repeat;
   mix-blend-mode: screen;
+  opacity: 0.60;
   animation: radarSweep var(--layer-duration, 5.8s) linear infinite;
 }
 

@@ -85,7 +85,7 @@ export function startVelocityMotion(
     // --- Roll & scale & opacity from noise ---
     const roll = smoothNoise(t * 0.45, 10) * ROLL_AMP;
     const scale = 1.02 + smoothNoise(t * 0.35, 30) * 0.03;
-    const opacity = 0.75 + smoothNoise(t * 0.25, 20) * 0.15;
+    const opacity = 0.20 + smoothNoise(t * 0.25, 20) * 0.05;
 
     el.style.transform = `translate3d(${x.toFixed(3)}%, ${y.toFixed(3)}%, 0) rotate(${roll.toFixed(2)}deg) scale(${scale.toFixed(4)})`;
     el.style.opacity = opacity.toFixed(3);

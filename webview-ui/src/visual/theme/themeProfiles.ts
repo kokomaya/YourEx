@@ -20,7 +20,7 @@ export const THEME_PROFILES: Record<number, ThemeProfile> = {
     chapter: 1,
     backgroundEffects: ['bg.starfieldForward'],
     interactiveEffects: ['ui.button.neonPulse'],
-    postEffects: ['ui.hud.cockpitFrame'],
+    postEffects: ['ui.hud.cockpitFrame', 'ui.hud.signalRadarSweep'],
     intensity: 0.7,
   },
   2: {
@@ -50,7 +50,7 @@ export const THEME_PROFILES: Record<number, ThemeProfile> = {
     },
     backgroundEffects: ['bg.starfieldForward', 'bg.binaryStream'],
     interactiveEffects: ['ui.button.circuitTrace'],
-    postEffects: ['ui.hud.cockpitFrame', 'ui.focus.scanLine'],
+    postEffects: ['ui.hud.cockpitFrame', 'ui.hud.signalRadarSweep', 'ui.focus.scanLine'],
     intensity: 0.75,
   },
   4: {
@@ -65,7 +65,7 @@ export const THEME_PROFILES: Record<number, ThemeProfile> = {
     },
     backgroundEffects: ['bg.starfieldForward', 'bg.hexDriftGrid'],
     interactiveEffects: ['ui.button.signalLock'],
-    postEffects: ['ui.hud.cockpitFrame', 'ui.hud.velocityStreak', 'ui.focus.dataBloom'],
+    postEffects: ['ui.hud.cockpitFrame', 'ui.hud.signalRadarSweep', 'ui.hud.velocityStreak', 'ui.focus.dataBloom'],
     intensity: 0.78,
   },
   5: {
@@ -80,7 +80,7 @@ export const THEME_PROFILES: Record<number, ThemeProfile> = {
     },
     backgroundEffects: ['bg.starfieldForward', 'bg.auroraSignalFog'],
     interactiveEffects: ['ui.button.neonPulse'],
-    postEffects: ['ui.hud.cockpitFrame', 'post.canopyReflectionPulse', 'ui.hud.velocityStreak'],
+    postEffects: ['ui.hud.cockpitFrame', 'ui.hud.signalRadarSweep', 'post.canopyReflectionPulse', 'ui.hud.velocityStreak'],
     intensity: 0.82,
   },
   6: {
@@ -95,7 +95,7 @@ export const THEME_PROFILES: Record<number, ThemeProfile> = {
     },
     backgroundEffects: ['bg.starfieldForward', 'bg.hexDriftGrid', 'bg.binaryStream'],
     interactiveEffects: ['ui.button.signalLock', 'ui.button.circuitTrace'],
-    postEffects: ['ui.hud.cockpitFrame', 'ui.hud.velocityStreak', 'post.glitchBlur', 'ui.focus.scanLine'],
+    postEffects: ['ui.hud.cockpitFrame', 'ui.hud.signalRadarSweep', 'ui.hud.velocityStreak', 'post.glitchBlur', 'ui.focus.scanLine'],
     intensity: 0.88,
   },
 };
