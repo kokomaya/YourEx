@@ -221,6 +221,7 @@ export class PromptPanelProvider {
     // Next level in current chapter
     if (currentIndex >= 0 && currentIndex < chapterLevels.length - 1) {
       this.loadLevel(chapterLevels[currentIndex + 1].id);
+      this._onDidUpdate.fire();
       return;
     }
 
@@ -229,6 +230,7 @@ export class PromptPanelProvider {
     const nextChapterLevels = loadChapterLevels(nextCh);
     if (nextChapterLevels.length > 0 && this._gameState?.isChapterUnlocked(nextCh)) {
       this.loadLevel(nextChapterLevels[0].id);
+      this._onDidUpdate.fire();
       return;
     }
   }
@@ -402,6 +404,10 @@ export class PromptPanelProvider {
     const total = getAllLevels().length;
     const completed = this._gameState.getCompletedLevelIds().length;
     return computeDecryptPercent(completed, total);
+  }
+
+  getCurrentLevelId(): string | null {
+    return this._currentLevel?.id ?? null;
   }
 
   private postMessage(msg: ExtensionMessage): void {

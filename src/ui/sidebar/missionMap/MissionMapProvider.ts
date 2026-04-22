@@ -7,6 +7,7 @@ export class MissionMapProvider implements vscode.WebviewViewProvider {
 
   private _view?: vscode.WebviewView;
   private _dataSource: IMapDataSource | null = null;
+  private _activeLevelId: string | null = null;
   private _onDidSelectLevel = new vscode.EventEmitter<string>();
   readonly onDidSelectLevel = this._onDidSelectLevel.event;
 
@@ -20,6 +21,16 @@ export class MissionMapProvider implements vscode.WebviewViewProvider {
     if (!this._view || !this._dataSource) return;
     const chapters = this._dataSource.getChapters();
     this._view.webview.postMessage({ command: 'loadMap', chapters });
+    if (this._activeLevelId) {
+      this._view.webview.postMessage({ command: 'highlightLevel', levelId: this._activeLevelId });
+    }
+  }
+
+  setActiveLevel(levelId: string | null): void {
+    this._activeLevelId = levelId;
+    if (this._view && levelId) {
+      this._view.webview.postMessage({ command: 'highlightLevel', levelId });
+    }
   }
 
   resolveWebviewView(
@@ -198,6 +209,11 @@ body {
 .node-btn:hover:not([disabled]) {
   background: var(--vscode-list-hoverBackground, rgba(255,255,255,0.06));
 }
+.node-btn[data-active="true"] {
+  background: var(--vscode-list-activeSelectionBackground, #094771);
+  color: var(--vscode-list-activeSelectionForeground, #fff);
+  border-radius: 6px;
+}
 .node-btn:focus-visible {
   outline: 1px solid var(--vscode-focusBorder, #007acc);
   outline-offset: -1px;
@@ -322,6 +338,9 @@ const MAP_JS = `
         activeChapter = msg.chapterId;
         renderTabs();
         renderPanel();
+        break;
+      case 'highlightLevel':
+        highlightActiveLevel(msg.levelId);
         break;
     }
   });
@@ -448,5 +467,30 @@ const MAP_JS = `
 
   // Signal ready
   vscode.postMessage({ command: 'ready' });
+
+  function highlightActiveLevel(levelId) {
+    // Switch to the correct chapter tab if needed
+    for (const ch of chapters) {
+      const node = ch.nodes.find(n => n.id === levelId);
+      if (node && ch.chapter !== activeChapter) {
+        activeChapter = ch.chapter;
+        renderTabs();
+        renderPanel();
+        break;
+      }
+    }
+
+    // Remove previous highlight
+    panelEl.querySelectorAll('.node-btn[data-active]').forEach(el => {
+      delete el.dataset.active;
+    });
+
+    // Apply highlight
+    const btn = panelEl.querySelector('.node-btn[data-id="' + levelId + '"]');
+    if (btn) {
+      btn.dataset.active = 'true';
+      btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
 })();
 `;

@@ -283,9 +283,8 @@ export function PromptPanel() {
             }
             postMessage({ command: 'nextLevel' });
           }}>
-            <Oscilloscope active={true} color="var(--scene-accent, #4fc3f7)" width={260} height={56} />
+            <Oscilloscope active={true} width={280} height={48} />
             <span className="signal-fragment__code">{signalFragment}</span>
-            <Oscilloscope active={true} color="var(--scene-accent, #4fc3f7)" width={260} height={56} />
             <span className="signal-fragment__hint">SIGNAL LOCKED — 自动跳转中…</span>
           </div>
         )}

@@ -112,6 +112,7 @@ export function activate(context: vscode.ExtensionContext) {
     sidebarProvider.refresh();
     mapDataSource.setAccessPolicy(accessPolicy);
     missionMapProvider.refresh();
+    missionMapProvider.setActiveLevel(promptPanel.getCurrentLevelId());
     const percent = promptPanel.getDecryptPercent();
     statusBar.update(gameState.state.xp, gameState.state.combo, percent, accessPolicy.mode);
   }
