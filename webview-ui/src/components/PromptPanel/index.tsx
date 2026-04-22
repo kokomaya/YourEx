@@ -1,10 +1,14 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useVSCode, useMessageListener } from '../../hooks/useVSCode';
 import type { Level, JudgeResult, PromptScore, ExtensionMessage } from '../../types/messages';
+import { useVisualScene } from '../../visual/hooks/useVisualScene';
+import { VisualScene } from '../../visual/components/VisualScene';
+import { useVisualPreferences } from '../../visual/hooks/useVisualPreferences';
 import './PromptPanel.css';
 
 export function PromptPanel() {
   const { postMessage } = useVSCode();
+  const visual = useVisualPreferences();
   const [level, setLevel] = useState<Level | null>(null);
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
@@ -14,6 +18,30 @@ export function PromptPanel() {
     feedback: string;
     rawRegex?: string;
   } | null>(null);
+
+  const stateHint = loading
+    ? 'loading'
+    : result?.judgeResult.status === 'error' || result?.judgeResult.status === 'fail'
+      ? 'error'
+      : result?.judgeResult.status === 'perfect' || result?.judgeResult.status === 'pass'
+        ? 'success'
+        : 'idle';
+
+  const flightPhase = loading
+    ? 'accelerate'
+    : stateHint === 'error'
+      ? 'turbulence'
+      : stateHint === 'success'
+        ? 'jump'
+        : level?.chapter && level.chapter >= 4
+          ? 'accelerate'
+          : 'cruise';
+
+  const cockpitAlert = stateHint === 'error'
+    ? 'critical'
+    : loading
+      ? 'warning'
+      : 'normal';
 
   useMessageListener(useCallback((msg: unknown) => {
     const data = msg as ExtensionMessage;
@@ -49,6 +77,22 @@ export function PromptPanel() {
     postMessage({ command: 'ready' });
   }, [postMessage]);
 
+  const scene = useVisualScene({
+    chapterId: level?.chapter ?? 1,
+    chapterThemeOverride: visual.chapterThemeOverride > 0 ? visual.chapterThemeOverride : undefined,
+    effectsEnabled: visual.effectsEnabled,
+    blurEnabled: visual.blurEnabled,
+    motionLevel: visual.motionLevel,
+    backgroundIntensity: visual.backgroundIntensity,
+    cockpitOverlayOpacity: visual.cockpitOverlayOpacity,
+    starfieldSpeedMultiplier: visual.starfieldSpeedMultiplier,
+    performanceTier: visual.performanceTier,
+    stateHint,
+    flightPhase,
+    cockpitAlert,
+    reducedMotion: window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false,
+  });
+
   const handleExecute = () => {
     if (!level || !prompt.trim() || loading) return;
     setLoading(true);
@@ -63,24 +107,28 @@ export function PromptPanel() {
 
   if (!level) {
     return (
-      <div className="prompt-panel">
-        <h2>[Signal Decryption Terminal]</h2>
-        <p className="text-secondary">&gt; Awaiting signal data…</p>
-        <p className="text-muted hint">选择侧边栏中的关卡以开始解密</p>
-      </div>
+      <VisualScene scene={scene}>
+        <div className="prompt-panel prompt-panel--waiting">
+          <h2>[Signal Decryption Terminal]</h2>
+          <p className="text-secondary">&gt; Awaiting signal data…</p>
+          <p className="text-muted hint">选择侧边栏中的关卡以开始解密</p>
+        </div>
+      </VisualScene>
     );
   }
 
   const statusIcon = result ? getStatusIcon(result.judgeResult.status) : null;
 
   return (
-    <div className="prompt-panel">
-      <header className="signal-header">
-        <h2>[Signal #{level.id.replace('level_', '')} — {level.title}]</h2>
-        <span className="difficulty-badge" data-difficulty={level.difficulty}>
-          {level.difficulty}
-        </span>
-      </header>
+    <VisualScene scene={scene}>
+      <div className="prompt-panel">
+        <header className="signal-header">
+          <h2>[Signal #{level.id.replace('level_', '')} — {level.title}]</h2>
+          <span className="chapter-chip">Chapter {level.chapter}</span>
+          <span className="difficulty-badge" data-difficulty={level.difficulty}>
+            {level.difficulty}
+          </span>
+        </header>
 
       <section className="signal-story">
         <p className="text-secondary">{level.story}</p>
@@ -116,6 +164,7 @@ export function PromptPanel() {
       <section className="prompt-input">
         <h3>✍️ 你的指令</h3>
         <textarea
+          className="console-input"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="向解码协助系统下达指令……"
@@ -128,19 +177,19 @@ export function PromptPanel() {
         <div className="char-count text-muted">{prompt.length} 字符</div>
       </section>
 
-      <div className="action-buttons">
-        <button className="btn-primary" onClick={handleExecute} disabled={loading || !prompt.trim()}>
-          {loading ? '🔄 解析中…' : '🤖 Execute Parse'}
-        </button>
-        <button className="btn-secondary" onClick={handleManual} disabled={loading}>
-          ⚔️ Manual
-        </button>
-      </div>
+        <div className="action-buttons">
+          <button className={`btn-primary ${scene.buttonClassName}`} onClick={handleExecute} disabled={loading || !prompt.trim()}>
+            {loading ? '🔄 解析中…' : '🤖 Execute Parse'}
+          </button>
+          <button className={`btn-secondary ${scene.buttonClassName}`} onClick={handleManual} disabled={loading}>
+            ⚔️ Manual
+          </button>
+        </div>
 
-      {result && (
-        <section className="result-panel" data-status={result.judgeResult.status}>
-          <h3>{statusIcon} {getStatusLabel(result.judgeResult.status)}</h3>
-          <p className="feedback-text">{result.feedback}</p>
+        {result && (
+          <section className="result-panel" data-status={result.judgeResult.status}>
+            <h3>{statusIcon} {getStatusLabel(result.judgeResult.status)}</h3>
+            <p className="feedback-text">{result.feedback}</p>
 
           {result.rawRegex && (
             <div className="regex-display">
@@ -178,9 +227,10 @@ export function PromptPanel() {
               </div>
             </div>
           )}
-        </section>
-      )}
-    </div>
+          </section>
+        )}
+      </div>
+    </VisualScene>
   );
 }
 

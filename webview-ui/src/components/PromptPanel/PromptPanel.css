@@ -15,6 +15,15 @@
   margin: 0;
 }
 
+.chapter-chip {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: var(--scene-accent);
+  border: 1px solid color-mix(in srgb, var(--scene-accent) 70%, transparent);
+  background: color-mix(in srgb, var(--scene-accent) 12%, transparent);
+}
+
 .difficulty-badge {
   font-size: 11px;
   padding: 2px 8px;
@@ -53,10 +62,11 @@
 .data-list {
   list-style: none;
   padding: 0;
-  background: var(--bg-secondary);
+  background: color-mix(in srgb, var(--bg-secondary) 78%, transparent);
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 8px 12px;
+  backdrop-filter: blur(1.5px);
 }
 
 .data-list li {
@@ -105,6 +115,19 @@
   position: relative;
 }
 
+.console-input {
+  position: relative;
+  background-image:
+    linear-gradient(90deg, transparent 0 46%, color-mix(in srgb, var(--scene-accent) 24%, transparent) 50%, transparent 54%);
+  background-size: 240% 100%;
+  animation: consoleSweep 3.2s linear infinite;
+}
+
+@keyframes consoleSweep {
+  from { background-position: 120% 0; }
+  to { background-position: -120% 0; }
+}
+
 .char-count {
   text-align: right;
   font-size: 11px;
@@ -151,7 +174,8 @@
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 16px;
-  background: var(--bg-secondary);
+  background: color-mix(in srgb, var(--bg-secondary) 82%, transparent);
+  backdrop-filter: blur(2px);
 }
 
 .result-panel[data-status="perfect"],
@@ -250,4 +274,9 @@
 .hint {
   margin-top: 16px;
   font-size: 12px;
+}
+
+.prompt-panel--waiting {
+  min-height: 55vh;
+  justify-content: center;
 }

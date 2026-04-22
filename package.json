@@ -60,6 +60,50 @@
           "type": "boolean",
           "default": false,
           "description": "Allow switching to Developer Mode that bypasses chapter/level locks."
+        },
+        "yourex.visual.effectsEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable dynamic visual effects in webview panels."
+        },
+        "yourex.visual.motionLevel": {
+          "type": "string",
+          "enum": ["off", "low", "medium", "high"],
+          "default": "medium",
+          "description": "Visual motion intensity level for animated backgrounds and transitions."
+        },
+        "yourex.visual.blurEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable blur-based post effects such as glitch blur overlays."
+        },
+        "yourex.visual.backgroundIntensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 60,
+          "description": "Background effect intensity from 0 to 100."
+        },
+        "yourex.visual.chapterThemeOverride": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 6,
+          "default": 0,
+          "description": "Force a chapter theme for visual testing. Set 0 to follow current level chapter."
+        },
+        "yourex.visual.cockpitOverlayOpacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 55,
+          "description": "Cockpit overlay opacity from 0 to 100."
+        },
+        "yourex.visual.starfieldSpeedMultiplier": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 3,
+          "default": 1,
+          "description": "Global multiplier for forward starfield movement speed."
         }
       }
     },

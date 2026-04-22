@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getWebviewContent } from './webviewHelper';
+import { getWebviewContent, getVisualConfigFromSettings } from './webviewHelper';
 import type { GameStateManager } from '../../state/gameState';
 import { computeLeaderboard } from '../../engine/leaderboard';
 
@@ -34,7 +34,8 @@ export class LeaderboardProvider {
     this._panel.webview.html = getWebviewContent(
       this._panel.webview,
       this._extensionUri,
-      'leaderboard'
+      'leaderboard',
+      getVisualConfigFromSettings()
     );
 
     this._panel.webview.onDidReceiveMessage((msg) => {

@@ -11,6 +11,14 @@
   --accent-yellow: #fbbf24;
   --border: #334155;
   --font-mono: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+  --scene-primary: var(--bg-primary);
+  --scene-secondary: var(--bg-secondary);
+  --scene-accent: var(--accent-cyan);
+  --scene-glow: rgba(34, 211, 238, 0.45);
+  --scene-intensity: 0.5;
+  --scene-animation-scale: 1;
+  --scene-cockpit-opacity: 0.55;
+  --scene-starfield-multiplier: 1;
 }
 
 * {
@@ -20,17 +28,361 @@
 }
 
 body {
-  background-color: var(--bg-primary);
+  background-color: #050a14;
   color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 13px;
   line-height: 1.6;
   padding: 16px;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 #root {
   max-width: 720px;
   margin: 0 auto;
+}
+
+.visual-scene {
+  position: relative;
+  isolation: isolate;
+}
+
+.visual-scene__layers {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.visual-scene__content {
+  position: relative;
+  z-index: 1;
+}
+
+.visual-layer {
+  position: absolute;
+  inset: -15%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.visual-layer--starfield {
+  mix-blend-mode: normal;
+}
+
+.visual-layer--starfield {
+  inset: -35%;
+  background-image:
+    url('../assets/visual/starfield-noise-dummy.png'),
+    url('../assets/visual/starfield-noise-dummy.png'),
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--scene-accent) 14%, transparent), transparent 58%);
+  background-size: 50% 50%, 72% 72%, cover;
+  background-position: 0 0, 30% 40%, center;
+  background-repeat: repeat, repeat, no-repeat;
+  transform-origin: center;
+  animation: starfieldRush var(--layer-duration, 14s) linear infinite;
+}
+
+.visual-layer--wave {
+  background-image:
+    repeating-linear-gradient(
+      -12deg,
+      transparent 0 18px,
+      color-mix(in srgb, var(--scene-accent) 45%, transparent) 19px,
+      transparent 21px 40px
+    );
+  filter: blur(0.25px);
+  animation: waveSweep var(--layer-duration, 18s) linear infinite;
+}
+
+.visual-layer--binary {
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 38px,
+      color-mix(in srgb, var(--scene-accent) 28%, transparent) 39px,
+      transparent 41px 62px
+    ),
+    repeating-linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--scene-accent) 22%, transparent) 0 2px,
+      transparent 3px 16px
+    );
+  filter: blur(0.2px) saturate(1.1);
+  animation: binaryFlow var(--layer-duration, 11s) linear infinite;
+}
+
+.visual-layer--hex {
+  background-image:
+    repeating-linear-gradient(60deg, color-mix(in srgb, var(--scene-accent) 10%, transparent) 0 1px, transparent 1px 20px),
+    repeating-linear-gradient(-60deg, color-mix(in srgb, var(--scene-accent) 10%, transparent) 0 1px, transparent 1px 20px),
+    repeating-linear-gradient(0deg, color-mix(in srgb, var(--scene-accent) 8%, transparent) 0 1px, transparent 1px 18px);
+  animation: hexDrift var(--layer-duration, 24s) linear infinite;
+}
+
+.visual-layer--aurora {
+  background:
+    radial-gradient(circle at 15% 20%, color-mix(in srgb, var(--scene-accent) 35%, transparent), transparent 45%),
+    radial-gradient(circle at 80% 30%, color-mix(in srgb, #67e8f9 32%, transparent), transparent 42%),
+    radial-gradient(circle at 50% 80%, color-mix(in srgb, #a78bfa 26%, transparent), transparent 48%);
+  filter: blur(12px) saturate(1.15);
+  animation: auroraPulse var(--layer-duration, 14s) ease-in-out infinite alternate;
+}
+
+.visual-layer--glitch {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0 15%,
+    color-mix(in srgb, var(--scene-accent) 18%, transparent) 16% 17%,
+    transparent 18% 38%,
+    color-mix(in srgb, #f472b6 17%, transparent) 39% 40%,
+    transparent 41% 100%
+  );
+  filter: blur(2px);
+  animation: glitchShift var(--layer-duration, 1.6s) steps(3, end) infinite;
+}
+
+.visual-layer--scanline {
+  background-image: repeating-linear-gradient(
+    180deg,
+    transparent 0 6px,
+    color-mix(in srgb, var(--scene-accent) 16%, transparent) 7px,
+    transparent 8px 14px
+  );
+  animation: scanlineDrift var(--layer-duration, 6s) linear infinite;
+}
+
+.visual-layer--bloom {
+  background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--scene-accent) 34%, transparent), transparent 55%);
+  filter: blur(22px);
+  animation: bloomPulse var(--layer-duration, 4.2s) ease-in-out infinite;
+}
+
+.visual-layer--cockpit-frame {
+  inset: 0;
+  mix-blend-mode: screen;
+  background:
+    url('../assets/visual/cockpit-overlay-dummy.png') center/cover no-repeat;
+  opacity: var(--scene-cockpit-opacity);
+  animation: cockpitFloat var(--layer-duration, 20s) ease-in-out infinite;
+}
+
+.visual-layer--velocity {
+  inset: -8%;
+  background:
+    url('../assets/visual/visual-layer--velocity.png') center/cover no-repeat;
+  mix-blend-mode: screen;
+  animation: velocityStreak var(--layer-duration, 8s) linear infinite;
+}
+
+.visual-layer--radar {
+  inset: 10% 24% 22% 24%;
+  border-radius: 50%;
+  background:
+    url('../assets/visual/visual-layer--radar.png') center/contain no-repeat;
+  mix-blend-mode: screen;
+  animation: radarSweep var(--layer-duration, 5.8s) linear infinite;
+}
+
+.visual-layer--canopy {
+  inset: -5% -8% 45% -8%;
+  background: linear-gradient(180deg, color-mix(in srgb, #d7f5ff 28%, transparent), transparent 72%);
+  filter: blur(6px);
+  animation: canopyPulse var(--layer-duration, 4.8s) ease-in-out infinite;
+}
+
+.visual-layer--error-boost {
+  animation-duration: 700ms !important;
+}
+
+.visual-layer--success-boost {
+  animation-duration: 1.2s !important;
+}
+
+.visual-scene--static .visual-layer {
+  animation: none !important;
+}
+
+.visual-alert--warning .visual-layer--cockpit-frame {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, #fbbf24 24%, transparent),
+    inset 0 0 30px color-mix(in srgb, #fbbf24 14%, transparent);
+}
+
+.visual-alert--critical .visual-layer--cockpit-frame {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, #fb7185 35%, transparent),
+    inset 0 0 34px color-mix(in srgb, #fb7185 18%, transparent);
+  animation-duration: 2.2s;
+}
+
+.btn-sci-neon,
+.btn-sci-circuit,
+.btn-sci-plasma,
+.btn-sci-lock {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+.btn-sci-neon::before,
+.btn-sci-circuit::before,
+.btn-sci-plasma::before,
+.btn-sci-lock::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.btn-sci-neon {
+  box-shadow: 0 0 14px color-mix(in srgb, var(--scene-accent) 32%, transparent);
+  animation: neonPulse 2.1s ease-in-out infinite;
+}
+
+.btn-sci-circuit::before {
+  background:
+    linear-gradient(110deg, transparent 10%, color-mix(in srgb, var(--scene-accent) 45%, transparent) 48%, transparent 88%);
+  transform: translateX(-110%);
+}
+
+.btn-sci-circuit:hover::before {
+  animation: circuitTrace 900ms ease-out;
+}
+
+.btn-sci-plasma::before {
+  background:
+    linear-gradient(
+      125deg,
+      transparent 0 28%,
+      color-mix(in srgb, #7dd3fc 55%, transparent) 47%,
+      color-mix(in srgb, #22d3ee 62%, transparent) 53%,
+      transparent 72% 100%
+    );
+  transform: translateX(-120%);
+}
+
+.btn-sci-plasma:hover::before {
+  animation: circuitTrace 700ms ease-out;
+}
+
+.btn-sci-plasma {
+  box-shadow: 0 0 16px color-mix(in srgb, #67e8f9 28%, transparent);
+}
+
+.btn-sci-lock::before {
+  border: 1px dashed color-mix(in srgb, var(--scene-accent) 55%, transparent);
+}
+
+.btn-sci-lock:active {
+  animation: lockPulse 260ms ease-out;
+}
+
+@keyframes waveSweep {
+  from { transform: translate3d(-3%, 0, 0); }
+  to { transform: translate3d(3%, -2%, 0); }
+}
+
+@keyframes starfieldRush {
+  from { transform: scale(1) translate3d(0, 0, 0); opacity: 0.5; }
+  to { transform: scale(1.18) translate3d(0, 2.8%, 0); opacity: 0.82; }
+}
+
+@keyframes binaryFlow {
+  from { transform: translate3d(0, -4%, 0); }
+  to { transform: translate3d(0, 4%, 0); }
+}
+
+@keyframes hexDrift {
+  from { transform: translate3d(-2%, -2%, 0); }
+  to { transform: translate3d(2%, 2%, 0); }
+}
+
+@keyframes auroraPulse {
+  from { transform: scale(1) rotate(0deg); opacity: 0.42; }
+  to { transform: scale(1.08) rotate(2deg); opacity: 0.68; }
+}
+
+@keyframes glitchShift {
+  0% { transform: translate3d(0, 0, 0); }
+  30% { transform: translate3d(-1px, 1px, 0); }
+  60% { transform: translate3d(1px, -1px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+@keyframes scanlineDrift {
+  from { transform: translateY(-2%); }
+  to { transform: translateY(2%); }
+}
+
+@keyframes bloomPulse {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.46; }
+}
+
+@keyframes cockpitFloat {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -1.6%, 0); }
+}
+
+@keyframes velocityStreak {
+  from { transform: translate3d(-1%, 0, 0); }
+  to { transform: translate3d(4%, -1.5%, 0); }
+}
+
+@keyframes radarSweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes canopyPulse {
+  0%, 100% { opacity: 0.08; }
+  50% { opacity: 0.34; }
+}
+
+@keyframes neonPulse {
+  0%, 100% { box-shadow: 0 0 8px color-mix(in srgb, var(--scene-accent) 22%, transparent); }
+  50% { box-shadow: 0 0 18px color-mix(in srgb, var(--scene-accent) 45%, transparent); }
+}
+
+@keyframes circuitTrace {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(130%); }
+}
+
+@keyframes lockPulse {
+  from { transform: scale(1); }
+  50% { transform: scale(0.985); }
+  to { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visual-layer,
+  .btn-sci-neon,
+  .btn-sci-circuit::before,
+  .btn-sci-plasma::before,
+  .btn-sci-lock {
+    animation: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .visual-layer {
+    opacity: 0.12 !important;
+  }
+
+  .visual-layer--cockpit-frame {
+    opacity: 0.2 !important;
+  }
+
+  .result-panel,
+  .data-list,
+  textarea,
+  button {
+    border-width: 2px;
+  }
 }
 
 h1, h2, h3 {

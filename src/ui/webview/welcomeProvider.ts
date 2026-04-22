@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getWebviewContent } from './webviewHelper';
+import { getWebviewContent, getVisualConfigFromSettings } from './webviewHelper';
 
 export class WelcomeProvider {
   private _panel: vscode.WebviewPanel | undefined;
@@ -27,7 +27,8 @@ export class WelcomeProvider {
     this._panel.webview.html = getWebviewContent(
       this._panel.webview,
       this._extensionUri,
-      'welcome'
+      'welcome',
+      getVisualConfigFromSettings()
     );
 
     this._panel.webview.onDidReceiveMessage((message: { command: string }) => {

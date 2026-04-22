@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getWebviewContent } from './webviewHelper';
+import { getWebviewContent, getVisualConfigFromSettings } from './webviewHelper';
 import type { IAIProvider } from '../../ai/IAIProvider';
 import type { GameStateManager } from '../../state/gameState';
 import type { Level, WebViewMessage, ExtensionMessage } from '../../types';
@@ -49,7 +49,8 @@ export class PromptPanelProvider {
       this._panel.webview.html = getWebviewContent(
         this._panel.webview,
         this._extensionUri,
-        'promptPanel'
+        'promptPanel',
+        getVisualConfigFromSettings()
       );
 
       this._panel.webview.onDidReceiveMessage((msg: WebViewMessage) => {

@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useVSCode } from '../../hooks/useVSCode';
+import { useVisualScene } from '../../visual/hooks/useVisualScene';
+import { VisualScene } from '../../visual/components/VisualScene';
+import { useVisualPreferences } from '../../visual/hooks/useVisualPreferences';
 import './Welcome.css';
 
 const BOOT_LINES = [
@@ -22,10 +25,27 @@ const STORY_LINES = [
 
 export function Welcome() {
   const { postMessage } = useVSCode();
+  const visual = useVisualPreferences();
   const [visibleLines, setVisibleLines] = useState(0);
   const [showRex, setShowRex] = useState(false);
   const [showStory, setShowStory] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
+
+  const scene = useVisualScene({
+    chapterId: 1,
+    chapterThemeOverride: visual.chapterThemeOverride > 0 ? visual.chapterThemeOverride : undefined,
+    effectsEnabled: visual.effectsEnabled,
+    blurEnabled: visual.blurEnabled,
+    motionLevel: visual.motionLevel,
+    backgroundIntensity: visual.backgroundIntensity,
+    cockpitOverlayOpacity: visual.cockpitOverlayOpacity,
+    starfieldSpeedMultiplier: visual.starfieldSpeedMultiplier,
+    performanceTier: visual.performanceTier,
+    flightPhase: showButtons ? 'cruise' : 'accelerate',
+    cockpitAlert: showButtons ? 'normal' : 'warning',
+    stateHint: showButtons ? 'success' : 'loading',
+    reducedMotion: window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false,
+  });
 
   useEffect(() => {
     // Typewriter effect for boot lines
@@ -49,8 +69,9 @@ export function Welcome() {
   };
 
   return (
-    <div className="welcome">
-      <h2 className="boot-title">[System Booting…]</h2>
+    <VisualScene scene={scene}>
+      <div className="welcome">
+        <h2 className="boot-title">[System Booting…]</h2>
 
       <div className="boot-lines">
         {BOOT_LINES.slice(0, visibleLines).map((line, i) => (
@@ -72,16 +93,17 @@ export function Welcome() {
         </div>
       )}
 
-      {showButtons && (
-        <div className="welcome-actions">
-          <button className="btn-primary" onClick={handleStart}>
-            🤖 启用协助系统
-          </button>
-          <button className="btn-secondary" onClick={handleStart}>
-            ⚔️ 独立解析
-          </button>
-        </div>
-      )}
-    </div>
+        {showButtons && (
+          <div className="welcome-actions">
+            <button className={`btn-primary ${scene.buttonClassName}`} onClick={handleStart}>
+              🤖 启用协助系统
+            </button>
+            <button className={`btn-secondary ${scene.buttonClassName}`} onClick={handleStart}>
+              ⚔️ 独立解析
+            </button>
+          </div>
+        )}
+      </div>
+    </VisualScene>
   );
 }
