@@ -46,7 +46,10 @@ export function activate(context: vscode.ExtensionContext) {
   const mockFallback = new MockProvider();
 
   const modeConfig = vscode.workspace.getConfiguration('yourex.mode');
-  const defaultMode = parseRunMode(modeConfig.get<string>('default', 'user'));
+  const defaultMode =
+    context.extensionMode === vscode.ExtensionMode.Development
+      ? 'developer'
+      : parseRunMode(modeConfig.get<string>('default', 'user'));
   const modeService = new ModeService(defaultMode);
   modeService.bindStorage(
     (key, value) => context.globalState.update(key, value),
@@ -54,18 +57,34 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   function allowDeveloperMode(): boolean {
-    const configured = vscode.workspace.getConfiguration('yourex.mode').get<boolean>('allowDeveloper', false);
+    const configured =
+      context.extensionMode === vscode.ExtensionMode.Development
+        ? true
+        : vscode.workspace.getConfiguration('yourex.mode').get<boolean>('allowDeveloper', false);
     return computeAllowDeveloperMode(configured, context.extensionMode);
   }
 
   function getEffectiveMode(mode: RunMode): RunMode {
+    if (
+      context.extensionMode === vscode.ExtensionMode.Development &&
+      defaultMode === 'developer' &&
+      allowDeveloperMode()
+    ) {
+      return 'developer';
+    }
+
     if (mode === 'developer' && !allowDeveloperMode()) {
       return 'user';
     }
     return mode;
   }
 
-  let accessPolicy = createAccessPolicy(getEffectiveMode(modeService.getMode()), gameState);
+  const initialMode = getEffectiveMode(modeService.getMode());
+  if (initialMode === 'developer' && modeService.getMode() !== 'developer') {
+    void modeService.setMode('developer');
+  }
+
+  let accessPolicy = createAccessPolicy(initialMode, gameState);
 
   const sidebarProvider = new SidebarProvider();
   sidebarProvider.setGameState(gameState);

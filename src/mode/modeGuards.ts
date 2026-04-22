@@ -6,5 +6,11 @@ export function computeAllowDeveloperMode(
   if (extensionMode === 1) {
     return false;
   }
+
+  // VS Code enum value: Development = 2
+  if (extensionMode === 2) {
+    return true;
+  }
+
   return configuredAllowDeveloper;
 }
