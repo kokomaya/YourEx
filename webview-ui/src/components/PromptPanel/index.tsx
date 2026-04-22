@@ -7,6 +7,7 @@ import { VisualScene } from '../../visual/components/VisualScene';
 import { useVisualPreferences } from '../../visual/hooks/useVisualPreferences';
 import { useMonitorScene } from '../../visual/monitor/useMonitorScene';
 import { MonitorViewportShell } from '../../visual/monitor/MonitorViewportShell';
+import { Oscilloscope } from './Oscilloscope';
 import '../../visual/monitor/MonitorFrame.css';
 import './PromptPanel.css';
 
@@ -282,7 +283,9 @@ export function PromptPanel() {
             }
             postMessage({ command: 'nextLevel' });
           }}>
+            <Oscilloscope active={true} color="var(--scene-accent, #4fc3f7)" width={260} height={56} />
             <span className="signal-fragment__code">{signalFragment}</span>
+            <Oscilloscope active={true} color="var(--scene-accent, #4fc3f7)" width={260} height={56} />
             <span className="signal-fragment__hint">SIGNAL LOCKED — 自动跳转中…</span>
           </div>
         )}
