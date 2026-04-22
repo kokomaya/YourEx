@@ -4,6 +4,9 @@ import type { Level, JudgeResult, PromptScore, ExtensionMessage } from '../../ty
 import { useVisualScene } from '../../visual/hooks/useVisualScene';
 import { VisualScene } from '../../visual/components/VisualScene';
 import { useVisualPreferences } from '../../visual/hooks/useVisualPreferences';
+import { useMonitorScene } from '../../visual/monitor/useMonitorScene';
+import { MonitorViewportShell } from '../../visual/monitor/MonitorViewportShell';
+import '../../visual/monitor/MonitorFrame.css';
 import './PromptPanel.css';
 
 export function PromptPanel() {
@@ -93,6 +96,15 @@ export function PromptPanel() {
     reducedMotion: window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false,
   });
 
+  const monitor = useMonitorScene({
+    chapterId: level?.chapter ?? 1,
+    stateHint,
+    performanceTier: visual.performanceTier,
+    reducedMotion: window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false,
+    cockpitAlert,
+    monitorFrameEnabled: visual.effectsEnabled,
+  });
+
   const handleExecute = () => {
     if (!level || !prompt.trim() || loading) return;
     setLoading(true);
@@ -108,11 +120,13 @@ export function PromptPanel() {
   if (!level) {
     return (
       <VisualScene scene={scene}>
-        <div className="prompt-panel prompt-panel--waiting">
-          <h2>[Signal Decryption Terminal]</h2>
-          <p className="text-secondary">&gt; Awaiting signal data…</p>
-          <p className="text-muted hint">选择侧边栏中的关卡以开始解密</p>
-        </div>
+        <MonitorViewportShell monitor={monitor}>
+          <div className="prompt-panel prompt-panel--waiting">
+            <h2>[Signal Decryption Terminal]</h2>
+            <p className="text-secondary">&gt; Awaiting signal data…</p>
+            <p className="text-muted hint">选择侧边栏中的关卡以开始解密</p>
+          </div>
+        </MonitorViewportShell>
       </VisualScene>
     );
   }
@@ -121,6 +135,7 @@ export function PromptPanel() {
 
   return (
     <VisualScene scene={scene}>
+      <MonitorViewportShell monitor={monitor}>
       <div className="prompt-panel">
         <header className="signal-header">
           <h2>[Signal #{level.id.replace('level_', '')} — {level.title}]</h2>
@@ -230,6 +245,7 @@ export function PromptPanel() {
           </section>
         )}
       </div>
+      </MonitorViewportShell>
     </VisualScene>
   );
 }

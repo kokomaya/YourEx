@@ -1,0 +1,354 @@
+/* ============================================================
+   Monitor Frame System – Cockpit Display Bezel
+   ============================================================ */
+
+/* ---------- Frame container ---------- */
+
+.monitor-frame {
+  --monitor-bezel-color: #22d3ee;
+  --monitor-bezel-glow: rgba(34, 211, 238, 0.25);
+  --monitor-status-color: #22d3ee;
+  --monitor-border-w: 2px;
+  --monitor-corner-size: 18px;
+  --monitor-bezel-h: 28px;
+  --monitor-viewport-radius: 4px;
+  --monitor-padding: 6px;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border: var(--monitor-border-w) solid var(--monitor-bezel-color);
+  border-radius: 8px;
+  box-shadow:
+    0 0 12px var(--monitor-bezel-glow),
+    inset 0 0 8px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+/* Edge glow pulse – subtle breathing */
+.monitor-frame::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  box-shadow: 0 0 18px var(--monitor-bezel-glow);
+  opacity: 0.5;
+  animation: monitorEdgeGlow 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ---------- Corner brackets ---------- */
+
+.monitor-corner {
+  display: none;
+  position: absolute;
+  width: var(--monitor-corner-size);
+  height: var(--monitor-corner-size);
+  pointer-events: none;
+  z-index: 6;
+}
+
+.monitor-frame--brackets .monitor-corner {
+  display: block;
+}
+
+.monitor-corner--tl {
+  top: 0;
+  left: 0;
+  border-top: 2px solid var(--monitor-bezel-color);
+  border-left: 2px solid var(--monitor-bezel-color);
+}
+
+.monitor-corner--tr {
+  top: 0;
+  right: 0;
+  border-top: 2px solid var(--monitor-bezel-color);
+  border-right: 2px solid var(--monitor-bezel-color);
+}
+
+.monitor-corner--bl {
+  bottom: 0;
+  left: 0;
+  border-bottom: 2px solid var(--monitor-bezel-color);
+  border-left: 2px solid var(--monitor-bezel-color);
+}
+
+.monitor-corner--br {
+  bottom: 0;
+  right: 0;
+  border-bottom: 2px solid var(--monitor-bezel-color);
+  border-right: 2px solid var(--monitor-bezel-color);
+}
+
+/* ---------- Top / Bottom bezel bars ---------- */
+
+.monitor-bezel {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--monitor-bezel-h);
+  padding: 0 12px;
+  background: linear-gradient(180deg, rgba(0, 10, 20, 0.92), rgba(0, 10, 20, 0.8));
+  pointer-events: none;
+  z-index: 4;
+}
+
+.monitor-bezel--bottom {
+  justify-content: center;
+  height: 20px;
+  background: linear-gradient(0deg, rgba(0, 10, 20, 0.92), rgba(0, 10, 20, 0.8));
+}
+
+.monitor-bezel__label {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--monitor-bezel-color);
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+.monitor-bezel__label--dim {
+  opacity: 0.35;
+  font-size: 9px;
+}
+
+/* ---------- Status light ---------- */
+
+.monitor-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.monitor-status__dot {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--monitor-status-color);
+  box-shadow: 0 0 6px var(--monitor-status-color);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.monitor-status--loading .monitor-status__dot {
+  animation: monitorStatusBlink 1s ease-in-out infinite;
+}
+
+.monitor-status--success .monitor-status__dot {
+  animation: monitorStatusFlash 0.6s ease-out 1;
+}
+
+.monitor-status--error .monitor-status__dot {
+  animation: monitorStatusError 0.4s ease-in-out 3;
+}
+
+/* ---------- Signal scan overlay ---------- */
+
+.monitor-scan-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(34, 211, 238, 0.03) 50%,
+    transparent 100%
+  );
+  background-size: 100% 6px;
+  animation: monitorScanSweep 8s linear infinite;
+}
+
+.monitor-frame--scan .monitor-scan-overlay {
+  display: block;
+}
+
+/* ---------- Alert strip ---------- */
+
+.monitor-alert-strip {
+  display: none;
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  pointer-events: none;
+  z-index: 4;
+  background: transparent;
+}
+
+.monitor-frame--alert-strip .monitor-alert-strip {
+  display: block;
+}
+
+.monitor-frame--warning .monitor-alert-strip {
+  background: rgba(251, 191, 36, 0.45);
+  animation: monitorAlertPulse 2s ease-in-out infinite;
+}
+
+.monitor-frame--critical .monitor-alert-strip {
+  background: rgba(239, 68, 68, 0.55);
+  animation: monitorAlertPulse 0.8s ease-in-out infinite;
+}
+
+/* ---------- Viewport (content area) ---------- */
+
+.monitor-viewport {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--monitor-padding);
+  position: relative;
+  z-index: 2;
+  /* CRT-ish inner shadow */
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- Bezel style variants ---------- */
+
+/* Clean (ch1) — thin, minimal */
+.monitor-frame--clean {
+  --monitor-border-w: 1px;
+  --monitor-corner-size: 14px;
+}
+
+/* Bracket (ch2) — visible brackets, wider corners */
+.monitor-frame--bracket {
+  --monitor-border-w: 1.5px;
+  --monitor-corner-size: 20px;
+}
+
+/* Scan (ch3) — scan overlay active */
+.monitor-frame--scan {
+  --monitor-border-w: 1.5px;
+}
+
+/* Hard (ch4) — engineering style, thick border */
+.monitor-frame--hard {
+  --monitor-border-w: 3px;
+  --monitor-corner-size: 22px;
+  border-radius: 4px;
+}
+
+/* Neon (ch5) — glow-heavy, softer edges */
+.monitor-frame--neon {
+  --monitor-border-w: 1.5px;
+  border-radius: 10px;
+  box-shadow:
+    0 0 20px var(--monitor-bezel-glow),
+    0 0 40px var(--monitor-bezel-glow),
+    inset 0 0 12px rgba(0, 0, 0, 0.6);
+}
+
+.monitor-frame--neon::before {
+  box-shadow: 0 0 30px var(--monitor-bezel-glow);
+  opacity: 0.6;
+}
+
+/* Alert (ch6) — critical theme, high-detail */
+.monitor-frame--alert {
+  --monitor-border-w: 2px;
+  --monitor-corner-size: 24px;
+}
+
+/* ---------- State modifiers ---------- */
+
+.monitor-frame--warning {
+  border-color: #fbbf24;
+  box-shadow:
+    0 0 12px rgba(251, 191, 36, 0.25),
+    inset 0 0 8px rgba(0, 0, 0, 0.6);
+}
+
+.monitor-frame--critical {
+  border-color: #ef4444;
+  box-shadow:
+    0 0 12px rgba(239, 68, 68, 0.3),
+    inset 0 0 8px rgba(0, 0, 0, 0.6);
+  animation: monitorCriticalFlicker 0.15s ease-in-out 2;
+}
+
+/* ---------- Static mode (reduced motion / low perf) ---------- */
+
+.monitor-frame--static::before,
+.monitor-frame--static .monitor-scan-overlay,
+.monitor-frame--static .monitor-status__dot,
+.monitor-frame--static .monitor-alert-strip {
+  animation: none !important;
+}
+
+/* ---------- Animations ---------- */
+
+@keyframes monitorEdgeGlow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes monitorStatusBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes monitorStatusFlash {
+  0% { transform: scale(1); box-shadow: 0 0 6px var(--monitor-status-color); }
+  40% { transform: scale(1.6); box-shadow: 0 0 14px var(--monitor-status-color); }
+  100% { transform: scale(1); box-shadow: 0 0 6px var(--monitor-status-color); }
+}
+
+@keyframes monitorStatusError {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+@keyframes monitorScanSweep {
+  0% { background-position: 0 -100%; }
+  100% { background-position: 0 200%; }
+}
+
+@keyframes monitorAlertPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+@keyframes monitorCriticalFlicker {
+  0% { opacity: 1; }
+  25% { opacity: 0.7; }
+  50% { opacity: 1; }
+  75% { opacity: 0.85; }
+  100% { opacity: 1; }
+}
+
+/* ---------- Accessibility ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .monitor-frame::before,
+  .monitor-scan-overlay,
+  .monitor-status__dot,
+  .monitor-alert-strip {
+    animation: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .monitor-frame {
+    border-color: #fff;
+    --monitor-bezel-color: #fff;
+  }
+
+  .monitor-bezel__label {
+    opacity: 1;
+    color: #fff;
+  }
+
+  .monitor-viewport {
+    box-shadow: none;
+  }
+}

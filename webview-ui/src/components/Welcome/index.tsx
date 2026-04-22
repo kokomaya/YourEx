@@ -3,6 +3,9 @@ import { useVSCode } from '../../hooks/useVSCode';
 import { useVisualScene } from '../../visual/hooks/useVisualScene';
 import { VisualScene } from '../../visual/components/VisualScene';
 import { useVisualPreferences } from '../../visual/hooks/useVisualPreferences';
+import { useMonitorScene } from '../../visual/monitor/useMonitorScene';
+import { MonitorViewportShell } from '../../visual/monitor/MonitorViewportShell';
+import '../../visual/monitor/MonitorFrame.css';
 import './Welcome.css';
 
 const BOOT_LINES = [
@@ -47,6 +50,15 @@ export function Welcome() {
     reducedMotion: window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false,
   });
 
+  const monitor = useMonitorScene({
+    chapterId: 1,
+    stateHint: showButtons ? 'success' : 'loading',
+    performanceTier: visual.performanceTier,
+    reducedMotion: window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false,
+    cockpitAlert: showButtons ? 'normal' : 'warning',
+    monitorFrameEnabled: visual.effectsEnabled,
+  });
+
   useEffect(() => {
     // Typewriter effect for boot lines
     const totalLines = BOOT_LINES.length;
@@ -70,6 +82,7 @@ export function Welcome() {
 
   return (
     <VisualScene scene={scene}>
+      <MonitorViewportShell monitor={monitor}>
       <div className="welcome">
         <h2 className="boot-title">[System Booting…]</h2>
 
@@ -104,6 +117,7 @@ export function Welcome() {
           </div>
         )}
       </div>
+      </MonitorViewportShell>
     </VisualScene>
   );
 }

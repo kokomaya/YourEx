@@ -104,6 +104,11 @@
           "maximum": 3,
           "default": 1,
           "description": "Global multiplier for forward starfield movement speed."
+        },
+        "yourex.visual.monitorFrameEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable the cockpit monitor frame around game content."
         }
       }
     },
