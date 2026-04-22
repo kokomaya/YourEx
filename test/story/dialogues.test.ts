@@ -33,7 +33,7 @@ describe('dialogues', () => {
     it('returns dialogue for valid chapter', () => {
       const d = getChapterDialogue(1);
       expect(d).toBeDefined();
-      expect(d?.title).toContain('Signal Contact');
+      expect(d?.title).toContain('信号接触');
     });
 
     it('returns undefined for invalid chapter', () => {

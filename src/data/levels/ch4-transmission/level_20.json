@@ -2,7 +2,7 @@
   "id": "level_20",
   "title": "Reconstruction",
   "chapter": 4,
-  "story": "[Signal Fragment #20] 最复杂的数据包：日志行格式为 [TIMESTAMP] LEVEL: message。时间戳格式 HH:MM:SS，LEVEL 是 INFO/WARN/ERROR。你需要提取所有合法的日志行。",
+  "story": "[Meridian-7 日志 #020] 最后一步：重建完整的通信日志。每条日志格式为 [HH:MM:SS] LEVEL: message，LEVEL 是 INFO/WARN/ERROR。你需要从残损数据中提取所有合法的日志条目，重建通信记录，然后打包成求救信号发送给 rEx。这是决定性的一步。",
   "difficulty": "hard",
   "promptChallenge": "写一个 prompt，让 AI 生成能匹配日志格式 [HH:MM:SS] LEVEL: message 的正则表达式",
   "input": [
@@ -31,9 +31,9 @@
     "提供具体的示例帮助 AI 理解格式"
   ],
   "feedback": {
-    "onPass": "[Pattern Accepted] 第四章完成。日志已重构。通信协议完全破解。",
+    "onPass": "[求救信号已发送] 第四章完成。通信日志重建，求救信息已打包发出。",
     "onFail": "[Parse Failed] 日志重构失败。多个组件需要同时约束。",
-    "onPerfect": "[Decryption Success] 完美重构。结构化指令 + 精确约束 = 终极解析。",
+    "onPerfect": "[求救信号已发送] 通信日志重建完成。Meridian-7 的坐标、状态、求救信息——全部以 rEx 协议格式打包发出。现在，等待。",
     "onDirectWrite": "[Manual Override] 手动重构日志。第四章，传输协议完全掌控。"
   }
 }

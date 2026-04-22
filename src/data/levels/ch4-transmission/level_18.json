@@ -2,7 +2,7 @@
   "id": "level_18",
   "title": "Nested Signal",
   "chapter": 4,
-  "story": "[Signal Fragment #18] rEx 的数据包含嵌套结构——函数调用格式如 func(arg)。你需要提取所有合法的函数调用，其中函数名是字母，参数可以是数字或字符串。",
+  "story": "[Meridian-7 日志 #018] rEx 发来了指令序列——函数调用格式的嵌套结构。send(42)、decode(\"signal\")、process(100)…… 这是 rEx 在指导你做什么？还是在测试你能否执行它的指令？先准确解析所有合法的指令。",
   "difficulty": "hard",
   "promptChallenge": "写一个 prompt，让 AI 生成能匹配函数调用格式 funcName(args) 的正则表达式",
   "input": [

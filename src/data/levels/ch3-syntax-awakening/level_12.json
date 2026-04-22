@@ -2,7 +2,7 @@
   "id": "level_12",
   "title": "Unknown Coordinates",
   "chapter": 3,
-  "story": "[Signal Fragment #12] rEx 发送了一组坐标数据。格式为 (数字, 数字)，每个数字可以是整数或小数。你需要从噪声中提取所有合法坐标对。",
+  "story": "[Meridian-7 日志 #012] 信号中出现了坐标对——(数字, 数字) 格式。这是 rEx 在告诉你它的位置？还是在指引你前往某处？数字可以是整数或小数，精度似乎很重要。提取所有合法坐标。",
   "difficulty": "medium",
   "promptChallenge": "写一个 prompt，让 AI 生成能匹配坐标格式 (数字, 数字) 的正则表达式，数字可以是整数或小数",
   "input": [

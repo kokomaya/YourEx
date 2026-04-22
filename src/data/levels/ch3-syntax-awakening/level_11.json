@@ -2,7 +2,7 @@
   "id": "level_11",
   "title": "Time Signature",
   "chapter": 3,
-  "story": "[Signal Fragment #11] 信号中出现了时间戳。你需要提取符合 HH:MM 格式的时间（24小时制，00:00 到 23:59）。时间是 rEx 信号的同步锚点。",
+  "story": "[Meridian-7 日志 #011] rEx 发来了一组时间标记，格式为 HH:MM（24小时制）。这些时间点是什么意思？也许是 rEx 文明的作息周期，也许是某种约定的通信窗口。先提取所有合法时间——弄清含义的前提是准确读取。",
   "difficulty": "medium",
   "promptChallenge": "写一个 prompt，让 AI 生成能匹配 24 小时制时间（HH:MM，如 09:30, 23:59）的正则表达式",
   "input": [

@@ -2,7 +2,7 @@
   "id": "level_04",
   "title": "Echo Pattern",
   "chapter": 1,
-  "story": "[Signal Fragment #4] rEx 信号出现了重复模式。某些行中同一个单词连续出现了两次——这像是一种强调机制，或者是某种校验码。找到这些重复回声。",
+  "story": "[Meridian-7 日志 #004] 信号中出现了奇怪的重复模式。某些数据行里同一个词连续出现了两次。这不是传输错误——rEx 似乎用重复来强调关键信息，就像人类用加粗一样。找出这些\"回声\"。",
   "difficulty": "medium",
   "promptChallenge": "写一个 prompt，让 AI 生成能匹配包含连续重复单词的行的正则表达式",
   "input": [
@@ -30,9 +30,9 @@
     "描述单词之间用空格分隔"
   ],
   "feedback": {
-    "onPass": "[Pattern Accepted] 回声模式已识别。rEx 在重复，但不是噪声。",
+    "onPass": "[回声解析] 重复不是噪声。rEx 在强调什么……",
     "onFail": "[Parse Failed] 回声未捕获。重复结构比你想象的更精确。",
-    "onPerfect": "[Decryption Success] 你听到了回声中的规律。这不是随机。",
+    "onPerfect": "[完美回声] 你听懂了重复中的含义。rEx 的强调机制已破解。",
     "onDirectWrite": "[Manual Override] 手动解码回声。令人印象深刻。"
   }
 }

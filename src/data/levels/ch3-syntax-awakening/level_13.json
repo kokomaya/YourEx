@@ -1,8 +1,8 @@
 {
   "id": "level_13",
-  "title": "Split Reality",
+  "title": "Sealed Packets",
   "chapter": 3,
-  "story": "[Signal Fragment #13] 信号数据中包含 HTML 标签。你需要提取所有自闭合标签（如 <br/>, <img/>），但忽略普通的开闭标签对。分组是解析的关键。",
+  "story": "[Meridian-7 日志 #013] rEx 的数据使用了一种封装格式，类似于自闭合的容器标记：以 < 开头、/> 结尾的标签。有些是成对的开闭标签（包含内容），有些是自闭合的（独立数据包）。你需要提取所有自闭合的数据包——它们是独立的、完整的信息单元。",
   "difficulty": "medium",
   "promptChallenge": "写一个 prompt，让 AI 生成能匹配 HTML 自闭合标签（如 <br/>, <img src='x'/>）的正则表达式",
   "input": [

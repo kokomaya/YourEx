@@ -5,12 +5,12 @@ import type { IAccessPolicy } from '../../../access/IAccessPolicy';
 import { loadChapterLevels, TOTAL_CHAPTERS, HIDDEN_CHAPTER } from '../../../engine/levelLoader';
 
 const CHAPTER_NAMES: Record<number, string> = {
-  1: '📡 Signal Contact',
-  2: '🔍 Pattern Recognition',
-  3: '⚡ Syntax Awakening',
-  4: '🛰️ Transmission',
-  5: '🌌 rEx',
-  6: '👁️ Origin Frame',
+  1: '📡 信号接触',
+  2: '🔍 模式识别',
+  3: '⚡ 语法觉醒',
+  4: '🛰️ 通信建立',
+  5: '🌌 rEx 的回应',
+  6: '🔧 起源',
 };
 
 const CHAPTER_COLORS: Record<number, string> = {

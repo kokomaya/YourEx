@@ -6,19 +6,19 @@ import { getAchievements } from './achievementManager';
 import { DIALOGUES } from '../story/dialogues';
 
 const CHAPTER_NAMES: Record<number, string> = {
-  1: 'Signal Contact',
-  2: 'Pattern Recognition',
-  3: 'Syntax Awakening',
-  4: 'Transmission',
-  5: 'rEx',
-  6: 'Origin',
+  1: '信号接触',
+  2: '模式识别',
+  3: '语法觉醒',
+  4: '通信建立',
+  5: 'rEx 的回应',
+  6: '起源',
 };
 
 const CHAPTER_PREVIEW: Record<number, string> = {
-  2: '>> 信号结构变得复杂…',
-  3: '>> 语法规律开始浮现…',
-  4: '>> 信号变成了结构化的通信协议…',
-  5: '>> 最后一段信号…',
+  2: '>> 信号恢复了，而且更强了。rEx 在测试你。',
+  3: '>> rEx 的信号发生了质变——它开始跟你说话了。',
+  4: '>> 是时候发出求救了。Meridian-7 燃料仅剩 0.8%。',
+  5: '>> ……回应来了。rEx 收到了你的消息。',
 };
 
 export interface AchievementInfo {

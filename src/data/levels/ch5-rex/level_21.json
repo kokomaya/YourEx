@@ -2,7 +2,7 @@
   "id": "level_21",
   "title": "Full Decode",
   "chapter": 5,
-  "story": "[Signal Fragment #21] 终局开始。rEx 的核心协议要求：提取所有后面紧跟着数字的单词。前瞻断言——看而不取。这是理解 rEx 的关键一步。",
+  "story": "[Meridian-7 日志 #021] rEx 的回应到了。第一批数据很奇怪——有些单词后面紧跟着数字，像是某种标记系统。rEx 说你需要\"向前看\"才能理解：提取所有后面紧跟数字的单词。这是 rEx 语言的高级特性。",
   "difficulty": "hard",
   "promptChallenge": "写一个 prompt，让 AI 生成能匹配后面紧跟数字的单词（不包含数字本身）的正则表达式",
   "input": [

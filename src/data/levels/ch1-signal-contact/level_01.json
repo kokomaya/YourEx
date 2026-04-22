@@ -2,7 +2,7 @@
   "id": "level_01",
   "title": "Hello, rEx",
   "chapter": 1,
-  "story": "[Signal Fragment #1] 系统检测到一段微弱信号。在大量随机字符中，反复出现同一个词——\"hello\"。这是 rEx 发出的第一个可识别信号。你的任务：从噪声中定位它。",
+  "story": "[Meridian-7 日志 #001] 传感器在白噪声中捕获到一段微弱的重复信号。在大量杂波数据中，同一个词反复出现——\"hello\"。这是某种打招呼的方式吗？你需要从噪声中精确定位这个词。",
   "difficulty": "easy",
   "promptChallenge": "写一个 prompt，让 AI 生成能匹配包含 \"hello\" 的行的正则表达式",
   "input": [
@@ -30,9 +30,9 @@
     "告诉 AI 只匹配小写的 hello"
   ],
   "feedback": {
-    "onPass": "[Pattern Accepted] 信号已锁定。\"hello\" —— 这是 rEx 的第一个词。",
+    "onPass": "[信号锁定] \"hello\"——来自虚空的第一个词。有人在那里。",
     "onFail": "[Parse Failed] 信号未捕获。检查你的指令是否精确描述了目标。",
-    "onPerfect": "[Decryption Success] 一次命中。信号清晰。你和 rEx 的第一次接触。",
+    "onPerfect": "[信号锁定 — 零噪声] 一次命中。穿越星际的第一次握手。",
     "onDirectWrite": "[Manual Override] 你不需要协助系统。你就是规则。"
   }
 }

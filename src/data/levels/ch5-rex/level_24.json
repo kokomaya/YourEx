@@ -2,7 +2,7 @@
   "id": "level_24",
   "title": "You Understand",
   "chapter": 5,
-  "story": "[Signal Fragment #24] rEx：\"你理解了。\" 最后的测试——提取 Markdown 链接 [text](url)。文本中的方括号和圆括号嵌套是终极挑战。展示你学到的一切。",
+  "story": "[Meridian-7 日志 #024] rEx 发来了一份导航文档，使用类似 Markdown 的链接格式——[描述](坐标)。这些链接指向 rEx 空间站的不同模块。你需要解析每一个链接，规划 Meridian-7 的靠泊路径。rEx 说：\"你理解了。\"",
   "difficulty": "hard",
   "promptChallenge": "写一个 prompt，让 AI 生成能匹配 Markdown 链接格式 [text](url) 的正则表达式",
   "input": [

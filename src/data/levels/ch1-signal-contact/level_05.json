@@ -2,7 +2,7 @@
   "id": "level_05",
   "title": "Still There?",
   "chapter": 1,
-  "story": "[Signal Fragment #5] 信号逐渐减弱。最后一批数据中，你需要筛选出以特定标记结尾的行——以 \".signal\" 结尾的数据行。这可能是 rEx 的签名格式。",
+  "story": "[Meridian-7 日志 #005] 信号开始减弱了。在最后一批可解析的数据中，你发现有些行以 \".signal\" 结尾——这像是 rEx 通信的签名标记，类似人类信件的落款。如果你不能在信号彻底消失前完成解析……抓紧时间。",
   "difficulty": "medium",
   "promptChallenge": "写一个 prompt，让 AI 生成能匹配以 \".signal\" 结尾的行的正则表达式",
   "input": [
@@ -31,9 +31,9 @@
     "提示 AI 使用行尾锚点"
   ],
   "feedback": {
-    "onPass": "[Pattern Accepted] 签名格式已确认。rEx 的信号有固定的结尾标记。",
+    "onPass": "[签名确认] 信号格式已锁定。你确认了 rEx 的存在——现在需要学会它的语言。",
     "onFail": "[Parse Failed] 签名未识别。结尾匹配需要更精确的规则。",
-    "onPerfect": "[Decryption Success] 第一章信号全部解析完成。rEx 的语言开始显现。",
+    "onPerfect": "[完美收束] 第一章完成。信号不再是噪声，它是对话的开始。",
     "onDirectWrite": "[Manual Override] 手动识别签名。第一章，完美收官。"
   }
 }

@@ -2,7 +2,7 @@
   "id": "level_10",
   "title": "Repeat Protocol",
   "chapter": 2,
-  "story": "[Signal Fragment #10] rEx 的通信协议中使用了重复编码。某些信号由 3 到 5 个相同字母组成（如 aaa, BBBBB）。你需要从数据中提取这些重复模式。",
+  "story": "[Meridian-7 日志 #010] rEx 的编码中有一种重复协议：某些信号由同一个字符重复 3-5 次组成。这是某种压缩格式，还是一种情感表达？无论如何，你需要从数据中精确提取这些重复模式。这是 rEx 对你的最后一项测试。",
   "difficulty": "hard",
   "promptChallenge": "写一个 prompt，让 AI 生成能匹配由同一字母重复 3-5 次组成的字符串的正则表达式",
   "input": [
@@ -32,9 +32,9 @@
     "明确重复次数的范围是 3 到 5"
   ],
   "feedback": {
-    "onPass": "[Pattern Accepted] 重复协议已破解。第二章信号全部解析。",
+    "onPass": "[测试通过] 重复协议已破解。第二章信号全部解析。",
     "onFail": "[Parse Failed] 重复模式识别失败。同一字母的重复和随机字母不同。",
-    "onPerfect": "[Decryption Success] 完美。量词和引用的结合——你已掌握模式识别。",
+    "onPerfect": "[测试通过] rEx 的编码规则你已全部掌握。它似乎……满意了。",
     "onDirectWrite": "[Manual Override] 手动破解协议。第二章，优雅收官。"
   }
 }

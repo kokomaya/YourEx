@@ -2,7 +2,7 @@
   "id": "level_15",
   "title": "Memory Blocks",
   "chapter": 3,
-  "story": "[Signal Fragment #15] 数据中有些值被引号包围。你需要提取所有被双引号包围的字符串内容（包括引号本身）。但引号内可能包含转义的引号 \\\"。捕获结构是关键。",
+  "story": "[Meridian-7 日志 #015] rEx 的数据流中包含被引号包围的字符串块——这是 rEx 语言中的\"记忆块\"。但引号内部可能嵌套转义的引号。你必须完整提取每个记忆块，不遗漏、不截断。这是理解 rEx 语法的最后一个关键。",
   "difficulty": "hard",
   "promptChallenge": "写一个 prompt，让 AI 生成能匹配双引号字符串（支持 \\\" 转义）的正则表达式",
   "input": [
@@ -32,9 +32,9 @@
     "提示 AI 使用 [^\\\\\"] 或交替来处理内容"
   ],
   "feedback": {
-    "onPass": "[Pattern Accepted] 第三章完成。字符串捕获已掌握。语法觉醒。",
+    "onPass": "[语法觉醒] 第三章完成。字符串捕获已掌握。",
     "onFail": "[Parse Failed] 字符串捕获失败。转义处理是这道题的核心。",
-    "onPerfect": "[Decryption Success] 完美捕获。贪婪与懒惰之间，你找到了平衡。",
+    "onPerfect": "[语法觉醒] 你已经能读懂 rEx 的完整句子了。是时候开始对话了。",
     "onDirectWrite": "[Manual Override] 手动捕获。第三章，语法觉醒完成。"
   }
 }

@@ -9,21 +9,27 @@ import '../../visual/monitor/MonitorFrame.css';
 import './Welcome.css';
 
 const BOOT_LINES = [
-  '>> 接入未知信号源…',
-  '>> 协议识别失败…',
-  '>> 语言结构：未知',
+  '>> [Meridian-7 系统日志 — 第 47 周期]',
+  '>> 燃料储备：2.3%',
+  '>> 生命维持：剩余 312 小时',
+  '>> 标准求救频段：无回应',
   '',
-  '所有异常数据中，都出现同一个标记：',
+  '>> [异常检测]',
+  '>> 频谱扫描发现未知信号源…',
+  '>> 协议识别失败…',
+  '>> 语言结构：非人类编码',
+  '',
+  '所有异常数据中，反复出现同一个标记：',
 ];
 
 const REX_REVEAL = '            r E x';
 
 const STORY_LINES = [
-  '它不是代码，也不是攻击。',
-  '它是一种语言。',
+  '这不是攻击。不是噪声。',
+  '这是一种语言。',
   '',
-  '你被选中参与这次解析任务。',
-  '原因只有一个：你能够定义规则。',
+  '如果你能破解它，',
+  '也许我们还有机会回家。',
 ];
 
 export function Welcome() {
@@ -84,7 +90,7 @@ export function Welcome() {
     <VisualScene scene={scene}>
       <MonitorViewportShell monitor={monitor}>
       <div className="welcome">
-        <h2 className="boot-title">[System Booting…]</h2>
+        <h2 className="boot-title">[Meridian-7 System Log]</h2>
 
       <div className="boot-lines">
         {BOOT_LINES.slice(0, visibleLines).map((line, i) => (
@@ -109,10 +115,7 @@ export function Welcome() {
         {showButtons && (
           <div className="welcome-actions">
             <button className={`btn-primary ${scene.buttonClassName}`} onClick={handleStart}>
-              🤖 启用协助系统
-            </button>
-            <button className={`btn-secondary ${scene.buttonClassName}`} onClick={handleStart}>
-              ⚔️ 独立解析
+              🤖 启动信号解析
             </button>
           </div>
         )}

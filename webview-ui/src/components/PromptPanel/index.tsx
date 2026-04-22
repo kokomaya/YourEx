@@ -335,7 +335,20 @@ const SIGNAL_FRAGMENTS = [
   'rEx[SIGNAL:{0}::CAPTURED]',
 ];
 
+/** Narrative fragments shown at key story milestones */
+const NARRATIVE_FRAGMENTS: Record<string, string> = {
+  'level_05': 'rEx[…WHO ARE YOU…]',
+  'level_10': 'rEx[…TEST PASSED…]',
+  'level_15': 'rEx[…I CAN HEAR YOU…]',
+  'level_20': 'rEx[…MESSAGE RECEIVED…CALCULATING…]',
+  'level_24': 'rEx[…DOCKING BAY 7…STANDBY…]',
+};
+
 function pickSignalFragment(chapter: number, levelId: string): string {
+  // Show narrative fragment at key milestones
+  if (NARRATIVE_FRAGMENTS[levelId]) {
+    return NARRATIVE_FRAGMENTS[levelId];
+  }
   const idx = levelId.split('').reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
   const template = SIGNAL_FRAGMENTS[idx % SIGNAL_FRAGMENTS.length];
   const num = levelId.replace('level_', '');

@@ -2,7 +2,7 @@
   "id": "level_09",
   "title": "Partial Truth",
   "chapter": 2,
-  "story": "[Signal Fragment #9] 数据包中有些行包含日期信息，格式为 YYYY-MM-DD。但并非所有看起来像日期的数据都是合法的——你需要排除明显不合法的月份和日期。",
+  "story": "[Meridian-7 日志 #009] 数据包中出现了时间标记，格式是 YYYY-MM-DD。rEx 竟然使用和人类相似的历法？还是说……这些时间戳是为了让你能看懂？不是所有看起来像日期的数据都合法——你必须过滤掉损坏的条目。",
   "difficulty": "medium",
   "promptChallenge": "写一个 prompt，让 AI 生成能匹配 YYYY-MM-DD 格式日期的正则表达式（月份 01-12，日期 01-31）",
   "input": [

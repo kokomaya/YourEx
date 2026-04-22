@@ -2,7 +2,7 @@
   "id": "level_26",
   "title": "Origin Frame",
   "chapter": 6,
-  "story": "[Black Box Signal] rEx 终局后，系统从 AUMOVIO E3 平台验证车的网关 ECU 残骸中恢复了一段损坏转储。你需要在混杂的 CAN/UDS/Bootloader/OTA 日志中，提取唯一合法的起源帧。",
+  "story": "[Meridian-7 日志 #026 — 最终日志] rEx 空间站为 Meridian-7 更换了外星动力模块，但飞船的人类系统无法与之通信。启动日志中充斥着来自外星硬件的 rEx 协议帧——CAN 总线、UDS 诊断、Bootloader 引导，全部是 rEx 格式。你必须从这堆混杂的日志中提取出唯一合法的起源帧，完成协议适配，让人类飞船与外星引擎同步。这是回家前的最后一步。",
   "difficulty": "hard",
   "promptChallenge": "写一个 prompt，让 AI 生成正则，严格提取唯一合法的 rEx Origin Frame，并排除损坏帧/伪帧。",
   "input": [
@@ -138,9 +138,9 @@
     "要求完整匹配整个 Origin Frame。"
   ],
   "feedback": {
-    "onPass": "[ORIGIN FRAME LOCKED] 你从 ECU 残骸中找到了唯一合法的起源帧。协议并非偶然，它有明确的制造现场与构建链。",
-    "onFail": "[Forensics Incomplete] 你捕捉到了片段，但仍有噪声穿透。检查字段边界与长度约束。",
-    "onPerfect": "[FORENSICS PERFECT] 你在混沌转储中定位了唯一真帧。rEx 最后的注释浮现：WE_WERE_THE_PARSER。",
-    "onDirectWrite": "[Manual Forensics] 你绕过了提示流程，但依然完成了取证。结果成立，协议确认。"
+    "onPass": "[PROTOCOL ADAPTATION COMPLETE] 起源帧已锁定。外星动力模块的协议适配成功——人类系统现在可以与 rEx 硬件通信了。",
+    "onFail": "[Adaptation Incomplete] 你捕捉到了片段，但仍有噪声穿透。检查字段边界与长度约束。",
+    "onPerfect": "[PERFECT ADAPTATION] 协议适配完成。外星动力模块已上线。引擎点火……成功。Meridian-7，起飞。",
+    "onDirectWrite": "[Manual Adaptation] 你绕过了提示流程，但依然完成了适配。引擎已就绪，协议确认。"
   }
 }

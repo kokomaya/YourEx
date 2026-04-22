@@ -2,7 +2,7 @@
   "id": "level_22",
   "title": "Not Just Pattern",
   "chapter": 5,
-  "story": "[Signal Fragment #22] rEx 开始验证密码强度。提取所有满足条件的密码：至少 8 位，包含大写、小写和数字。这不只是模式匹配——这是规则验证。",
+  "story": "[Meridian-7 日志 #022] rEx 发来了一组访问凭证，但需要验证强度。只有满足条件的密码才能激活通信加密通道：至少 8 位，同时包含大写、小写字母和数字。rEx 说：\"安全是信任的前提。\"",
   "difficulty": "hard",
   "promptChallenge": "写一个 prompt，让 AI 生成能验证密码强度（至少8位，含大写、小写和数字）的正则表达式",
   "input": [

@@ -2,7 +2,7 @@
   "id": "level_06",
   "title": "Hidden Token",
   "chapter": 2,
-  "story": "[Signal Fragment #6] 信号变得更加复杂。数据流中隐藏着关键的认证令牌——它们都是由大写字母和数字组成的 8 位编码。你需要从噪声中精确提取它们。",
+  "story": "[Meridian-7 日志 #006] 信号突然增强了。rEx 发来了新的数据流，比之前更有结构。你注意到其中散布着一些 8 位编码——由大写字母和数字组成。这像是 rEx 的认证令牌。也许你需要先证明自己\"听得懂\"才能继续对话。",
   "difficulty": "easy",
   "promptChallenge": "写一个 prompt，让 AI 生成能匹配由大写字母和数字组成的恰好 8 位字符串的正则表达式",
   "input": [

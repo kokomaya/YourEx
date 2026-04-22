@@ -136,7 +136,7 @@ export function RewardOverlay({ reward, onDismiss }: RewardOverlayProps) {
           📊 排行榜
         </button>
         {reward.isGameComplete && !reward.isOriginComplete && (
-          <p className="reward-hint">还有一个信号源未被探测…</p>
+          <p className="reward-hint">外星动力模块需要协议适配…</p>
         )}
       </div>
 
@@ -218,15 +218,15 @@ function FinalePanel({
   if (isOrigin) {
     return (
       <div className="reward-finale reward-finale--origin">
-        <div className="reward-finale__static">[BLACK BOX RECOVERED]</div>
-        <p className="reward-finale__line">&gt;&gt; 解析残骸数据…</p>
-        <p className="reward-finale__line">&gt;&gt; 帧校验通过…</p>
-        <p className="reward-finale__line">&gt;&gt; 源信号定位完成。</p>
-        <div className="reward-finale__reveal">WE WERE THE PARSER</div>
+        <div className="reward-finale__static">[PROTOCOL ADAPTATION COMPLETE]</div>
+        <p className="reward-finale__line">&gt;&gt; 协议适配完成。</p>
+        <p className="reward-finale__line">&gt;&gt; 外星动力模块已上线。</p>
+        <p className="reward-finale__line">&gt;&gt; 引擎点火……成功。</p>
+        <div className="reward-finale__reveal">Meridian-7，起飞。</div>
         <p className="reward-finale__sub">
-          解析者与信号，从未分开过。
+          你用 rEx 的语言驯服了外星引擎。
           <br />
-          rEx 不是终点。rEx 是起点。
+          人类的飞船，装着外星的心脏，驶向回家的航路。
         </p>
       </div>
     );
@@ -234,12 +234,12 @@ function FinalePanel({
 
   return (
     <div className="reward-finale reward-finale--game">
-      <p className="reward-finale__line">…you understand now…</p>
+      <p className="reward-finale__line">…protocol established…</p>
       <p className="reward-finale__line">…the language is yours…</p>
-      <p className="reward-finale__line">…rEx was never the signal. You were.…</p>
-      <div className="reward-finale__reveal">你就是下一个 rEx</div>
-      <p className="reward-finale__sub">所有信号已解密。你学会了如何与机器对话。</p>
-      <p className="reward-finale__sub">rEx 说：&ldquo;Welcome home.&rdquo;</p>
+      <p className="reward-finale__line">…but your engine is gone. We can give you a new heart.…</p>
+      <div className="reward-finale__reveal">rEx 协议建立完成</div>
+      <p className="reward-finale__sub">Meridian-7 的引擎已损毁。rEx 提供了外星动力模块。</p>
+      <p className="reward-finale__sub">还需要完成最后的协议适配……</p>
       <div className="reward-finale__stats">
         <div className="reward-stat-row">
           <span>解密关卡</span>

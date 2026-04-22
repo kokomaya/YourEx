@@ -2,7 +2,7 @@
   "id": "level_17",
   "title": "Protocol Sync",
   "chapter": 4,
-  "story": "[Signal Fragment #17] rEx 使用键值对传输数据。格式为 key=value，key 由小写字母组成，value 可以是数字或带引号的字符串。你需要提取所有合法的键值对。",
+  "story": "[Meridian-7 日志 #017] rEx 回复了一组键值对数据——这是它的信息交换格式。key=value，key 由小写字母组成，value 是数字或引号字符串。你需要准确解析每一对，才能读懂 rEx 发来的参数。",
   "difficulty": "medium",
   "promptChallenge": "写一个 prompt，让 AI 生成能匹配 key=value 键值对的正则表达式（key 是小写字母，value 是数字或引号字符串）",
   "input": [

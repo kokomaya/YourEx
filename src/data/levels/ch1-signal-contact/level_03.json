@@ -1,8 +1,8 @@
 {
   "id": "level_03",
-  "title": "Fragment Found",
+  "title": "Signal Coordinates",
   "chapter": 1,
-  "story": "[Signal Fragment #3] 在截获的通信数据中，混杂着大量噪声。你需要从中提取出所有合法的邮箱地址——它们可能是 rEx 信号源的坐标标识。",
+  "story": "[Meridian-7 日志 #003] 信号分析有了新发现——数据流中嵌入了坐标标识符。它们的格式类似于人类的邮箱地址：一个标识符、一个定位符号 @、一个域标记。这可能是 rEx 的空间定位系统。提取出所有合法的坐标标识。",
   "difficulty": "medium",
   "promptChallenge": "写一个 prompt，让 AI 生成能精确匹配合法邮箱地址的正则表达式",
   "input": [
@@ -30,9 +30,9 @@
     "别忘了让 AI 处理边界情况"
   ],
   "feedback": {
-    "onPass": "[Pattern Accepted] 信号片段已解密。新的结构正在浮现。",
+    "onPass": "[坐标提取完成] 这些不是随机数据。它们指向某个位置。",
     "onFail": "[Parse Failed] 结构不完整。信号仍处于混乱状态。",
-    "onPerfect": "[Decryption Success] 这不只是匹配。你开始理解它了。",
+    "onPerfect": "[精确定位] 每一个坐标都准确无误。信号源的位置正在清晰。",
     "onDirectWrite": "[Manual Override] 你不需要协助系统。你就是规则。"
   }
 }

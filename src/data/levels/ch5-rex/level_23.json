@@ -2,7 +2,7 @@
   "id": "level_23",
   "title": "Language Formed",
   "chapter": 5,
-  "story": "[Signal Fragment #23] rEx 的语言正在成型。你需要提取所有合法的电子邮件地址。这是综合运用字符类、量词、分组和选择的终极考验。",
+  "story": "[Meridian-7 日志 #023] rEx 发来了它的通讯录——一组联络标识符，格式与人类邮箱地址惊人地相似。这些是 rEx 网络中其他节点的地址。如果能准确提取它们，你就能接入 rEx 的通信网络，获得更多支援。",
   "difficulty": "hard",
   "promptChallenge": "写一个 prompt，让 AI 生成能匹配电子邮件地址（user@domain.tld 格式）的正则表达式",
   "input": [
