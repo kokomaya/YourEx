@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
 import { SidebarProvider } from './ui/sidebar/sidebarProvider';
 import { PromptPanelProvider } from './ui/webview/promptPanelProvider';
 import { WelcomeProvider } from './ui/webview/welcomeProvider';
@@ -10,11 +12,22 @@ import { CopilotProvider } from './ai/copilotProvider';
 import type { IAIProvider } from './ai/IAIProvider';
 import { setDataRoot, getAllLevels, getLevelById } from './engine/levelLoader';
 
+function resolveDataRoot(extensionRoot: string): string {
+  const candidates = [
+    path.join(extensionRoot, 'out', 'data', 'levels'),
+    path.join(extensionRoot, 'data', 'levels'),
+    path.join(extensionRoot, 'src', 'data', 'levels'),
+  ];
+
+  const found = candidates.find((candidate) => fs.existsSync(candidate));
+  return found ?? candidates[candidates.length - 1];
+}
+
 export function activate(context: vscode.ExtensionContext) {
   console.log('[YourEx] System Booting…');
 
   // --- Data root ---
-  const dataRoot = vscode.Uri.joinPath(context.extensionUri, 'out', 'data', 'levels').fsPath;
+  const dataRoot = resolveDataRoot(context.extensionUri.fsPath);
   setDataRoot(dataRoot);
 
   // --- Dependency assembly ---

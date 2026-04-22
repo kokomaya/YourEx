@@ -149,7 +149,7 @@ export class GameStateManager {
     const raw = this._load(STORAGE_KEY);
     if (raw) {
       try {
-        this._state = { ...structuredClone(DEFAULT_GAME_STATE), ...JSON.parse(raw) };
+        this._state = this.normalizeState({ ...structuredClone(DEFAULT_GAME_STATE), ...JSON.parse(raw) });
       } catch {
         this._state = structuredClone(DEFAULT_GAME_STATE);
       }
@@ -161,7 +161,17 @@ export class GameStateManager {
   }
 
   fromJSON(json: string): void {
-    this._state = { ...structuredClone(DEFAULT_GAME_STATE), ...JSON.parse(json) };
+    this._state = this.normalizeState({ ...structuredClone(DEFAULT_GAME_STATE), ...JSON.parse(json) });
     this.save();
+  }
+
+  private normalizeState(state: GameState): GameState {
+    const unlocked = new Set(state.unlockedChapters);
+    unlocked.add(1);
+
+    return {
+      ...state,
+      unlockedChapters: Array.from(unlocked).sort((a, b) => a - b),
+    };
   }
 }
