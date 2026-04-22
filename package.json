@@ -38,8 +38,34 @@
         "command": "yourex.promptReplay",
         "title": "Prompt Replay",
         "category": "YourEx"
+      },
+      {
+        "command": "yourex.switchMode",
+        "title": "Switch Mode",
+        "category": "YourEx"
+      },
+      {
+        "command": "yourex.showCurrentMode",
+        "title": "Show Current Mode",
+        "category": "YourEx"
       }
     ],
+    "configuration": {
+      "title": "YourEx",
+      "properties": {
+        "yourex.mode.default": {
+          "type": "string",
+          "enum": ["user", "developer"],
+          "default": "user",
+          "description": "Default run mode used when no persisted mode exists yet."
+        },
+        "yourex.mode.allowDeveloper": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allow switching to Developer Mode that bypasses chapter/level locks."
+        }
+      }
+    },
     "viewsContainers": {
       "activitybar": [
         {

@@ -11,6 +11,9 @@ import { MockProvider } from './ai/mockProvider';
 import { CopilotProvider } from './ai/copilotProvider';
 import type { IAIProvider } from './ai/IAIProvider';
 import { setDataRoot, getAllLevels, getLevelById } from './engine/levelLoader';
+import { ModeService } from './mode/modeService';
+import { createAccessPolicy } from './access/accessPolicyFactory';
+import { parseRunMode, getModeLabel, type RunMode } from './mode/runMode';
 
 function resolveDataRoot(extensionRoot: string): string {
   const candidates = [
@@ -41,8 +44,30 @@ export function activate(context: vscode.ExtensionContext) {
   const aiProvider: IAIProvider = new CopilotProvider();
   const mockFallback = new MockProvider();
 
+  const modeConfig = vscode.workspace.getConfiguration('yourex.mode');
+  const defaultMode = parseRunMode(modeConfig.get<string>('default', 'user'));
+  const modeService = new ModeService(defaultMode);
+  modeService.bindStorage(
+    (key, value) => context.globalState.update(key, value),
+    (key) => context.globalState.get<string>(key)
+  );
+
+  function allowDeveloperMode(): boolean {
+    return vscode.workspace.getConfiguration('yourex.mode').get<boolean>('allowDeveloper', true);
+  }
+
+  function getEffectiveMode(mode: RunMode): RunMode {
+    if (mode === 'developer' && !allowDeveloperMode()) {
+      return 'user';
+    }
+    return mode;
+  }
+
+  let accessPolicy = createAccessPolicy(getEffectiveMode(modeService.getMode()), gameState);
+
   const sidebarProvider = new SidebarProvider();
   sidebarProvider.setGameState(gameState);
+  sidebarProvider.setAccessPolicy(accessPolicy);
 
   const promptPanel = new PromptPanelProvider(context.extensionUri);
   promptPanel.setDependencies(aiProvider, gameState);
@@ -54,9 +79,11 @@ export function activate(context: vscode.ExtensionContext) {
 
   // --- UI refresh helper ---
   function refreshUI() {
+    accessPolicy = createAccessPolicy(getEffectiveMode(modeService.getMode()), gameState);
+    sidebarProvider.setAccessPolicy(accessPolicy);
     sidebarProvider.refresh();
     const percent = promptPanel.getDecryptPercent();
-    statusBar.update(gameState.state.xp, gameState.state.combo, percent);
+    statusBar.update(gameState.state.xp, gameState.state.combo, percent, accessPolicy.mode);
   }
 
   // Listen to prompt panel updates (level completed, etc.)
@@ -78,8 +105,40 @@ export function activate(context: vscode.ExtensionContext) {
     }),
 
     vscode.commands.registerCommand('yourex.openLevel', (levelId: string) => {
+      if (!accessPolicy.canOpenLevel(levelId)) {
+        vscode.window.showWarningMessage('[YourEx] This level is locked in User Mode. Switch to Developer Mode to bypass locks.');
+        return;
+      }
       gameState.startTimer();
       promptPanel.show(levelId);
+    }),
+
+    vscode.commands.registerCommand('yourex.switchMode', async () => {
+      if (!allowDeveloperMode()) {
+        vscode.window.showInformationMessage('[YourEx] Developer Mode is disabled by configuration.');
+        return;
+      }
+
+      const current = getEffectiveMode(modeService.getMode());
+      const picked = await vscode.window.showQuickPick(
+        [
+          { label: 'User Mode', description: 'Normal progression with chapter locks', value: 'user' as RunMode },
+          { label: 'Developer Mode', description: 'Bypass chapter and level locks', value: 'developer' as RunMode },
+        ],
+        {
+          placeHolder: `Current: ${getModeLabel(current)}`,
+        }
+      );
+
+      if (!picked) return;
+      await modeService.setMode(picked.value);
+      refreshUI();
+      vscode.window.showInformationMessage(`[YourEx] Switched to ${getModeLabel(picked.value)}.`);
+    }),
+
+    vscode.commands.registerCommand('yourex.showCurrentMode', () => {
+      const mode = getEffectiveMode(modeService.getMode());
+      vscode.window.showInformationMessage(`[YourEx] Current mode: ${getModeLabel(mode)}.`);
     }),
 
     vscode.commands.registerCommand('yourex.signalProgress', () => {
@@ -146,6 +205,10 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   // --- Status bar init ---
+  if (modeService.getMode() === 'developer' && !allowDeveloperMode()) {
+    void modeService.setMode('user');
+  }
+  context.subscriptions.push(modeService.onDidChangeMode(() => refreshUI()));
   refreshUI();
 
   // --- Cleanup ---

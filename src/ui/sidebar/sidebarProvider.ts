@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { loadChapterLevels, TOTAL_CHAPTERS } from '../../engine/levelLoader';
 import type { GameStateManager } from '../../state/gameState';
+import type { IAccessPolicy } from '../../access/IAccessPolicy';
 
 const CHAPTER_NAMES: Record<number, string> = {
   1: '📡 Signal Contact',
@@ -15,9 +16,14 @@ export class SidebarProvider implements vscode.TreeDataProvider<SidebarItem> {
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   private _gameState: GameStateManager | null = null;
+  private _accessPolicy: IAccessPolicy | null = null;
 
   setGameState(gameState: GameStateManager): void {
     this._gameState = gameState;
+  }
+
+  setAccessPolicy(policy: IAccessPolicy): void {
+    this._accessPolicy = policy;
   }
 
   getTreeItem(element: SidebarItem): vscode.TreeItem {
@@ -25,7 +31,7 @@ export class SidebarProvider implements vscode.TreeDataProvider<SidebarItem> {
   }
 
   getChildren(element?: SidebarItem): SidebarItem[] {
-    if (!this._gameState) return [];
+    if (!this._gameState || !this._accessPolicy) return [];
 
     // Root: show chapters
     if (!element) {
@@ -46,10 +52,12 @@ export class SidebarProvider implements vscode.TreeDataProvider<SidebarItem> {
 
   private getChapters(): SidebarItem[] {
     const items: SidebarItem[] = [];
+    const isDeveloperMode = this._accessPolicy!.mode === 'developer';
     for (let ch = 1; ch <= TOTAL_CHAPTERS; ch++) {
-      const unlocked = this._gameState!.isChapterUnlocked(ch);
+      const unlocked = this._accessPolicy!.isChapterUnlocked(ch);
       const name = CHAPTER_NAMES[ch] ?? `Chapter ${ch}`;
-      const label = `Ch.${ch} ${name}`;
+      const baseLabel = `Ch.${ch} ${name}`;
+      const label = isDeveloperMode ? `🛠️ ${baseLabel}` : baseLabel;
 
       const item = new SidebarItem(
         unlocked ? label : `🔒 Ch.${ch} ${name}`,
