@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { SidebarProvider } from './ui/sidebar/sidebarProvider';
+import { MissionMapProvider } from './ui/sidebar/missionMap/MissionMapProvider';
+import { MapDataSource } from './ui/sidebar/missionMap/MapDataSource';
 import { PromptPanelProvider } from './ui/webview/promptPanelProvider';
 import { WelcomeProvider } from './ui/webview/welcomeProvider';
 import { LeaderboardProvider } from './ui/webview/leaderboardProvider';
@@ -90,6 +92,10 @@ export function activate(context: vscode.ExtensionContext) {
   sidebarProvider.setGameState(gameState);
   sidebarProvider.setAccessPolicy(accessPolicy);
 
+  const mapDataSource = new MapDataSource(gameState, accessPolicy);
+  const missionMapProvider = new MissionMapProvider(context.extensionUri);
+  missionMapProvider.setDataSource(mapDataSource);
+
   const promptPanel = new PromptPanelProvider(context.extensionUri);
   promptPanel.setDependencies(aiProvider, gameState);
 
@@ -103,6 +109,8 @@ export function activate(context: vscode.ExtensionContext) {
     accessPolicy = createAccessPolicy(getEffectiveMode(modeService.getMode()), gameState);
     sidebarProvider.setAccessPolicy(accessPolicy);
     sidebarProvider.refresh();
+    mapDataSource.setAccessPolicy(accessPolicy);
+    missionMapProvider.refresh();
     const percent = promptPanel.getDecryptPercent();
     statusBar.update(gameState.state.xp, gameState.state.combo, percent, accessPolicy.mode);
   }
@@ -110,15 +118,26 @@ export function activate(context: vscode.ExtensionContext) {
   // Listen to prompt panel updates (level completed, etc.)
   promptPanel.onDidUpdate(() => refreshUI());
 
-  // --- TreeView ---
-  const treeView = vscode.window.createTreeView('yourex-levels', {
+  // --- TreeView (classic, kept as fallback) ---
+  const treeView = vscode.window.createTreeView('yourex-levels-tree', {
     treeDataProvider: sidebarProvider,
     showCollapseAll: true,
+  });
+
+  // --- Mission Map (webview sidebar) ---
+  const mapViewDisposable = vscode.window.registerWebviewViewProvider(
+    MissionMapProvider.viewType,
+    missionMapProvider,
+  );
+
+  missionMapProvider.onDidSelectLevel((levelId: string) => {
+    vscode.commands.executeCommand('yourex.openLevel', levelId);
   });
 
   // --- Commands ---
   context.subscriptions.push(
     treeView,
+    mapViewDisposable,
 
     vscode.commands.registerCommand('yourex.startDecryption', () => {
       gameState.startTimer();

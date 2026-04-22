@@ -125,14 +125,20 @@
       "yourex-sidebar": [
         {
           "id": "yourex-levels",
-          "name": "Signal Decryption",
-          "type": "tree"
+          "name": "Mission Map",
+          "type": "webview"
+        },
+        {
+          "id": "yourex-levels-tree",
+          "name": "Level List",
+          "type": "tree",
+          "visibility": "collapsed"
         }
       ]
     },
     "viewsWelcome": [
       {
-        "view": "yourex-levels",
+        "view": "yourex-levels-tree",
         "contents": "📡 接入未知信号源…\n\n检测到异常信号标记：rEx\n\n[开始解密](command:yourex.startDecryption)\n\n或点击下方关卡列表直接进入。"
       }
     ]
