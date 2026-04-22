@@ -32,6 +32,11 @@
         "category": "YourEx"
       },
       {
+        "command": "yourex.showWelcome",
+        "title": "Show Welcome",
+        "category": "YourEx"
+      },
+      {
         "command": "yourex.promptReplay",
         "title": "Prompt Replay",
         "category": "YourEx"

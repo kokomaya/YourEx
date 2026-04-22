@@ -195,6 +195,10 @@ export function activate(context: vscode.ExtensionContext) {
       leaderboardProvider.show();
     }),
 
+    vscode.commands.registerCommand('yourex.showWelcome', () => {
+      welcomeProvider.show();
+    }),
+
     vscode.commands.registerCommand('yourex.promptReplay', async () => {
       const completedIds = gameState.getCompletedLevelIds();
       if (completedIds.length === 0) {
