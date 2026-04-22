@@ -8,9 +8,6 @@
     "vscode": "^1.85.0"
   },
   "categories": ["Other"],
-  "activationEvents": [
-    "onView:yourex-levels"
-  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
