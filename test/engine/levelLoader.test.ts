@@ -32,6 +32,12 @@ describe('loadChapterLevels', () => {
     expect(loadChapterLevels(99)).toEqual([]);
   });
 
+  it('should load hidden chapter 6 level data when present', () => {
+    const levels = loadChapterLevels(6);
+    expect(levels.length).toBeGreaterThanOrEqual(1);
+    expect(levels.some(l => l.id === 'level_26')).toBe(true);
+  });
+
   it('each level should have required fields', () => {
     const levels = loadChapterLevels(1);
     for (const level of levels) {
@@ -57,6 +63,13 @@ describe('getLevelById', () => {
 
   it('should return undefined for non-existent id', () => {
     expect(getLevelById('nonexistent')).toBeUndefined();
+  });
+
+  it('should find hidden level_26', () => {
+    const level = getLevelById('level_26');
+    expect(level).toBeDefined();
+    expect(level!.chapter).toBe(6);
+    expect(level!.title).toBe('Origin Frame');
   });
 });
 

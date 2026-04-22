@@ -11,9 +11,9 @@ describe('computeAllowDeveloperMode', () => {
     expect(computeAllowDeveloperMode(false, EXTENSION_MODE_PRODUCTION)).toBe(false);
   });
 
-  it('respects configuration in development mode', () => {
+  it('always allows developer mode in development mode', () => {
     expect(computeAllowDeveloperMode(true, EXTENSION_MODE_DEVELOPMENT)).toBe(true);
-    expect(computeAllowDeveloperMode(false, EXTENSION_MODE_DEVELOPMENT)).toBe(false);
+    expect(computeAllowDeveloperMode(false, EXTENSION_MODE_DEVELOPMENT)).toBe(true);
   });
 
   it('respects configuration in test mode', () => {

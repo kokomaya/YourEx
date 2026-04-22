@@ -8,6 +8,7 @@ const CHAPTER_DIRS: Record<number, string> = {
   3: 'ch3-syntax-awakening',
   4: 'ch4-transmission',
   5: 'ch5-rex',
+  6: 'ch6-origin',
 };
 
 const TOTAL_CHAPTERS = 5;
@@ -56,7 +57,8 @@ export function getAllLevels(): Level[] {
 }
 
 export function getLevelById(id: string): Level | undefined {
-  for (let ch = 1; ch <= TOTAL_CHAPTERS; ch++) {
+  const chapterIds = Object.keys(CHAPTER_DIRS).map(Number).sort((a, b) => a - b);
+  for (const ch of chapterIds) {
     const levels = loadChapterLevels(ch);
     const found = levels.find(l => l.id === id);
     if (found) {

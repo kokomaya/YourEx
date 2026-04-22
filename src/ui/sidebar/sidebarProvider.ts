@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { loadChapterLevels, TOTAL_CHAPTERS } from '../../engine/levelLoader';
+import { loadChapterLevels, TOTAL_CHAPTERS, HIDDEN_CHAPTER } from '../../engine/levelLoader';
 import type { GameStateManager } from '../../state/gameState';
 import type { IAccessPolicy } from '../../access/IAccessPolicy';
 
@@ -9,6 +9,7 @@ const CHAPTER_NAMES: Record<number, string> = {
   3: '⚡ Syntax Awakening',
   4: '🛰️ Transmission',
   5: '🌌 rEx',
+  6: '👁️ Origin Frame',
 };
 
 export class SidebarProvider implements vscode.TreeDataProvider<SidebarItem> {
@@ -53,7 +54,12 @@ export class SidebarProvider implements vscode.TreeDataProvider<SidebarItem> {
   private getChapters(): SidebarItem[] {
     const items: SidebarItem[] = [];
     const isDeveloperMode = this._accessPolicy!.mode === 'developer';
-    for (let ch = 1; ch <= TOTAL_CHAPTERS; ch++) {
+    const chapterNumbers = Array.from({ length: TOTAL_CHAPTERS }, (_, index) => index + 1);
+    if (isDeveloperMode || this._gameState!.isChapterUnlocked(HIDDEN_CHAPTER)) {
+      chapterNumbers.push(HIDDEN_CHAPTER);
+    }
+
+    for (const ch of chapterNumbers) {
       const unlocked = this._accessPolicy!.isChapterUnlocked(ch);
       const name = CHAPTER_NAMES[ch] ?? `Chapter ${ch}`;
       const baseLabel = `Ch.${ch} ${name}`;
