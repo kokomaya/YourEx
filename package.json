@@ -61,7 +61,7 @@
         },
         "yourex.mode.allowDeveloper": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "Allow switching to Developer Mode that bypasses chapter/level locks."
         }
       }
@@ -99,6 +99,10 @@
     "pretest": "npm run compile",
     "test": "vitest run",
     "test:watch": "vitest",
+    "package:dev": "node scripts/package-vsix.cjs dev",
+    "package:prod": "node scripts/package-vsix.cjs prod",
+    "package:dev:dry": "node scripts/package-vsix.cjs dev --dry-run",
+    "package:prod:dry": "node scripts/package-vsix.cjs prod --dry-run",
     "build:webview": "cd webview-ui && npm run build",
     "dev:webview": "cd webview-ui && npm run dev"
   },

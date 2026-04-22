@@ -14,6 +14,7 @@ import { setDataRoot, getAllLevels, getLevelById } from './engine/levelLoader';
 import { ModeService } from './mode/modeService';
 import { createAccessPolicy } from './access/accessPolicyFactory';
 import { parseRunMode, getModeLabel, type RunMode } from './mode/runMode';
+import { computeAllowDeveloperMode } from './mode/modeGuards';
 
 function resolveDataRoot(extensionRoot: string): string {
   const candidates = [
@@ -53,7 +54,8 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   function allowDeveloperMode(): boolean {
-    return vscode.workspace.getConfiguration('yourex.mode').get<boolean>('allowDeveloper', true);
+    const configured = vscode.workspace.getConfiguration('yourex.mode').get<boolean>('allowDeveloper', false);
+    return computeAllowDeveloperMode(configured, context.extensionMode);
   }
 
   function getEffectiveMode(mode: RunMode): RunMode {
