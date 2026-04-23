@@ -7,6 +7,7 @@ import { Welcome } from './components/Welcome';
 import { Leaderboard } from './components/Leaderboard';
 import { ScoreDetail } from './components/ScoreDetail';
 import { Codex } from './components/Codex';
+import { Ch6Interlude } from './components/Ch6Interlude';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 
 declare global {
@@ -38,6 +39,8 @@ function App() {
         return <ScoreDetail />;
       case 'codex':
         return <Codex />;
+      case 'ch6Interlude':
+        return <Ch6Interlude />;
       case 'promptPanel':
       default:
         return <PromptPanel />;

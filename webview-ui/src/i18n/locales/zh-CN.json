@@ -163,5 +163,24 @@
 
   "codex.recursion": "递归模式（匹配嵌套结构）",
   "codex.conditional": "条件匹配（若某组已匹配，则…否则…）",
-  "codex.resetMatch": "重置匹配起点 — 丢弃 \\K 左侧内容"
+  "codex.resetMatch": "重置匹配起点 — 丢弃 \\K 左侧内容",
+
+  "ch6Interlude.title": "MERIDIAN-7 系统日志",
+  "ch6Interlude.boot.line1": ">> [SYS] Meridian-7 核心系统上线。",
+  "ch6Interlude.boot.line2": ">> [NAV] 导航计算中：HOME — 4.7 光时。",
+  "ch6Interlude.boot.line3": ">> [ENG] 主引擎：严重故障——燃烧核心已损毁。",
+  "ch6Interlude.boot.line4": ">> [rEx-LINK] 空间站握手成功。",
+  "ch6Interlude.boot.line5": ">> [rEx-LINK] 外星动力模块 XT-CORE/77 已接收。",
+  "ch6Interlude.boot.line6": ">> [ENG] 安装 XT-CORE/77 至驱动舱……完成。",
+  "ch6Interlude.boot.line7": ">> [ENG] 点火序列启动。",
+  "ch6Interlude.boot.line8": ">> [ENG] 引擎上线。输出：额定值 118%。✓",
+  "ch6Interlude.boot.line9": ">> [SYS] 警告：检测到外星-人类协议不兼容。",
+  "ch6Interlude.boot.line10": ">> [DIAG] 所有诊断总线均报告 rEx 帧格式。需适配。",
+  "ch6Interlude.reveal": "A L I G N M E N T   R E Q U I R E D",
+  "ch6Interlude.story.line1": "你解译了所有信号。",
+  "ch6Interlude.story.line2": "rEx 星球回馈了它最深处的礼物——一颗外星引擎的心脏。",
+  "ch6Interlude.story.line3": "它在跳动。但它不说人类的语言。",
+  "ch6Interlude.story.line4": "协议帧在日志中涌动，等待被读懂。",
+  "ch6Interlude.story.line5": "最后一次对齐，然后——回家。",
+  "ch6Interlude.startButton": "开始协议适配"
 }

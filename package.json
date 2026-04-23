@@ -1,9 +1,9 @@
 {
-  "name": "yourex",
+  "name": "urex",
   "displayName": "YourEx",
   "description": "Your little game of rEgular eXpression — Match the pattern. Understand the language.",
   "version": "0.0.1",
-  "publisher": "kokomaya",
+  "publisher": "kokoma",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -14,7 +14,7 @@
   "categories": [
     "Other"
   ],
-  "icon": "resources/icon.png",
+  "icon": "resources/icon.jpg",
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -66,6 +66,11 @@
       {
         "command": "yourex.openCodex",
         "title": "Regex Codex",
+        "category": "YourEx"
+      },
+      {
+        "command": "yourex.showCh6Interlude",
+        "title": "Show Chapter 6 Interlude",
         "category": "YourEx"
       }
     ],

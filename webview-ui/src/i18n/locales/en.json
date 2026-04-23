@@ -163,5 +163,24 @@
 
   "codex.recursion": "Recursive pattern (match nested structures)",
   "codex.conditional": "Conditional match (if group matched, then…else…)",
-  "codex.resetMatch": "Reset match start — discard left of \\K"
+  "codex.resetMatch": "Reset match start — discard left of \\K",
+
+  "ch6Interlude.title": "MERIDIAN-7 SYSTEM LOG",
+  "ch6Interlude.boot.line1": ">> [SYS] Meridian-7 core systems online.",
+  "ch6Interlude.boot.line2": ">> [NAV] Plotting course: HOME — 4.7 light-hours.",
+  "ch6Interlude.boot.line3": ">> [ENG] Primary drive: CRITICAL FAILURE — combustion core destroyed.",
+  "ch6Interlude.boot.line4": ">> [rEx-LINK] Station handshake accepted.",
+  "ch6Interlude.boot.line5": ">> [rEx-LINK] Alien power module XT-CORE/77 received.",
+  "ch6Interlude.boot.line6": ">> [ENG] Installing XT-CORE/77 to drive bay... done.",
+  "ch6Interlude.boot.line7": ">> [ENG] Ignition sequence initiated.",
+  "ch6Interlude.boot.line8": ">> [ENG] Drive online. Output: 118% nominal. ✓",
+  "ch6Interlude.boot.line9": ">> [SYS] Warning: alien-human protocol mismatch detected.",
+  "ch6Interlude.boot.line10": ">> [DIAG] All diagnostic buses reporting rEx frame format. Adaptation required.",
+  "ch6Interlude.reveal": "A L I G N M E N T   R E Q U I R E D",
+  "ch6Interlude.story.line1": "You have decoded every signal.",
+  "ch6Interlude.story.line2": "The rEx planet gave back its deepest gift — an alien engine core.",
+  "ch6Interlude.story.line3": "It beats. But it does not speak human.",
+  "ch6Interlude.story.line4": "Protocol frames surge through the logs, waiting to be understood.",
+  "ch6Interlude.story.line5": "One final alignment — then home.",
+  "ch6Interlude.startButton": "BEGIN ADAPTATION"
 }

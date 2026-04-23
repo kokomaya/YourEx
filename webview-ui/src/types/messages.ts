@@ -54,7 +54,7 @@ export interface LeaderboardEntry {
   rank: number;
 }
 
-export type WebViewType = 'promptPanel' | 'welcome' | 'leaderboard' | 'scoreDetail' | 'codex';
+export type WebViewType = 'promptPanel' | 'welcome' | 'leaderboard' | 'scoreDetail' | 'codex' | 'ch6Interlude';
 
 // WebView → Extension
 export type WebViewMessage =

@@ -1,0 +1,27 @@
+@import '../Welcome/Welcome.css';
+
+.ch6-interlude .boot-title {
+  color: var(--accent-yellow, #fbbf24);
+  text-shadow: 0 0 16px var(--accent-yellow, #fbbf24), 0 0 32px rgba(251, 191, 36, 0.3);
+}
+
+.ch6-interlude .rex-reveal pre {
+  color: var(--accent-yellow, #fbbf24);
+  text-shadow: 0 0 20px var(--accent-yellow, #fbbf24), 0 0 40px rgba(251, 191, 36, 0.3);
+}
+
+.ch6-interlude .boot-line {
+  color: var(--text-secondary);
+}
+
+.ch6-interlude .boot-line:nth-child(9),
+.ch6-interlude .boot-line:nth-child(10) {
+  color: var(--accent-yellow, #fbbf24);
+  font-weight: 600;
+}
+
+.ch6-interlude .welcome-actions .btn-primary {
+  background: var(--accent-yellow, #fbbf24);
+  color: var(--bg-primary, #0a0f1a);
+  border-color: var(--accent-yellow, #fbbf24);
+}

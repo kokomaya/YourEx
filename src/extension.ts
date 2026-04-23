@@ -8,6 +8,7 @@ import { PromptPanelProvider } from './ui/webview/promptPanelProvider';
 import { WelcomeProvider } from './ui/webview/welcomeProvider';
 import { LeaderboardProvider } from './ui/webview/leaderboardProvider';
 import { CodexProvider } from './ui/webview/codexProvider';
+import { Ch6InterludeProvider } from './ui/webview/ch6InterludeProvider';
 import { StatusBarManager } from './ui/statusbar';
 import { GameStateManager } from './state/gameState';
 import { MockProvider } from './ai/mockProvider';
@@ -116,6 +117,8 @@ export function activate(context: vscode.ExtensionContext) {
   leaderboardProvider.setLocale(initialLocale);
   const codexProvider = new CodexProvider(context.extensionUri);
   codexProvider.setLocale(initialLocale);
+  const ch6InterludeProvider = new Ch6InterludeProvider(context.extensionUri);
+  ch6InterludeProvider.setLocale(initialLocale);
   const statusBar = new StatusBarManager();
 
   // --- UI refresh helper ---
@@ -164,6 +167,20 @@ export function activate(context: vscode.ExtensionContext) {
       if (!accessPolicy.canOpenLevel(levelId)) {
         vscode.window.showWarningMessage('[YourEx] This level is locked in User Mode. Switch to Developer Mode to bypass locks.');
         return;
+      }
+      // Show Ch6 interlude before opening level_26 for the first time
+      if (levelId === 'level_26') {
+        const seen = context.globalState.get<boolean>('yourex.ch6InterludeSeen', false);
+        if (!seen) {
+          ch6InterludeProvider.show();
+          const disposable = ch6InterludeProvider.onDidComplete(() => {
+            disposable.dispose();
+            void context.globalState.update('yourex.ch6InterludeSeen', true);
+            gameState.startTimer();
+            promptPanel.show(levelId);
+          });
+          return;
+        }
       }
       gameState.startTimer();
       promptPanel.show(levelId);
@@ -217,6 +234,10 @@ export function activate(context: vscode.ExtensionContext) {
       codexProvider.show();
     }),
 
+    vscode.commands.registerCommand('yourex.showCh6Interlude', () => {
+      ch6InterludeProvider.show();
+    }),
+
     vscode.commands.registerCommand('yourex.switchLanguage', async (localeArg?: string) => {
       let targetLocale: Locale;
 
@@ -252,6 +273,7 @@ export function activate(context: vscode.ExtensionContext) {
       welcomeProvider.broadcastLocale(targetLocale);
       leaderboardProvider.broadcastLocale(targetLocale);
       codexProvider.broadcastLocale(targetLocale);
+      ch6InterludeProvider.broadcastLocale(targetLocale);
 
       // Refresh extension-side UI
       refreshUI();
@@ -321,6 +343,7 @@ export function activate(context: vscode.ExtensionContext) {
       promptPanel.dispose();
       welcomeProvider.dispose();
       leaderboardProvider.dispose();
+      ch6InterludeProvider.dispose();
       statusBar.dispose();
       localeService.dispose();
     },
