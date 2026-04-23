@@ -3,15 +3,7 @@ import type { ChapterMapData, MapNode } from './mapMessages';
 import type { GameStateManager } from '../../../state/gameState';
 import type { IAccessPolicy } from '../../../access/IAccessPolicy';
 import { loadChapterLevels, TOTAL_CHAPTERS, HIDDEN_CHAPTER } from '../../../engine/levelLoader';
-
-const CHAPTER_NAMES: Record<number, string> = {
-  1: '📡 信号接触',
-  2: '🔍 模式识别',
-  3: '⚡ 语法觉醒',
-  4: '🛰️ 通信建立',
-  5: '🌌 rEx 的回应',
-  6: '🔧 起源',
-};
+import { t } from '../../../i18n/t';
 
 const CHAPTER_COLORS: Record<number, string> = {
   1: '#22d3ee',
@@ -77,7 +69,7 @@ export class MapDataSource implements IMapDataSource {
 
       chapters.push({
         chapter: ch,
-        name: CHAPTER_NAMES[ch] ?? `Chapter ${ch}`,
+        name: t(`sidebar.chapter.${ch}`) || `Chapter ${ch}`,
         unlocked,
         progress,
         total: nodes.length,

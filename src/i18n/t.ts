@@ -15,7 +15,12 @@ export function setUIDataDir(dir: string): void {
 
 function getUIDataDir(): string {
   if (uiDataDir) return uiDataDir;
-  return path.join(__dirname, '..', 'data', 'ui');
+  // Try compiled output location first, then fall back to src/
+  const candidates = [
+    path.join(__dirname, '..', 'data', 'ui'),
+    path.join(__dirname, '..', '..', 'src', 'data', 'ui'),
+  ];
+  return candidates.find(d => fs.existsSync(d)) ?? candidates[0];
 }
 
 function loadStrings(locale: Locale): UIStrings {

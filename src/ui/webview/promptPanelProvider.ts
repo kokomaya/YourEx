@@ -35,6 +35,14 @@ export class PromptPanelProvider {
   broadcastLocale(locale: Locale): void {
     this._locale = locale;
     this.postMessage({ command: 'localeChanged', locale });
+    // Reload current level in the new locale so content text updates
+    if (this._currentLevel) {
+      const reloaded = getLevelById(this._currentLevel.id);
+      if (reloaded) {
+        this._currentLevel = reloaded;
+        this.postMessage({ command: 'loadLevel', level: reloaded });
+      }
+    }
   }
 
   setDependencies(aiProvider: IAIProvider, gameState: GameStateManager, devMode?: boolean): void {

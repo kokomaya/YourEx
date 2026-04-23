@@ -161,8 +161,9 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run build",
-    "build": "npm run compile && npm run build:webview",
+    "build": "npm run compile && npm run copy:data && npm run build:webview",
     "compile": "tsc -p ./tsconfig.json",
+    "copy:data": "node -e \"const fs=require('fs'),p=require('path');function cp(s,d){fs.mkdirSync(d,{recursive:true});for(const e of fs.readdirSync(s,{withFileTypes:true}))e.isDirectory()?cp(p.join(s,e.name),p.join(d,e.name)):fs.copyFileSync(p.join(s,e.name),p.join(d,e.name))}cp('src/data/ui','out/data/ui');cp('src/data/levels','out/data/levels')\"",
     "watch": "tsc -watch -p ./tsconfig.json",
     "pretest": "npm run compile",
     "test": "vitest run",
