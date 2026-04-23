@@ -9,7 +9,7 @@ const LOCALE_MAP: Record<Locale, Record<string, string>> = {
   'en': en,
 };
 
-const DEFAULT_LOCALE: Locale = 'zh-CN';
+const DEFAULT_LOCALE: Locale = 'en';
 
 interface I18nContextValue {
   locale: Locale;

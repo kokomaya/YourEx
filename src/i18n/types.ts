@@ -1,5 +1,5 @@
 export type Locale = 'zh-CN' | 'en';
-export const DEFAULT_LOCALE: Locale = 'zh-CN';
+export const DEFAULT_LOCALE: Locale = 'en';
 export const SUPPORTED_LOCALES: readonly Locale[] = ['zh-CN', 'en'] as const;
 
 export const LOCALE_LABELS: Record<Locale, string> = {

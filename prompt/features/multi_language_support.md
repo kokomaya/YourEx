@@ -161,7 +161,7 @@ VS Code Setting: yourex.language = "en" | "zh-CN"
 ```typescript
 // src/i18n/types.ts
 export type Locale = 'zh-CN' | 'en';
-export const DEFAULT_LOCALE: Locale = 'zh-CN';
+export const DEFAULT_LOCALE: Locale = 'en';
 export const SUPPORTED_LOCALES: Locale[] = ['zh-CN', 'en'];
 ```
 

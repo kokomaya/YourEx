@@ -73,11 +73,11 @@
 
 ### 4.1 扫描之眼按钮（Scan Eye）
 
-位置：prompt 输入区（`section.prompt-input`）标题栏右侧，与「✍️ Your Prompt」标题同行。
+位置：prompt 输入区（`section.prompt-input`）标题栏右侧，与「✍️ Your Instructions」标题同行。
 
 ```
 ┌─ prompt-input ────────────────────────────┐
-│ ✍️ Your Prompt       [👁 📡 SIGNAL GUIDANCE] │
+│ ✍️ Your Instructions       [👁 📡 SIGNAL GUIDANCE] │
 │                                            │
 │  [textarea]                                │
 │                                    12 chars │

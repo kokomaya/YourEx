@@ -24,7 +24,7 @@
   "promptPanel.mission": "📋 Mission",
   "promptPanel.testData": "📡 Test Data",
   "promptPanel.expected": "Expected: ",
-  "promptPanel.yourPrompt": "✍️ Your Prompt",
+  "promptPanel.yourPrompt": "✍️ Your Instructions",
   "promptPanel.placeholder": "Issue instructions to the decoding assist system…",
   "promptPanel.charCount": "{count} chars",
   "promptPanel.loading": "🔄 Parsing…",
