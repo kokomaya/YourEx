@@ -1,0 +1,95 @@
+/* ── Scan Eye Button ── */
+.scan-eye-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 10px 0 7px;
+  border: 1px solid rgba(0, 255, 180, 0.2);
+  border-radius: 13px;
+  background: rgba(0, 10, 8, 0.6);
+  color: rgba(0, 255, 180, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.scan-eye-btn:hover:not(:disabled) {
+  color: rgba(0, 255, 180, 0.95);
+  border-color: rgba(0, 255, 180, 0.6);
+  background: rgba(0, 255, 180, 0.08);
+  box-shadow: 0 0 14px rgba(0, 255, 180, 0.2);
+  transform: scale(1.1);
+}
+
+.scan-eye-btn:hover:not(:disabled) .scan-eye-icon svg {
+  filter: drop-shadow(0 0 4px rgba(0, 255, 180, 0.6));
+}
+
+.scan-eye-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+/* Disabled state */
+.scan-eye-btn--disabled {
+  color: rgba(100, 100, 100, 0.3);
+  border-color: rgba(100, 100, 100, 0.15);
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+/* Pulse state — new hint available */
+.scan-eye-btn--pulse {
+  color: rgba(0, 255, 180, 0.85);
+  border-color: rgba(0, 255, 180, 0.5);
+  animation: eyeBreathe 2s ease-in-out infinite;
+}
+
+.scan-eye-btn--pulse .scan-eye-icon svg {
+  filter: drop-shadow(0 0 6px rgba(0, 255, 180, 0.5));
+}
+
+@keyframes eyeBreathe {
+  0%, 100% {
+    box-shadow: 0 0 6px rgba(0, 255, 180, 0.15);
+    border-color: rgba(0, 255, 180, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(0, 255, 180, 0.35), 0 0 30px rgba(0, 255, 180, 0.1);
+    border-color: rgba(0, 255, 180, 0.65);
+  }
+}
+
+/* Ping dot — notification indicator */
+.scan-eye-ping {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00ffa0;
+  box-shadow: 0 0 6px #00ffa0;
+  animation: pingFlash 1.5s ease-in-out infinite;
+}
+
+@keyframes pingFlash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.scan-eye-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+.scan-eye-label {
+  white-space: nowrap;
+}

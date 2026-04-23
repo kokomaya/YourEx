@@ -95,5 +95,10 @@
   "score.attemptLog": "[Attempt Log] {count} total",
   "score.waiting": "> Awaiting decryption data…",
   "language.label": "🌐 LANG",
-  "language.transition.switching": "SWITCHING LANGUAGE PROTOCOL…"
+  "language.transition.switching": "SWITCHING LANGUAGE PROTOCOL…",
+  "hint.interceptedSignal": "截获信号",
+  "hint.scanGuidance": "信号引导",
+  "hint.locked": "[已加密]",
+  "hint.scanEyeTooltip": "信号扫描器 — 查看已解码的引导信息",
+  "hint.noHintsYet": "尚未截获信号…"
 }

@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useVSCode, useMessageListener } from '../../hooks/useVSCode';
 import { useTranslation } from '../../i18n';
-import type { Level, JudgeResult, PromptScore, LevelRewardData, ExtensionMessage } from '../../types/messages';
+import type { Level, JudgeResult, PromptScore, LevelRewardData, HintData, ExtensionMessage } from '../../types/messages';
 import { RewardOverlay } from '../Reward';
 import { useVisualScene } from '../../visual/hooks/useVisualScene';
 import { VisualScene } from '../../visual/components/VisualScene';
@@ -9,6 +9,9 @@ import { useVisualPreferences } from '../../visual/hooks/useVisualPreferences';
 import { useMonitorScene } from '../../visual/monitor/useMonitorScene';
 import { MonitorViewportShell } from '../../visual/monitor/MonitorViewportShell';
 import { Oscilloscope } from './Oscilloscope';
+import { ScanEyeButton } from './ScanEyeButton';
+import { HintPanel } from './HintPanel';
+import { HintAlert } from './HintAlert';
 import '../../visual/monitor/MonitorFrame.css';
 import './PromptPanel.css';
 
@@ -27,6 +30,8 @@ export function PromptPanel() {
   } | null>(null);
   const [reward, setReward] = useState<LevelRewardData | null>(null);
   const [signalFragment, setSignalFragment] = useState<string | null>(null);
+  const [hintData, setHintData] = useState<HintData | null>(null);
+  const [hintPanelOpen, setHintPanelOpen] = useState(false);
   const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const stateHint = loading
@@ -61,6 +66,8 @@ export function PromptPanel() {
         setResult(null);
         setReward(null);
         setSignalFragment(null);
+        setHintData(null);
+        setHintPanelOpen(false);
         setPrompt('');
         if (autoAdvanceTimer.current) {
           clearTimeout(autoAdvanceTimer.current);
@@ -99,6 +106,9 @@ export function PromptPanel() {
         break;
       case 'setLoading':
         setLoading(data.loading);
+        break;
+      case 'updateHints':
+        setHintData(data.hintData);
         break;
     }
   }, []));
@@ -204,7 +214,14 @@ export function PromptPanel() {
       </section>
 
       <section className="prompt-input">
-        <h3>{t('promptPanel.yourPrompt')}</h3>
+        <div className="prompt-input__header">
+          <h3>{t('promptPanel.yourPrompt')}</h3>
+          <ScanEyeButton
+            onClick={() => setHintPanelOpen(v => !v)}
+            hasNewHint={!!hintData?.hasNewPromptHint}
+            disabled={!hintData || (hintData.totalPromptHints === 0 && hintData.totalHints === 0)}
+          />
+        </div>
         <textarea
           className="console-input"
           value={prompt}
@@ -216,8 +233,18 @@ export function PromptPanel() {
             if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleExecute();
           }}
         />
-        <div className="char-count text-muted">{t('promptPanel.charCount', { count: prompt.length })}</div>
+        <div className="char-count text-muted">
+          {t('promptPanel.charCount', { count: prompt.length })}
+        </div>
       </section>
+
+      {hintData && (
+        <HintPanel
+          promptHints={hintData.promptHints}
+          totalCount={hintData.totalPromptHints}
+          visible={hintPanelOpen}
+        />
+      )}
 
         <div className="action-buttons">
           <button className={`btn-primary ${scene.buttonClassName}`} onClick={handleExecute} disabled={loading || !prompt.trim()}>
@@ -232,6 +259,11 @@ export function PromptPanel() {
           <section className="result-panel" data-status={result.judgeResult.status}>
             <h3>{statusIcon} {t(getStatusLabel(result.judgeResult.status))}</h3>
             <p className="feedback-text">{result.feedback}</p>
+
+          {hintData && hintData.hints.length > 0 &&
+            (result.judgeResult.status === 'fail' || result.judgeResult.status === 'partial' || result.judgeResult.status === 'error') && (
+            <HintAlert hints={hintData.hints} hasNewHint={hintData.hasNewHint} />
+          )}
 
           {result.rawRegex && (
             <div className="regex-display">

@@ -21,6 +21,7 @@ import { LocaleService, readLocaleFromConfig, detectDefaultLocale } from './i18n
 import { initTranslations } from './i18n/t';
 import { setDialogueLocale } from './story/dialogues';
 import { setAchievementLocale } from './engine/achievementManager';
+import { HintTracker } from './engine/hintTracker';
 import { type Locale, SUPPORTED_LOCALES, LOCALE_LABELS } from './i18n/types';
 
 function resolveDataRoot(extensionRoot: string): string {
@@ -113,6 +114,7 @@ export function activate(context: vscode.ExtensionContext) {
   const isDevMode = getEffectiveMode(modeService.getMode()) === 'developer';
   promptPanel.setDependencies(aiProvider, gameState, isDevMode);
   promptPanel.setLocale(initialLocale);
+  promptPanel.setHintTracker(new HintTracker());
 
   const welcomeProvider = new WelcomeProvider(context.extensionUri);
   welcomeProvider.setLocale(initialLocale);

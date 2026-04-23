@@ -61,6 +61,15 @@ export interface ChapterSummary {
   elapsedMs?: number;
 }
 
+export interface HintData {
+  hints: string[];
+  promptHints: string[];
+  totalHints: number;
+  totalPromptHints: number;
+  hasNewHint: boolean;
+  hasNewPromptHint: boolean;
+}
+
 // Extension → WebView
 export type ExtensionMessage =
   | { command: 'loadLevel'; level: Level }
@@ -69,4 +78,5 @@ export type ExtensionMessage =
   | { command: 'setLoading'; loading: boolean }
   | { command: 'showScoreDetail'; levelTitle: string; attempts: Omit<LevelAttempt, 'judgeResult'> & { judgeResult: Omit<JudgeResult, 'regex'> }[]; bestScore?: PromptScore }
   | { command: 'showLeaderboard'; entries: LeaderboardEntry[] }
+  | { command: 'updateHints'; hintData: HintData }
   | { command: 'localeChanged'; locale: string };

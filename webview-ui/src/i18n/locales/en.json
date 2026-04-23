@@ -95,5 +95,10 @@
   "score.attemptLog": "[Attempt Log] {count} total",
   "score.waiting": "> Awaiting decryption data…",
   "language.label": "🌐 LANG",
-  "language.transition.switching": "SWITCHING LANGUAGE PROTOCOL…"
+  "language.transition.switching": "SWITCHING LANGUAGE PROTOCOL…",
+  "hint.interceptedSignal": "INTERCEPTED SIGNAL",
+  "hint.scanGuidance": "SIGNAL GUIDANCE",
+  "hint.locked": "[LOCKED]",
+  "hint.scanEyeTooltip": "Signal Scanner — View decoded guidance",
+  "hint.noHintsYet": "No intercepted signals yet…"
 }

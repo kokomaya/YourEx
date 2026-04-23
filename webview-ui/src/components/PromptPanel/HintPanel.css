@@ -1,0 +1,102 @@
+/* ── Hint Panel (promptHints) ── */
+.hint-panel {
+  margin-top: 6px;
+  border: 1px solid rgba(0, 255, 180, 0.18);
+  border-radius: 6px;
+  background: rgba(0, 12, 8, 0.65);
+  backdrop-filter: blur(4px);
+  overflow: hidden;
+  animation: hintPanelSlide 0.3s ease-out;
+}
+
+@keyframes hintPanelSlide {
+  from {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    max-height: 400px;
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hint-panel__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(0, 255, 180, 0.1);
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  color: rgba(0, 255, 180, 0.7);
+  text-transform: uppercase;
+}
+
+.hint-panel__icon {
+  font-size: 13px;
+}
+
+.hint-panel__list {
+  list-style: none;
+  margin: 0;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hint-panel__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.hint-panel__marker {
+  color: rgba(0, 255, 180, 0.6);
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.hint-panel__item--unlocked .hint-panel__text {
+  color: rgba(200, 230, 220, 0.9);
+}
+
+/* Locked items — redacted look */
+.hint-panel__item--locked {
+  opacity: 0.4;
+}
+
+.hint-panel__item--locked .hint-panel__marker {
+  color: rgba(100, 100, 100, 0.5);
+}
+
+.hint-panel__redacted {
+  font-family: 'Courier New', monospace;
+  color: rgba(80, 80, 80, 0.5);
+  letter-spacing: 2px;
+  font-size: 11px;
+}
+
+.hint-panel__lock-tag {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: rgba(255, 100, 80, 0.5);
+  border: 1px solid rgba(255, 100, 80, 0.2);
+  border-radius: 2px;
+  padding: 1px 5px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.hint-panel__item--empty .hint-panel__text {
+  color: rgba(100, 100, 100, 0.5);
+  font-style: italic;
+  font-size: 11px;
+}

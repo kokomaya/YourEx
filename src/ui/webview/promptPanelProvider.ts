@@ -15,18 +15,25 @@ import { getAllLevels } from '../../engine/levelLoader';
 import { checkAchievements } from '../../engine/achievementManager';
 import { getRexSignal } from '../../story/dialogues';
 import { buildRewardData } from '../../engine/rewardBuilder';
+import type { IHintTracker } from '../../engine/hintTracker';
+import { resolveHints } from '../../engine/hintResolver';
 
 export class PromptPanelProvider {
   private _panel: vscode.WebviewPanel | undefined;
   private _currentLevel: Level | undefined;
   private _aiProvider: IAIProvider | undefined;
   private _gameState: GameStateManager | undefined;
+  private _hintTracker: IHintTracker | undefined;
   private _devMode = false;
   private _locale: Locale = 'zh-CN';
   private _onDidUpdate = new vscode.EventEmitter<void>();
   readonly onDidUpdate = this._onDidUpdate.event;
 
   constructor(private readonly _extensionUri: vscode.Uri) {}
+
+  setHintTracker(tracker: IHintTracker): void {
+    this._hintTracker = tracker;
+  }
 
   setLocale(locale: Locale): void {
     this._locale = locale;
@@ -95,6 +102,15 @@ export class PromptPanelProvider {
     if (!level) return;
     this._currentLevel = level;
     this.postMessage({ command: 'loadLevel', level });
+    this.sendHintState(level);
+  }
+
+  private sendHintState(level: Level, isNewFail = false): void {
+    if (!this._hintTracker) return;
+    const failCount = this._hintTracker.getFailCount(level.id);
+    const previousFailCount = isNewFail ? failCount - 1 : failCount;
+    const hintData = resolveHints(level, failCount, previousFailCount);
+    this.postMessage({ command: 'updateHints', hintData });
   }
 
   private async handleMessage(msg: WebViewMessage): Promise<void> {
@@ -102,6 +118,7 @@ export class PromptPanelProvider {
       case 'ready':
         if (this._currentLevel) {
           this.postMessage({ command: 'loadLevel', level: this._currentLevel });
+          this.sendHintState(this._currentLevel);
         }
         break;
 
@@ -217,6 +234,11 @@ export class PromptPanelProvider {
         const newState = resetCombo(this._gameState.state as any);
         this._gameState.setCombo(newState.combo);
 
+        // track failure for hint system
+        if (this._hintTracker) {
+          this._hintTracker.recordFail(levelId);
+        }
+
         showJudgeFeedback(result.judgeResult, feedback);
 
         this.postMessage({
@@ -226,6 +248,11 @@ export class PromptPanelProvider {
           feedback,
           rawRegex: result.rawRegex,
         });
+
+        // send updated hints after fail
+        if (level) {
+          this.sendHintState(level, true);
+        }
       }
 
       this._onDidUpdate.fire();
@@ -349,6 +376,11 @@ export class PromptPanelProvider {
       const newState = resetCombo(this._gameState.state as any);
       this._gameState.setCombo(newState.combo);
 
+      // track failure for hint system
+      if (this._hintTracker) {
+        this._hintTracker.recordFail(levelId);
+      }
+
       // Also send result to webview if open
       if (this._panel) {
         this.postMessage({
@@ -357,6 +389,9 @@ export class PromptPanelProvider {
           feedback,
           rawRegex,
         });
+
+        // send updated hints after fail
+        this.sendHintState(level, true);
       }
     }
 
