@@ -6,7 +6,8 @@
 
 1. **失败触发提示**：玩家解密失败时，根据已失败次数自动解锁并显示下一条 `hints` 提示。
 2. **主动查看提示**：在 PromptPanel 的合适位置放置一个科幻风格的"扫描之眼"按钮，玩家可主动点击查看已解锁的 `promptHints`（Prompt 编写指引）。
-3. 不影响现有功能——提示为纯叠加层，不改变评分、判定、奖励等已有逻辑。
+3. **付费解密**：玩家可一次性解锁所有锁定的 `promptHints`，代价是根据关卡难度扣除少量评分（easy: -1, medium: -2, hard: -5）。
+4. 提示系统会影响评分（仅在使用付费解密时），但不影响判定、奖励、XP、连击等已有逻辑。
 
 ---
 
@@ -49,46 +50,73 @@
 
 **设计意图**：hints 比 promptHints 晚一轮解锁——先让玩家自行思考 prompt 写法（通过 promptHints），再给出更直接的解题方向（hints）。
 
+### 3.3 付费解密（一次性解锁所有 promptHints）
+
+玩家可在 HintPanel 中点击「⚡ 全部解密 [-N pts]」按钮，一次性解锁当前关卡所有锁定的 promptHints。
+
+| 关卡难度 | 扣分 |
+|---|---|
+| easy | -1 |
+| medium | -2 |
+| hard | -5 |
+
+规则：
+- 每个关卡只能使用一次付费解密（`hasPeeked` 布尔标记，不可重复）
+- 解密后所有 promptHints 立即全部显示
+- 扣分在过关时从 `promptScore.total` 中扣除，最低保底 1 分
+- HintPanel header 显示 `-N pts` 标签提醒已使用
+- 付费解密按钮仅在存在锁定项且未使用过时显示
+
 ---
 
 ## 4. 视觉设计
 
 ### 4.1 扫描之眼按钮（Scan Eye）
 
-位置：prompt 输入区（`section.prompt-input`）的右上角，与字符计数同行。
+位置：prompt 输入区（`section.prompt-input`）标题栏右侧，与「✍️ Your Prompt」标题同行。
 
 ```
-┌─ ✍️ Your Prompt ───────────────────── 👁 ─┐
+┌─ prompt-input ────────────────────────────┐
+│ ✍️ Your Prompt       [👁 📡 SIGNAL GUIDANCE] │
 │                                            │
 │  [textarea]                                │
 │                                    12 chars │
 └────────────────────────────────────────────┘
 ```
 
+按钮形态：药丸形（`border-radius: 13px`），包含眼睛 SVG 图标 + 文字标签。
+
 视觉风格：
-- 默认态：半透明的眼睛图标 `👁`，微弱的青色呼吸光效
-- 有新提示解锁时：眼睛发出脉冲光晕（`@keyframes eyePulse`），提示玩家点击
-- 无可用提示时：灰暗禁用态
-- Hover：眼睛图标放大 + 扫描线扫过效果
+- 默认态：半透明青色边框 + 图标，Courier 字体大写文字标签
+- 有新提示解锁时：发出呼吸脉冲光晕（`@keyframes eyeBreathe`），通知圆点闪烁
+- 无可用提示时：灰暗禁用态（`opacity: 0.4`）
+- Hover：图标放大 + 边框发光 + 阴影扩散
 
 CSS class 命名：`.scan-eye-btn`，`.scan-eye-btn--pulse`，`.scan-eye-btn--disabled`
+
+布局：`.prompt-input__header` 使用 `display: flex; justify-content: space-between` 实现标题与按钮的左右对齐。
 
 ### 4.2 promptHints 弹出面板（Scan Eye Panel）
 
 点击扫描之眼后，在输入区下方展开一个面板：
 
 ```
-┌─ 📡 SIGNAL GUIDANCE ─────────────────────┐
+┌─ 📡 SIGNAL GUIDANCE ──────────── -2 pts ─┐
 │                                           │
 │  ▸ 直接告诉 AI 你要匹配什么内容            │
 │  ▸ 提示 AI 区分大小写                      │
 │  ▹ ░░░░░░░░░░░░░░░░  [LOCKED]            │
+│  ▹ ░░░░░░░░░░░░  [LOCKED]                │
+│                                           │
+│         [⚡ 全部解密 [-2 pts]]             │
 │                                           │
 └───────────────────────────────────────────┘
 ```
 
 - 已解锁项：正常显示文字，带 `▸` 前缀
 - 未解锁项：显示扫描线遮罩（`░░░` 占位 + `[LOCKED]` 标签），暗色处理
+- 付费解密按钮：居中显示于锁定项下方，点击后一次性解锁所有 promptHints
+- 已使用付费解密后：按钮消失，header 右侧显示 `-N pts` 扣分标签
 - 展开/收起使用 slide-down 动画
 - 面板边框使用与驾驶舱监视器一致的风格（`border-color` 跟随章节主题色）
 
@@ -120,7 +148,7 @@ CSS class 命名：`.scan-eye-btn`，`.scan-eye-btn--pulse`，`.scan-eye-btn--di
 
 | 模块 | 职责 | 层级 |
 |---|---|---|
-| `HintTracker` | 跟踪每个关卡的失败次数，计算已解锁 hint/promptHint 索引 | Extension（`src/engine/`） |
+| `HintTracker` | 跟踪每个关卡的失败次数和付费解密状态 | Extension（`src/engine/`） |
 | `HintResolver` | 根据 `HintTracker` 状态 + `Level` 数据，生成当前可显示的提示列表 | Extension（`src/engine/`） |
 | `ScanEyeButton` | 扫描之眼 UI 组件（按钮 + 脉冲动画 + 点击事件） | Webview（`webview-ui/src/components/PromptPanel/`） |
 | `HintPanel` | promptHints 弹出面板 UI 组件 | Webview（`webview-ui/src/components/PromptPanel/`） |
@@ -156,14 +184,17 @@ CSS class 命名：`.scan-eye-btn`，`.scan-eye-btn--pulse`，`.scan-eye-btn--di
 export interface IHintTracker {
   /** 记录一次失败 */
   recordFail(levelId: string): void;
-  /** 重置（切换关卡时调用） */
-  reset(levelId: string): void;
   /** 当前关卡失败次数 */
   getFailCount(levelId: string): number;
+  /** 标记为已使用付费解密（一次性，解锁所有锁定的 promptHints） */
+  markPeeked(levelId: string): void;
+  /** 是否已使用付费解密 */
+  hasPeeked(levelId: string): boolean;
 }
 
 export class HintTracker implements IHintTracker {
   private failCounts: Map<string, number> = new Map();
+  private peeked: Set<string> = new Set();
   // ...
 }
 ```
@@ -173,7 +204,7 @@ export class HintTracker implements IHintTracker {
 export interface HintData {
   /** 已解锁的 hints（失败自动解锁） */
   hints: string[];
-  /** 已解锁的 promptHints（主动查看） */
+  /** 已解锁的 promptHints（主动查看 + 付费解密） */
   promptHints: string[];
   /** hints 总数 */
   totalHints: number;
@@ -183,21 +214,36 @@ export interface HintData {
   hasNewHint: boolean;
   /** 是否有新解锁的 promptHint（用于触发扫描之眼脉冲） */
   hasNewPromptHint: boolean;
+  /** 是否已使用付费解密 */
+  hasPeeked: boolean;
+  /** 扣分数值（基于难度，始终返回） */
+  peekPenalty: number;
 }
 
-export function resolveHints(level: Level, failCount: number): HintData;
+/** 难度 → 扣分映射 */
+const DIFFICULTY_PEEK_PENALTY: Record<string, number> = {
+  easy: 1,
+  medium: 2,
+  hard: 5,
+};
+
+export function getPeekPenalty(difficulty: string): number;
+export function resolveHints(level: Level, failCount: number, previousFailCount?: number, peeked?: boolean): HintData;
 ```
 
 ### 6.2 消息协议扩展
 
 ```ts
 // ExtensionMessage 新增：
-| { command: 'updateHints'; hints: HintData }
+| { command: 'updateHints'; hintData: HintData }
+
+// WebViewMessage 新增：
+| { command: 'peekHint'; levelId: string }
 ```
 
 触发时机：
-- `showResult` 且 `status` 为 `fail` / `partial` / `error` 时，紧随 `showResult` 之后发送
-- 关卡加载时发送初始状态（`hints: [], promptHints: [], hasNew*: false`）
+- `updateHints`：`showResult` 且 `status` 为 `fail` / `partial` / `error` 时，紧随 `showResult` 之后发送；关卡加载时发送初始状态；`peekHint` 处理后发送
+- `peekHint`：玩家在 HintPanel 中点击「全部解密」按钮时发送
 
 ### 6.3 Webview 侧
 
@@ -213,7 +259,10 @@ interface ScanEyeButtonProps {
 interface HintPanelProps {
   promptHints: string[];     // 已解锁的 promptHints
   totalCount: number;        // 总数（用于显示锁定占位）
+  hasPeeked: boolean;        // 是否已使用付费解密
+  peekPenalty: number;       // 扣分数值（基于难度）
   visible: boolean;          // 展开/收起状态
+  onPeek: () => void;        // 付费解密回调
 }
 
 // HintAlert props
@@ -240,9 +289,27 @@ interface HintAlertProps {
 │      │                                                   │
 │      ├──▶ postMessage({ command: 'showResult', ... })    │
 │      │                                                   │
-│      ├──▶ hintData = resolveHints(level, failCount)      │
+│      ├──▶ hintData = resolveHints(level, failCount,      │
+│      │                  prevFailCount, hasPeeked)         │
 │      │                                                   │
 │      └──▶ postMessage({ command: 'updateHints', ...})    │
+│                                                          │
+│  Player peeks (付费解密)                                  │
+│      │                                                   │
+│      ▼                                                   │
+│  PromptPanelProvider.handlePeekHint(levelId)             │
+│      │                                                   │
+│      ├──▶ hintTracker.markPeeked(levelId)                │
+│      │                                                   │
+│      └──▶ sendHintState(level) → updateHints             │
+│                                                          │
+│  Player passes (scoring with penalty)                    │
+│      │                                                   │
+│      ▼                                                   │
+│  runDecryptionPipeline(prompt, level, ai, attempt,       │
+│      peekPenalty = hasPeeked ? getPeekPenalty(diff) : 0)  │
+│      └──▶ scorePrompt(..., peekPenalty)                  │
+│           total = max(1, rawTotal - peekPenalty)          │
 │                                                          │
 │  Player loads level                                      │
 │      │                                                   │
@@ -306,9 +373,9 @@ interface HintAlertProps {
 
 | 文件 | 变更 |
 |---|---|
-| `src/types/messages.ts` | `ExtensionMessage` 新增 `updateHints` 消息类型 |
-| `webview-ui/src/types/messages.ts` | 同步 `updateHints` 类型 + 导出 `HintData` |
-| `src/ui/webview/promptPanelProvider.ts` | 注入 `IHintTracker`，失败时发送 hint 数据，加载关卡时发送初始 hint 状态 |
+| `src/types/messages.ts` | `ExtensionMessage` 新增 `updateHints`；`WebViewMessage` 新增 `peekHint`；`HintData` 新增 `hasPeeked` / `peekPenalty` |
+| `webview-ui/src/types/messages.ts` | 同步上述类型变更 |
+| `src/ui/webview/promptPanelProvider.ts` | 注入 `IHintTracker`，失败时发送 hint 数据，加载关卡时发送初始 hint 状态，处理 `peekHint` 消息，过关时传递 `peekPenalty` 给 pipeline |
 | `src/extension.ts` | 创建 `HintTracker` 实例，传入 `PromptPanelProvider` |
 | `webview-ui/src/components/PromptPanel/index.tsx` | 新增 `hintData` state，渲染 `ScanEyeButton`、`HintPanel`、`HintAlert` |
 | `webview-ui/src/i18n/locales/zh-CN.json` | 新增 hint 相关 UI 文案 key |
@@ -318,11 +385,16 @@ interface HintAlertProps {
 
 | 文件 | 原因 |
 |---|---|
-| `src/engine/decryptionPipeline.ts` | 判定逻辑不变 |
-| `src/engine/promptScorer.ts` | 评分逻辑不变，使用提示不扣分 |
 | `src/engine/xpTracker.ts` | XP 计算不变 |
 | `src/engine/comboTracker.ts` | 连击逻辑不变 |
 | `src/data/levels/**/*.json` | hints/promptHints 字段已存在，无需修改 |
+
+### 受影响文件（评分扣分）
+
+| 文件 | 变更 |
+|---|---|
+| `src/engine/promptScorer.ts` | `scorePrompt()` 新增 `peekPenalty` 参数，`total = max(1, rawTotal - peekPenalty)` |
+| `src/engine/decryptionPipeline.ts` | `runDecryptionPipeline()` 新增 `peekPenalty` 参数，透传给 `scorePrompt()` |
 
 ---
 
@@ -334,7 +406,9 @@ interface HintAlertProps {
   "hint.scanGuidance": "📡 SIGNAL GUIDANCE",
   "hint.locked": "[LOCKED]",
   "hint.scanEyeTooltip": "Signal Scanner — View decoded guidance",
-  "hint.noHintsYet": "No intercepted signals yet…"
+  "hint.noHintsYet": "No intercepted signals yet…",
+  "hint.peekButton": "全部解密 / DECRYPT ALL",
+  "hint.peekTooltip": "强制解密所有信号。扣分取决于关卡难度。"
 }
 ```
 
@@ -346,8 +420,8 @@ interface HintAlertProps {
 
 | 测试文件 | 覆盖内容 |
 |---|---|
-| `test/engine/hintTracker.test.ts` | `recordFail` 计数递增、`reset` 归零、多关卡独立计数 |
-| `test/engine/hintResolver.test.ts` | 各失败次数下的解锁索引计算、边界情况（空数组、超出范围）、`hasNewHint` 标记 |
+| `test/engine/hintTracker.test.ts` | `recordFail` 计数递增、多关卡独立计数、`markPeeked` / `hasPeeked` 状态 |
+| `test/engine/hintResolver.test.ts` | 各失败次数下的解锁索引计算、边界情况（空数组、超出范围）、`hasNewHint` 标记、`peeked=true` 时全部解锁、`peekPenalty` 难度映射 |
 
 ### 10.2 验收场景
 
@@ -356,7 +430,9 @@ interface HintAlertProps {
 | 首次失败 | 无 hint 显示，扫描之眼可点击但面板显示 `promptHints[0]` |
 | 第二次失败 | `hints[0]` 出现在结果面板底部（打字机动画），扫描之眼脉冲 |
 | 第三次失败 | `hints[0]` + `hints[1]` 均显示，新的带高亮 |
-| 点击扫描之眼 | 弹出面板显示已解锁的 promptHints，未解锁项显示锁定遮罩 |
+| 点击扫描之眼 | 弹出面板显示已解锁的 promptHints，未解锁项显示锁定遮罩，底部显示「全部解密」按钮 |
+| 点击全部解密 | 所有锁定的 promptHints 立即显示，按钮消失，header 显示 `-N pts` 标签 |
+| 全部解密后过关 | 评分 `total` 扣除对应难度的分数（easy: -1, medium: -2, hard: -5），最低 1 分 |
 | 切换关卡 | hint 面板收起，hintData 重置为该关卡的当前状态 |
 | 通关后重玩 | 失败计数不重置（已解锁的提示保持可见） |
 | hints 为空数组 | HintAlert 不渲染，扫描之眼仅展示 promptHints |
