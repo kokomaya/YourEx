@@ -16,7 +16,8 @@ export async function runDecryptionPipeline(
   prompt: string,
   level: Level,
   aiProvider: IAIProvider,
-  attemptNumber: number
+  attemptNumber: number,
+  peekPenalty: number = 0
 ): Promise<DecryptionResult> {
   const aiResponse = await aiProvider.generate(prompt);
 
@@ -41,7 +42,7 @@ export async function runDecryptionPipeline(
   const judgeResult = judge(extracted.regex, level.input, level.expected);
 
   const passed = judgeResult.status === 'perfect' || judgeResult.status === 'pass';
-  const promptScore = scorePrompt(prompt, attemptNumber, extracted.raw.length, passed);
+  const promptScore = scorePrompt(prompt, attemptNumber, extracted.raw.length, passed, peekPenalty);
 
   return {
     aiResponse,

@@ -100,3 +100,53 @@
   font-style: italic;
   font-size: 11px;
 }
+
+/* ── Penalty badge ── */
+.hint-panel__penalty {
+  margin-left: auto;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  color: rgba(255, 140, 60, 0.85);
+  border: 1px solid rgba(255, 140, 60, 0.3);
+  border-radius: 3px;
+  padding: 1px 6px;
+}
+
+/* ── Peekable locked item ── */
+.hint-panel__item--peekable {
+  opacity: 0.7;
+}
+
+.hint-panel__peek-row {
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 200, 60, 0.1);
+  margin-top: 4px;
+}
+
+.hint-panel__peek-btn {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  color: rgba(255, 200, 60, 0.85);
+  background: rgba(255, 200, 60, 0.08);
+  border: 1px solid rgba(255, 200, 60, 0.3);
+  border-radius: 4px;
+  padding: 4px 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.hint-panel__peek-btn:hover {
+  color: rgba(255, 220, 80, 1);
+  background: rgba(255, 200, 60, 0.15);
+  border-color: rgba(255, 200, 60, 0.5);
+  box-shadow: 0 0 10px rgba(255, 200, 60, 0.2);
+}
+
+.hint-panel__peek-btn:active {
+  transform: scale(0.95);
+}

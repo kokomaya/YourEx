@@ -21,6 +21,7 @@ export type WebViewMessage =
   | { command: 'replayLevel'; levelId: string }
   | { command: 'viewLeaderboard' }
   | { command: 'switchLanguage'; locale: string }
+  | { command: 'peekHint'; levelId: string }
   | { command: 'ready' };
 
 export interface AchievementInfo {
@@ -68,6 +69,10 @@ export interface HintData {
   totalPromptHints: number;
   hasNewHint: boolean;
   hasNewPromptHint: boolean;
+  /** Whether the player has used the one-time peek for this level */
+  hasPeeked: boolean;
+  /** Score penalty for peeking (0 if not peeked) */
+  peekPenalty: number;
 }
 
 // Extension → WebView

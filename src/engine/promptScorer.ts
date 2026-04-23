@@ -9,7 +9,8 @@ export function scorePrompt(
   prompt: string,
   attemptNumber: number,
   regexLength: number,
-  passed: boolean
+  passed: boolean,
+  peekPenalty: number = 0
 ): PromptScore {
   if (!passed) {
     return { total: 0, brevityScore: 0, firstTryScore: 0, eleganceScore: 0, regexQualityScore: 0 };
@@ -20,12 +21,17 @@ export function scorePrompt(
   const eleganceScore = computeElegance(prompt);
   const regexQualityScore = computeRegexQuality(regexLength);
 
-  const total = Math.round(
+  const rawTotal = Math.round(
     brevityScore * WEIGHT_BREVITY +
     firstTryScore * WEIGHT_FIRST_TRY +
     eleganceScore * WEIGHT_ELEGANCE +
     regexQualityScore * WEIGHT_REGEX_QUALITY
   );
+
+  // Apply peek penalty (difficulty-based), floor at 1
+  const total = peekPenalty > 0
+    ? Math.max(1, rawTotal - peekPenalty)
+    : rawTotal;
 
   return { total, brevityScore, firstTryScore, eleganceScore, regexQualityScore };
 }

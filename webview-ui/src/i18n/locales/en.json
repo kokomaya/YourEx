@@ -100,5 +100,7 @@
   "hint.scanGuidance": "SIGNAL GUIDANCE",
   "hint.locked": "[LOCKED]",
   "hint.scanEyeTooltip": "Signal Scanner — View decoded guidance",
-  "hint.noHintsYet": "No intercepted signals yet…"
+  "hint.noHintsYet": "No intercepted signals yet…",
+  "hint.peekButton": "DECRYPT ALL",
+  "hint.peekTooltip": "Force-decrypt all signals. Score penalty based on difficulty."
 }

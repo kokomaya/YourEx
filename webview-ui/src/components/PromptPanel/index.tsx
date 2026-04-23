@@ -242,7 +242,14 @@ export function PromptPanel() {
         <HintPanel
           promptHints={hintData.promptHints}
           totalCount={hintData.totalPromptHints}
+          hasPeeked={hintData.hasPeeked}
+          peekPenalty={hintData.peekPenalty}
           visible={hintPanelOpen}
+          onPeek={() => {
+            if (level) {
+              postMessage({ command: 'peekHint', levelId: level.id });
+            }
+          }}
         />
       )}
 

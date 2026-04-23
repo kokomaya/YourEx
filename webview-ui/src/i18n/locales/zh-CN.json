@@ -100,5 +100,7 @@
   "hint.scanGuidance": "信号引导",
   "hint.locked": "[已加密]",
   "hint.scanEyeTooltip": "信号扫描器 — 查看已解码的引导信息",
-  "hint.noHintsYet": "尚未截获信号…"
+  "hint.noHintsYet": "尚未截获信号…",
+  "hint.peekButton": "全部解密",
+  "hint.peekTooltip": "强制解密所有信号。扣分取决于关卡难度。"
 }

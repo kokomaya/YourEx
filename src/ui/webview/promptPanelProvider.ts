@@ -16,7 +16,7 @@ import { checkAchievements } from '../../engine/achievementManager';
 import { getRexSignal } from '../../story/dialogues';
 import { buildRewardData } from '../../engine/rewardBuilder';
 import type { IHintTracker } from '../../engine/hintTracker';
-import { resolveHints } from '../../engine/hintResolver';
+import { resolveHints, getPeekPenalty } from '../../engine/hintResolver';
 
 export class PromptPanelProvider {
   private _panel: vscode.WebviewPanel | undefined;
@@ -108,9 +108,20 @@ export class PromptPanelProvider {
   private sendHintState(level: Level, isNewFail = false): void {
     if (!this._hintTracker) return;
     const failCount = this._hintTracker.getFailCount(level.id);
+    const peeked = this._hintTracker.hasPeeked(level.id);
     const previousFailCount = isNewFail ? failCount - 1 : failCount;
-    const hintData = resolveHints(level, failCount, previousFailCount);
+    const hintData = resolveHints(level, failCount, previousFailCount, peeked);
     this.postMessage({ command: 'updateHints', hintData });
+  }
+
+  private handlePeekHint(levelId: string): void {
+    if (!this._hintTracker) return;
+    if (this._hintTracker.hasPeeked(levelId)) return; // already peeked
+    const level = getLevelById(levelId);
+    if (!level) return;
+
+    this._hintTracker.markPeeked(levelId);
+    this.sendHintState(level);
   }
 
   private async handleMessage(msg: WebViewMessage): Promise<void> {
@@ -149,6 +160,10 @@ export class PromptPanelProvider {
       case 'switchLanguage':
         vscode.commands.executeCommand('yourex.switchLanguage', msg.locale);
         break;
+
+      case 'peekHint':
+        this.handlePeekHint(msg.levelId);
+        break;
     }
   }
 
@@ -165,6 +180,9 @@ export class PromptPanelProvider {
 
     try {
       const attemptNumber = this._gameState.getLevelAttempts(levelId).length + 1;
+      const peekPenalty = this._hintTracker?.hasPeeked(levelId)
+        ? getPeekPenalty(level.difficulty)
+        : 0;
 
       // Dev mode: skip AI, fake a perfect result
       const result = this._devMode
@@ -179,7 +197,7 @@ export class PromptPanelProvider {
             promptScore: { total: 95, brevityScore: 25, firstTryScore: 25, eleganceScore: 20, regexQualityScore: 25 },
             rawRegex: '/dev-auto-pass/',
           }
-        : await runDecryptionPipeline(prompt, level, this._aiProvider, attemptNumber);
+        : await runDecryptionPipeline(prompt, level, this._aiProvider, attemptNumber, peekPenalty);
 
       const feedback = getFeedbackText(result.judgeResult, level, 'prompt');
       const passed = result.judgeResult.status === 'perfect' || result.judgeResult.status === 'pass';
