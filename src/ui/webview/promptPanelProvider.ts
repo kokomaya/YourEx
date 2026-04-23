@@ -307,8 +307,9 @@ export class PromptPanelProvider {
     const nextCh = chapter + 1;
     const nextChapterLevels = loadChapterLevels(nextCh);
     if (nextChapterLevels.length > 0 && this._gameState?.isChapterUnlocked(nextCh)) {
-      this.loadLevel(nextChapterLevels[0].id);
-      this._onDidUpdate.fire();
+      const nextLevelId = nextChapterLevels[0].id;
+      // Route through openLevel command so interlude screens are triggered correctly
+      vscode.commands.executeCommand('yourex.openLevel', nextLevelId);
       return;
     }
   }
