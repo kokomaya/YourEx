@@ -4,6 +4,7 @@ import type { IAIProvider } from '../../ai/IAIProvider';
 import type { GameStateManager } from '../../state/gameState';
 import type { Level, WebViewMessage, ExtensionMessage } from '../../types';
 import type { Locale } from '../../i18n/types';
+import { t } from '../../i18n';
 import { getLevelById, loadChapterLevels, shouldUnlockNextChapter, getNextChapter, shouldUnlockHiddenChapter, HIDDEN_CHAPTER } from '../../engine/levelLoader';
 import { runDecryptionPipeline, runManualJudge } from '../../engine/decryptionPipeline';
 import { getFeedbackText } from '../feedback';
@@ -452,7 +453,7 @@ export class PromptPanelProvider {
         const next = getNextChapter(level.chapter);
         if (next !== null) {
           this._gameState.unlockChapter(next);
-          vscode.window.showInformationMessage(`🔓 [Chapter ${next} Unlocked] 新的信号频段已解锁！`);
+          vscode.window.showInformationMessage(t('notification.chapterUnlocked', { n: next }));
         }
       }
     }
@@ -478,7 +479,7 @@ export class PromptPanelProvider {
     if (!this._gameState.isChapterUnlocked(HIDDEN_CHAPTER) &&
         shouldUnlockHiddenChapter(this._gameState.state.completedLevels)) {
       this._gameState.unlockChapter(HIDDEN_CHAPTER);
-      vscode.window.showInformationMessage('🌙 [Incoming Signal…] rEx 开始回应你了。隐藏章节已解锁。');
+      vscode.window.showInformationMessage(t('notification.hiddenChapterUnlocked'));
     }
 
     return { xpGained: xp, combo: comboState.combo, newAchievementIds };

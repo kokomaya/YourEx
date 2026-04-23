@@ -7,7 +7,9 @@
   "engines": {
     "vscode": "^1.85.0"
   },
-  "categories": ["Other"],
+  "categories": [
+    "Other"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -67,13 +69,19 @@
       "properties": {
         "yourex.mode.default": {
           "type": "string",
-          "enum": ["user", "developer"],
+          "enum": [
+            "user",
+            "developer"
+          ],
           "default": "user",
           "description": "Default run mode used when no persisted mode exists yet."
         },
         "yourex.language": {
           "type": "string",
-          "enum": ["zh-CN", "en"],
+          "enum": [
+            "zh-CN",
+            "en"
+          ],
           "default": "zh-CN",
           "description": "Display language for YourEx game UI."
         },
@@ -89,7 +97,12 @@
         },
         "yourex.visual.motionLevel": {
           "type": "string",
-          "enum": ["off", "low", "medium", "high"],
+          "enum": [
+            "off",
+            "low",
+            "medium",
+            "high"
+          ],
           "default": "medium",
           "description": "Visual motion intensity level for animated backgrounds and transitions."
         },
