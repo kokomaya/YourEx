@@ -58,6 +58,10 @@ export class PromptPanelProvider {
     this._devMode = devMode ?? false;
   }
 
+  setDevMode(devMode: boolean): void {
+    this._devMode = devMode;
+  }
+
   show(levelId?: string): void {
     if (this._panel) {
       this._panel.reveal();

@@ -82,14 +82,6 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   function getEffectiveMode(mode: RunMode): RunMode {
-    if (
-      context.extensionMode === vscode.ExtensionMode.Development &&
-      defaultMode === 'developer' &&
-      allowDeveloperMode()
-    ) {
-      return 'developer';
-    }
-
     if (mode === 'developer' && !allowDeveloperMode()) {
       return 'user';
     }
@@ -129,6 +121,7 @@ export function activate(context: vscode.ExtensionContext) {
   // --- UI refresh helper ---
   function refreshUI() {
     accessPolicy = createAccessPolicy(getEffectiveMode(modeService.getMode()), gameState);
+    promptPanel.setDevMode(getEffectiveMode(modeService.getMode()) === 'developer');
     sidebarProvider.setAccessPolicy(accessPolicy);
     sidebarProvider.refresh();
     mapDataSource.setAccessPolicy(accessPolicy);
