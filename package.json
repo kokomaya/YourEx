@@ -178,7 +178,7 @@
     "viewsWelcome": [
       {
         "view": "yourex-levels-tree",
-        "contents": "📡 接入未知信号源…\n\n检测到异常信号标记：rEx\n\n[开始解密](command:yourex.startDecryption)\n\n或点击下方关卡列表直接进入。"
+        "contents": "📡 Connecting to unknown signal source…\n\nAnomalous signal marker detected: rEx\n\n[Start Decryption](command:yourex.startDecryption)\n\nOr select a level below to begin."
       }
     ]
   },
