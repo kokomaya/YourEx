@@ -150,8 +150,7 @@ export function PromptPanel() {
   };
 
   const handleManual = () => {
-    if (!level) return;
-    postMessage({ command: 'manualMode', levelId: level.id });
+    postMessage({ command: 'openCodex' });
   };
 
   if (!level) {

@@ -102,5 +102,66 @@
   "hint.scanEyeTooltip": "Signal Scanner — View decoded guidance",
   "hint.noHintsYet": "No intercepted signals yet…",
   "hint.peekButton": "DECRYPT ALL",
-  "hint.peekTooltip": "Force-decrypt all signals. Score penalty based on difficulty."
+  "hint.peekTooltip": "Force-decrypt all signals. Score penalty based on difficulty.",
+
+  "codex.title": "rEx CODEX",
+  "codex.subtitle": "Signal Pattern Reference Manual — Meridian-7 Archives",
+  "codex.footer": "Meridian-7 Signal Analysis Division — Codex v2.7",
+  "codex.colPattern": "Pattern",
+  "codex.colDesc": "Description",
+  "codex.colExample": "Example",
+
+  "codex.section.basic": "Basic Patterns",
+  "codex.section.anchors": "Anchors",
+  "codex.section.quantifiers": "Quantifiers",
+  "codex.section.charclass": "Character Classes",
+  "codex.section.groups": "Groups & References",
+  "codex.section.lookaround": "Lookaround",
+  "codex.section.flags": "Modifiers",
+  "codex.section.advanced": "Advanced",
+
+  "codex.dot": "Match any single character (except newline)",
+  "codex.digit": "Match any digit [0-9]",
+  "codex.nonDigit": "Match any non-digit character",
+  "codex.word": "Match word character [a-zA-Z0-9_]",
+  "codex.nonWord": "Match non-word character",
+  "codex.space": "Match any whitespace (space, tab, newline)",
+  "codex.nonSpace": "Match any non-whitespace character",
+
+  "codex.start": "Match start of string / line",
+  "codex.end": "Match end of string / line",
+  "codex.boundary": "Match word boundary",
+  "codex.nonBoundary": "Match non-word boundary",
+
+  "codex.star": "Zero or more of preceding element",
+  "codex.plus": "One or more of preceding element",
+  "codex.question": "Zero or one of preceding element",
+  "codex.exactN": "Exactly n occurrences",
+  "codex.atLeastN": "n or more occurrences",
+  "codex.range": "Between n and m occurrences",
+  "codex.lazy": "Non-greedy (lazy) — match as few as possible",
+
+  "codex.charSet": "Match any one character in the set",
+  "codex.negCharSet": "Match any character NOT in the set",
+  "codex.charRange": "Match characters in range",
+
+  "codex.captureGroup": "Capture group — group & remember match",
+  "codex.nonCapture": "Non-capturing group — group without capture",
+  "codex.namedGroup": "Named capture group",
+  "codex.backRef": "Backreference to captured group",
+  "codex.namedRef": "Backreference by group name",
+
+  "codex.posLookahead": "Positive lookahead — match if followed by",
+  "codex.negLookahead": "Negative lookahead — match if NOT followed by",
+  "codex.posLookbehind": "Positive lookbehind — match if preceded by",
+  "codex.negLookbehind": "Negative lookbehind — match if NOT preceded by",
+
+  "codex.flagI": "Case-insensitive matching",
+  "codex.flagG": "Global — find all matches",
+  "codex.flagM": "Multi-line — ^ $ match each line",
+  "codex.flagS": "Dotall — dot matches newline",
+
+  "codex.recursion": "Recursive pattern (match nested structures)",
+  "codex.conditional": "Conditional match (if group matched, then…else…)",
+  "codex.resetMatch": "Reset match start — discard left of \\K"
 }

@@ -7,6 +7,7 @@ import { MapDataSource } from './ui/sidebar/missionMap/MapDataSource';
 import { PromptPanelProvider } from './ui/webview/promptPanelProvider';
 import { WelcomeProvider } from './ui/webview/welcomeProvider';
 import { LeaderboardProvider } from './ui/webview/leaderboardProvider';
+import { CodexProvider } from './ui/webview/codexProvider';
 import { StatusBarManager } from './ui/statusbar';
 import { GameStateManager } from './state/gameState';
 import { MockProvider } from './ai/mockProvider';
@@ -121,6 +122,8 @@ export function activate(context: vscode.ExtensionContext) {
   const leaderboardProvider = new LeaderboardProvider(context.extensionUri);
   leaderboardProvider.setGameState(gameState);
   leaderboardProvider.setLocale(initialLocale);
+  const codexProvider = new CodexProvider(context.extensionUri);
+  codexProvider.setLocale(initialLocale);
   const statusBar = new StatusBarManager();
 
   // --- UI refresh helper ---
@@ -217,6 +220,10 @@ export function activate(context: vscode.ExtensionContext) {
       welcomeProvider.show();
     }),
 
+    vscode.commands.registerCommand('yourex.openCodex', () => {
+      codexProvider.show();
+    }),
+
     vscode.commands.registerCommand('yourex.switchLanguage', async (localeArg?: string) => {
       let targetLocale: Locale;
 
@@ -251,6 +258,7 @@ export function activate(context: vscode.ExtensionContext) {
       promptPanel.broadcastLocale(targetLocale);
       welcomeProvider.broadcastLocale(targetLocale);
       leaderboardProvider.broadcastLocale(targetLocale);
+      codexProvider.broadcastLocale(targetLocale);
 
       // Refresh extension-side UI
       refreshUI();

@@ -102,5 +102,66 @@
   "hint.scanEyeTooltip": "信号扫描器 — 查看已解码的引导信息",
   "hint.noHintsYet": "尚未截获信号…",
   "hint.peekButton": "全部解密",
-  "hint.peekTooltip": "强制解密所有信号。扣分取决于关卡难度。"
+  "hint.peekTooltip": "强制解密所有信号。扣分取决于关卡难度。",
+
+  "codex.title": "rEx 密码典",
+  "codex.subtitle": "信号模式参考手册 — 子午线-7 号档案库",
+  "codex.footer": "子午线-7 号信号分析部 — 密码典 v2.7",
+  "codex.colPattern": "模式",
+  "codex.colDesc": "说明",
+  "codex.colExample": "示例",
+
+  "codex.section.basic": "基础模式",
+  "codex.section.anchors": "锚点",
+  "codex.section.quantifiers": "量词",
+  "codex.section.charclass": "字符类",
+  "codex.section.groups": "分组与引用",
+  "codex.section.lookaround": "环视断言",
+  "codex.section.flags": "修饰符",
+  "codex.section.advanced": "高级语法",
+
+  "codex.dot": "匹配任意单个字符（换行符除外）",
+  "codex.digit": "匹配任意数字 [0-9]",
+  "codex.nonDigit": "匹配任意非数字字符",
+  "codex.word": "匹配单词字符 [a-zA-Z0-9_]",
+  "codex.nonWord": "匹配非单词字符",
+  "codex.space": "匹配任意空白字符（空格、制表符、换行）",
+  "codex.nonSpace": "匹配任意非空白字符",
+
+  "codex.start": "匹配字符串 / 行的开头",
+  "codex.end": "匹配字符串 / 行的结尾",
+  "codex.boundary": "匹配单词边界",
+  "codex.nonBoundary": "匹配非单词边界",
+
+  "codex.star": "前一元素出现零次或多次",
+  "codex.plus": "前一元素出现一次或多次",
+  "codex.question": "前一元素出现零次或一次",
+  "codex.exactN": "精确匹配 n 次",
+  "codex.atLeastN": "至少匹配 n 次",
+  "codex.range": "匹配 n 到 m 次",
+  "codex.lazy": "非贪婪（惰性）— 尽可能少匹配",
+
+  "codex.charSet": "匹配集合中的任意一个字符",
+  "codex.negCharSet": "匹配不在集合中的任意字符",
+  "codex.charRange": "匹配范围内的字符",
+
+  "codex.captureGroup": "捕获组 — 分组并记住匹配内容",
+  "codex.nonCapture": "非捕获组 — 分组但不捕获",
+  "codex.namedGroup": "命名捕获组",
+  "codex.backRef": "反向引用已捕获的分组",
+  "codex.namedRef": "按组名进行反向引用",
+
+  "codex.posLookahead": "正向前瞻 — 后面紧跟指定模式时匹配",
+  "codex.negLookahead": "负向前瞻 — 后面不跟指定模式时匹配",
+  "codex.posLookbehind": "正向后顾 — 前面是指定模式时匹配",
+  "codex.negLookbehind": "负向后顾 — 前面不是指定模式时匹配",
+
+  "codex.flagI": "不区分大小写匹配",
+  "codex.flagG": "全局匹配 — 查找所有匹配项",
+  "codex.flagM": "多行模式 — ^ $ 匹配每一行",
+  "codex.flagS": "单行模式 — 点号匹配换行符",
+
+  "codex.recursion": "递归模式（匹配嵌套结构）",
+  "codex.conditional": "条件匹配（若某组已匹配，则…否则…）",
+  "codex.resetMatch": "重置匹配起点 — 丢弃 \\K 左侧内容"
 }

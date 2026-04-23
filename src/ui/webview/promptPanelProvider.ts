@@ -164,6 +164,10 @@ export class PromptPanelProvider {
       case 'peekHint':
         this.handlePeekHint(msg.levelId);
         break;
+
+      case 'openCodex':
+        vscode.commands.executeCommand('yourex.openCodex');
+        break;
     }
   }
 

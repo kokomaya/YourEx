@@ -55,6 +55,11 @@
         "command": "yourex.switchLanguage",
         "title": "Switch Language",
         "category": "YourEx"
+      },
+      {
+        "command": "yourex.openCodex",
+        "title": "Regex Codex",
+        "category": "YourEx"
       }
     ],
     "configuration": {

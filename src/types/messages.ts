@@ -9,7 +9,7 @@ export interface LeaderboardEntry {
   rank: number;
 }
 
-export type WebViewType = 'promptPanel' | 'welcome' | 'leaderboard' | 'scoreDetail';
+export type WebViewType = 'promptPanel' | 'welcome' | 'leaderboard' | 'scoreDetail' | 'codex';
 
 // WebView → Extension
 export type WebViewMessage =
@@ -22,6 +22,7 @@ export type WebViewMessage =
   | { command: 'viewLeaderboard' }
   | { command: 'switchLanguage'; locale: string }
   | { command: 'peekHint'; levelId: string }
+  | { command: 'openCodex' }
   | { command: 'ready' };
 
 export interface AchievementInfo {
