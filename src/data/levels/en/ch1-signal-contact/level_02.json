@@ -1,0 +1,37 @@
+{
+  "id": "level_02",
+  "title": "Signal in Noise",
+  "chapter": 1,
+  "story": "[Meridian-7 Log #002] Signal volume has increased. The data stream is a mix of text and numbers, but you notice a pattern: all lines containing digits originate from the same source. Numbers seem to be the foundational structure of rEx's communication — filter them from the noise.",
+  "difficulty": "easy",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches lines containing at least one digit",
+  "input": [
+    "signal received at 0800",
+    "no data here",
+    "frequency 42.7 MHz",
+    "static noise",
+    "code 3 confirmed",
+    "all quiet"
+  ],
+  "expected": [
+    "signal received at 0800",
+    "frequency 42.7 MHz",
+    "code 3 confirmed"
+  ],
+  "hints": [
+    "[Hint] Valid signals all contain digits",
+    "[Hint] Regex has a shorthand for matching digits",
+    "[Hint] You just need the line to \"contain\" a digit"
+  ],
+  "promptHints": [
+    "Tell the AI you want to match lines \"containing digits\"",
+    "Use \"at least one digit\" to describe the condition",
+    "No need to describe the entire line format, just the presence of digits"
+  ],
+  "feedback": {
+    "onPass": "[Data Filtered] Numbers are the skeleton of rEx's language. You're starting to see the texture of the signal.",
+    "onFail": "[Parse Failed] Signal filtering failed. Did your rules miss some data lines?",
+    "onPerfect": "[Zero-Noise Filter] Perfect. Your filter didn't miss a single valid data packet.",
+    "onDirectWrite": "[Manual Override] Manual noise filtering. Impressive efficiency."
+  }
+}

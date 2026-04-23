@@ -1,0 +1,41 @@
+{
+  "id": "level_12",
+  "title": "Unknown Coordinates",
+  "chapter": 3,
+  "story": "[Meridian-7 Log #012] Coordinate pairs have appeared in the signal — in (number, number) format. Is rEx telling you its location? Or guiding you somewhere? Numbers can be integers or decimals, and precision seems important. Extract all valid coordinates.",
+  "difficulty": "medium",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches the coordinate format (number, number), where numbers can be integers or decimals",
+  "input": [
+    "(3, 4)",
+    "(12.5, 99.9)",
+    "(0, 0)",
+    "(3.14, 2.71)",
+    "3, 4",
+    "(abc, def)",
+    "(1,)",
+    "(7.0, 8.5)"
+  ],
+  "expected": [
+    "(3, 4)",
+    "(12.5, 99.9)",
+    "(0, 0)",
+    "(3.14, 2.71)",
+    "(7.0, 8.5)"
+  ],
+  "hints": [
+    "[Hint] Coordinates are enclosed in parentheses",
+    "[Hint] Numbers can have an optional decimal part",
+    "[Hint] The decimal point and following digits must appear together or not at all"
+  ],
+  "promptHints": [
+    "Describe the complete coordinate format, including parentheses and comma",
+    "Tell the AI that numbers can be integers or decimals",
+    "Hint the AI that the decimal part is optional (? quantifier)"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] Coordinates locked. rEx's signal has a spatial dimension.",
+    "onFail": "[Parse Failed] Coordinate parsing failed. Handling optional parts is the key.",
+    "onPerfect": "[Decryption Success] Spatial coordinates perfectly captured. Masterful use of quantifiers.",
+    "onDirectWrite": "[Manual Override] Manual positioning. Every coordinate is spot-on."
+  }
+}

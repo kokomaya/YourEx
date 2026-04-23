@@ -1,0 +1,39 @@
+{
+  "id": "level_21",
+  "title": "Full Decode",
+  "chapter": 5,
+  "story": "[Meridian-7 日志 #021] rEx 的回应到了。第一批数据很奇怪——有些单词后面紧跟着数字，像是某种标记系统。rEx 说你需要\"向前看\"才能理解：提取所有后面紧跟数字的单词。这是 rEx 语言的高级特性。",
+  "difficulty": "hard",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配后面紧跟数字的单词（不包含数字本身）的正则表达式",
+  "input": [
+    "version3",
+    "signal 42",
+    "rex2026",
+    "hello world",
+    "data99end",
+    "code7",
+    "test"
+  ],
+  "expected": [
+    "version3",
+    "rex2026",
+    "data99end",
+    "code7"
+  ],
+  "hints": [
+    "[Hint] 你需要匹配包含 \"字母后紧跟数字\" 模式的行",
+    "[Hint] 前瞻 (?=...) 可以检查后续内容但不消耗",
+    "[Hint] 或者直接匹配字母+数字的组合"
+  ],
+  "promptHints": [
+    "告诉 AI 目标是包含字母紧跟数字的字符串",
+    "提示 AI 使用前瞻断言",
+    "一句精准的指令比长篇描述更有效"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 前瞻解析成功。你开始\"看\"到信号背后的结构。",
+    "onFail": "[Parse Failed] 前瞻失败。\"看而不取\"——这需要新的思维方式。",
+    "onPerfect": "[Decryption Success] 完美前瞻。你不只是在匹配，你在预判。",
+    "onDirectWrite": "[Manual Override] 手动前瞻。断言对你来说只是工具。"
+  }
+}

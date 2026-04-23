@@ -1,0 +1,39 @@
+{
+  "id": "level_21",
+  "title": "Full Decode",
+  "chapter": 5,
+  "story": "[Meridian-7 Log #021] rEx's response has arrived. The first batch of data is strange — some words are immediately followed by numbers, like some kind of tagging system. rEx says you need to \"look ahead\" to understand: extract all words that are immediately followed by a number. This is an advanced feature of rEx's language.",
+  "difficulty": "hard",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches words immediately followed by a number (without including the number itself)",
+  "input": [
+    "version3",
+    "signal 42",
+    "rex2026",
+    "hello world",
+    "data99end",
+    "code7",
+    "test"
+  ],
+  "expected": [
+    "version3",
+    "rex2026",
+    "data99end",
+    "code7"
+  ],
+  "hints": [
+    "[Hint] You need to match lines containing a \"letter immediately followed by digit\" pattern",
+    "[Hint] Lookahead (?=...) can check what follows without consuming it",
+    "[Hint] Or simply match letter+digit combinations directly"
+  ],
+  "promptHints": [
+    "Tell the AI the target is strings containing letters immediately followed by digits",
+    "Hint the AI to use lookahead assertions",
+    "A single precise instruction is more effective than a lengthy description"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] Lookahead parsing successful. You're beginning to \"see\" the structure behind the signal.",
+    "onFail": "[Parse Failed] Lookahead failed. \"Look but don't take\" — this requires a new way of thinking.",
+    "onPerfect": "[Decryption Success] Perfect lookahead. You're not just matching — you're anticipating.",
+    "onDirectWrite": "[Manual Override] Manual lookahead. Assertions are just tools to you."
+  }
+}

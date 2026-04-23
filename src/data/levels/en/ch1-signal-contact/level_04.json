@@ -1,0 +1,38 @@
+{
+  "id": "level_04",
+  "title": "Echo Pattern",
+  "chapter": 1,
+  "story": "[Meridian-7 Log #004] Strange repeating patterns have appeared in the signal. In some data lines, the same word appears consecutively twice. This isn't a transmission error — rEx seems to use repetition to emphasize key information, like how humans use bold text. Find these \"echoes\".",
+  "difficulty": "medium",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches lines containing consecutive repeated words",
+  "input": [
+    "the the signal repeats",
+    "hello world",
+    "is is this real",
+    "no repeats here",
+    "rEx rEx calling",
+    "almost almost there"
+  ],
+  "expected": [
+    "the the signal repeats",
+    "is is this real",
+    "rEx rEx calling",
+    "almost almost there"
+  ],
+  "hints": [
+    "[Hint] Repetition means: the same word, appearing twice, right next to each other",
+    "[Hint] Regex has a way to \"remember\" previously matched content",
+    "[Hint] Think about word boundaries and backreferences"
+  ],
+  "promptHints": [
+    "Tell the AI you're looking for \"the same word appearing twice consecutively\"",
+    "Hint the AI to use backreferences",
+    "Describe that words are separated by spaces"
+  ],
+  "feedback": {
+    "onPass": "[Echo Resolved] Repetition isn't noise. rEx is emphasizing something...",
+    "onFail": "[Parse Failed] Echo not captured. The repeating structure is more precise than you think.",
+    "onPerfect": "[Perfect Echo] You understood the meaning in the repetition. rEx's emphasis mechanism is cracked.",
+    "onDirectWrite": "[Manual Override] Manual echo decoding. Impressive."
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "id": "level_15",
+  "title": "Memory Blocks",
+  "chapter": 3,
+  "story": "[Meridian-7 Log #015] rEx's data stream contains string blocks surrounded by quotation marks — these are \"memory blocks\" in rEx's language. But escaped quotes may be nested inside the quotes. You must extract each memory block completely, without omission or truncation. This is the last key to understanding rEx's syntax.",
+  "difficulty": "hard",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches double-quoted strings (supporting \\\" escapes)",
+  "input": [
+    "\"hello world\"",
+    "\"say \\\"hi\\\"\"",
+    "no quotes here",
+    "\"\"",
+    "\"rEx signal data\"",
+    "half \" quote",
+    "\"escaped \\\\ backslash\""
+  ],
+  "expected": [
+    "\"hello world\"",
+    "\"say \\\"hi\\\"\"",
+    "\"\"",
+    "\"rEx signal data\"",
+    "\"escaped \\\\ backslash\""
+  ],
+  "hints": [
+    "[Hint] Strings start and end with double quotes",
+    "[Hint] The middle can contain escape characters \\\\ or \\\"",
+    "[Hint] Non-greedy matching may incorrectly truncate"
+  ],
+  "promptHints": [
+    "Describe the string's delimiters and escape rules",
+    "Tell the AI it needs to handle escaped characters inside quotes",
+    "Hint the AI to use [^\\\\\\\"] or alternation for the content"
+  ],
+  "feedback": {
+    "onPass": "[Syntax Awakening] Chapter Three complete. String capture mastered.",
+    "onFail": "[Parse Failed] String capture failed. Escape handling is the core of this challenge.",
+    "onPerfect": "[Syntax Awakening] You can now read rEx's complete sentences. It's time to start the conversation.",
+    "onDirectWrite": "[Manual Override] Manual capture. Chapter Three — Syntax Awakening complete."
+  }
+}

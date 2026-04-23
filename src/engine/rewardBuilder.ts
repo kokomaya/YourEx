@@ -4,22 +4,17 @@ import type { PromptScore } from '../types/score';
 import { loadChapterLevels, TOTAL_CHAPTERS, HIDDEN_CHAPTER } from './levelLoader';
 import { getAchievements } from './achievementManager';
 import { DIALOGUES } from '../story/dialogues';
+import { t } from '../i18n';
 
-const CHAPTER_NAMES: Record<number, string> = {
-  1: '信号接触',
-  2: '模式识别',
-  3: '语法觉醒',
-  4: '通信建立',
-  5: 'rEx 的回应',
-  6: '起源',
-};
+function getChapterName(ch: number): string {
+  return t(`reward.chapterName.${ch}`);
+}
 
-const CHAPTER_PREVIEW: Record<number, string> = {
-  2: '>> 信号恢复了，而且更强了。rEx 在测试你。',
-  3: '>> rEx 的信号发生了质变——它开始跟你说话了。',
-  4: '>> 是时候发出求救了。Meridian-7 燃料仅剩 0.8%。',
-  5: '>> ……回应来了。rEx 收到了你的消息。',
-};
+function getChapterPreview(ch: number): string | null {
+  const key = `reward.chapterPreview.${ch}`;
+  const val = t(key);
+  return val !== key ? val : null;
+}
 
 export interface AchievementInfo {
   id: string;
@@ -120,7 +115,7 @@ export function buildRewardData(
 
     chapterSummary = {
       chapter,
-      chapterName: CHAPTER_NAMES[chapter] ?? `Chapter ${chapter}`,
+      chapterName: getChapterName(chapter),
       completeLine: DIALOGUES.chapterComplete[chapter] ?? '',
       levelsCompleted: chapterLevels.length,
       levelsPerfect,
@@ -129,7 +124,7 @@ export function buildRewardData(
       bestCombo: state.maxCombo,
       achievements: unlockedAchievements,
       nextChapter,
-      nextChapterIntro: nextIntroDialogue?.lines[0] ?? CHAPTER_PREVIEW[nextChapter ?? 0] ?? null,
+      nextChapterIntro: nextIntroDialogue?.lines[0] ?? getChapterPreview(nextChapter ?? 0),
     };
 
     // Game/Origin complete extras

@@ -2,15 +2,11 @@ import * as vscode from 'vscode';
 import { loadChapterLevels, TOTAL_CHAPTERS, HIDDEN_CHAPTER } from '../../engine/levelLoader';
 import type { GameStateManager } from '../../state/gameState';
 import type { IAccessPolicy } from '../../access/IAccessPolicy';
+import { t } from '../../i18n';
 
-const CHAPTER_NAMES: Record<number, string> = {
-  1: '📡 Signal Contact',
-  2: '🔍 Pattern Recognition',
-  3: '⚡ Syntax Awakening',
-  4: '🛰️ Transmission',
-  5: '🌌 rEx',
-  6: '👁️ Origin Frame',
-};
+function getChapterName(ch: number): string {
+  return t(`sidebar.chapter.${ch}`);
+}
 
 export class SidebarProvider implements vscode.TreeDataProvider<SidebarItem> {
   private _onDidChangeTreeData = new vscode.EventEmitter<SidebarItem | undefined>();
@@ -61,7 +57,7 @@ export class SidebarProvider implements vscode.TreeDataProvider<SidebarItem> {
 
     for (const ch of chapterNumbers) {
       const unlocked = this._accessPolicy!.isChapterUnlocked(ch);
-      const name = CHAPTER_NAMES[ch] ?? `Chapter ${ch}`;
+      const name = getChapterName(ch);
       const baseLabel = `Ch.${ch} ${name}`;
       const label = isDeveloperMode ? `🛠️ ${baseLabel}` : baseLabel;
 
@@ -75,7 +71,7 @@ export class SidebarProvider implements vscode.TreeDataProvider<SidebarItem> {
       item.chapterNumber = ch;
 
       if (!unlocked) {
-        item.tooltip = '完成前一章以解锁';
+        item.tooltip = t('sidebar.chapterLocked');
       }
 
       items.push(item);

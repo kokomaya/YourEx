@@ -1,0 +1,38 @@
+{
+  "id": "level_09",
+  "title": "Partial Truth",
+  "chapter": 2,
+  "story": "[Meridian-7 Log #009] Timestamps have appeared in the data packets, formatted as YYYY-MM-DD. Does rEx use a calendar similar to humans? Or... are these timestamps formatted so you can understand them? Not all data that looks like dates is valid — you must filter out corrupted entries.",
+  "difficulty": "medium",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches dates in YYYY-MM-DD format (month 01-12, day 01-31)",
+  "input": [
+    "2024-01-15",
+    "2023-12-31",
+    "2024-13-01",
+    "2024-00-15",
+    "2024-06-32",
+    "2024-02-28",
+    "not-a-date"
+  ],
+  "expected": [
+    "2024-01-15",
+    "2023-12-31",
+    "2024-02-28"
+  ],
+  "hints": [
+    "[Hint] Month can only be 01 to 12",
+    "[Hint] Day can only be 01 to 31",
+    "[Hint] You need character ranges to restrict valid digit values"
+  ],
+  "promptHints": [
+    "Tell the AI the exact date format and valid ranges",
+    "Clarify the upper and lower bounds for month and day",
+    "Have the AI note boundary values: 00 is not a valid month"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] Timestamps recognized. rEx's signal has a temporal dimension.",
+    "onFail": "[Parse Failed] Date validation failed. Your constraints need to be more precise.",
+    "onPerfect": "[Decryption Success] Timeline perfectly aligned. Every date is a coordinate.",
+    "onDirectWrite": "[Manual Override] Manual time calibration. Your regex is precise to the day."
+  }
+}

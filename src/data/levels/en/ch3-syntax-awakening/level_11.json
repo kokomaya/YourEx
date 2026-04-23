@@ -1,0 +1,40 @@
+{
+  "id": "level_11",
+  "title": "Time Signature",
+  "chapter": 3,
+  "story": "[Meridian-7 Log #011] rEx has sent a set of timestamps in HH:MM format (24-hour). What do these time points mean? Perhaps they mark rEx's civilization's daily cycle, or perhaps a designated communication window. First extract all valid times — accurate reading is the prerequisite for understanding meaning.",
+  "difficulty": "medium",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches 24-hour format times (HH:MM, e.g., 09:30, 23:59)",
+  "input": [
+    "09:30",
+    "23:59",
+    "00:00",
+    "24:00",
+    "12:60",
+    "3:45",
+    "15:30",
+    "99:99"
+  ],
+  "expected": [
+    "09:30",
+    "23:59",
+    "00:00",
+    "15:30"
+  ],
+  "hints": [
+    "[Hint] Hour range is 00-23",
+    "[Hint] Minute range is 00-59",
+    "[Hint] You need to constrain hours and minutes separately"
+  ],
+  "promptHints": [
+    "Tell the AI the exact time format and valid ranges",
+    "Clarify the numeric constraints for hours and minutes",
+    "Note that 24:00 and 12:60 are both invalid"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] Time synchronized. The signal now has a timeline.",
+    "onFail": "[Parse Failed] Time format error. Your constraints don't cover all boundaries.",
+    "onPerfect": "[Decryption Success] Perfect synchronization. Every timestamp is precise to the minute.",
+    "onDirectWrite": "[Manual Override] Manual time calibration. Time is no problem for you."
+  }
+}

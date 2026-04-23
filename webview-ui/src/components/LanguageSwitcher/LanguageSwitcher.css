@@ -1,0 +1,77 @@
+/* ── Language Switcher Button ── */
+.language-switcher-btn {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid rgba(0, 255, 160, 0.3);
+  border-radius: 4px;
+  background: rgba(0, 10, 8, 0.75);
+  color: rgba(0, 255, 160, 0.85);
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+
+.language-switcher-btn:hover {
+  border-color: rgba(0, 255, 160, 0.7);
+  background: rgba(0, 255, 160, 0.1);
+  box-shadow: 0 0 12px rgba(0, 255, 160, 0.2), inset 0 0 8px rgba(0, 255, 160, 0.05);
+  color: #00ffa0;
+}
+
+.language-switcher-btn:active {
+  transform: scale(0.96);
+}
+
+.language-switcher-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.lang-icon {
+  font-size: 14px;
+}
+
+.lang-label {
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
+/* ── Binary Transition Overlay ── */
+.binary-transition-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  pointer-events: none;
+}
+
+.binary-transition-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Scanline effect on top of canvas */
+.binary-transition-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+  pointer-events: none;
+}

@@ -2,12 +2,23 @@ import * as vscode from 'vscode';
 import { getWebviewContent, getVisualConfigFromSettings } from './webviewHelper';
 import type { GameStateManager } from '../../state/gameState';
 import { computeLeaderboard } from '../../engine/leaderboard';
+import type { Locale } from '../../i18n/types';
 
 export class LeaderboardProvider {
   private _panel: vscode.WebviewPanel | undefined;
   private _gameState: GameStateManager | undefined;
+  private _locale: Locale = 'zh-CN';
 
   constructor(private readonly _extensionUri: vscode.Uri) {}
+
+  setLocale(locale: Locale): void {
+    this._locale = locale;
+  }
+
+  broadcastLocale(locale: Locale): void {
+    this._locale = locale;
+    this._panel?.webview.postMessage({ command: 'localeChanged', locale });
+  }
 
   setGameState(gameState: GameStateManager): void {
     this._gameState = gameState;
@@ -35,7 +46,8 @@ export class LeaderboardProvider {
       this._panel.webview,
       this._extensionUri,
       'leaderboard',
-      getVisualConfigFromSettings()
+      getVisualConfigFromSettings(),
+      this._locale
     );
 
     this._panel.webview.onDidReceiveMessage((msg) => {

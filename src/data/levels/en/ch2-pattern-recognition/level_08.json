@@ -1,0 +1,39 @@
+{
+  "id": "level_08",
+  "title": "Encoded Digits",
+  "chapter": 2,
+  "story": "[Meridian-7 Log #008] rEx uses a numeric encoding system prefixed with \"0x\" — strikingly similar to human hexadecimal format. Perhaps mathematics truly is the universal language. Extract all valid rEx numeric values from the data stream.",
+  "difficulty": "medium",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches hexadecimal numbers (e.g., 0xFF, 0x1A2B)",
+  "input": [
+    "0xFF",
+    "0x1A2B",
+    "0xGG",
+    "xFF",
+    "0x0",
+    "0x00FF00",
+    "123456"
+  ],
+  "expected": [
+    "0xFF",
+    "0x1A2B",
+    "0x0",
+    "0x00FF00"
+  ],
+  "hints": [
+    "[Hint] Hexadecimal numbers start with 0x",
+    "[Hint] Valid hexadecimal characters are 0-9 and A-F (including lowercase)",
+    "[Hint] At least one hexadecimal digit is required"
+  ],
+  "promptHints": [
+    "Describe the prefix and allowed characters of hexadecimal numbers",
+    "Tell the AI the valid range is [0-9a-fA-F]",
+    "Clarify that the 0x prefix is mandatory"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] Encoded values decrypted. The numeric rules are becoming clear.",
+    "onFail": "[Parse Failed] Encoding recognition failed. Hexadecimal rules are stricter than you think.",
+    "onPerfect": "[Decryption Success] Precise extraction. rEx's numeric encoding has nowhere to hide.",
+    "onDirectWrite": "[Manual Override] Manual decoding. You read hexadecimal directly."
+  }
+}

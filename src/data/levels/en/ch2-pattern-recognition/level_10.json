@@ -1,0 +1,40 @@
+{
+  "id": "level_10",
+  "title": "Repeat Protocol",
+  "chapter": 2,
+  "story": "[Meridian-7 Log #010] rEx's encoding includes a repetition protocol: certain signals consist of the same character repeated 3-5 times. Is this a compression format, or a form of emotional expression? Either way, you need to extract these repeating patterns precisely from the data. This is rEx's final test for you.",
+  "difficulty": "hard",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches strings composed of the same letter repeated 3-5 times",
+  "input": [
+    "aaa",
+    "BBBBB",
+    "cccc",
+    "dd",
+    "EEEEEE",
+    "abcabc",
+    "fff",
+    "xy"
+  ],
+  "expected": [
+    "aaa",
+    "BBBBB",
+    "cccc",
+    "fff"
+  ],
+  "hints": [
+    "[Hint] You need to match the repetition of the \"same\" letter",
+    "[Hint] Backreferences can match previously captured content",
+    "[Hint] The quantifier {n,m} can specify repetition count"
+  ],
+  "promptHints": [
+    "Tell the AI you want to match repetition of the same letter, not just any letters",
+    "Hint the AI to use backreferences to ensure letter consistency",
+    "Clarify the repetition range is 3 to 5"
+  ],
+  "feedback": {
+    "onPass": "[Test Passed] Repetition protocol cracked. All Chapter Two signals parsed.",
+    "onFail": "[Parse Failed] Repetition pattern recognition failed. Same-letter repetition differs from random letters.",
+    "onPerfect": "[Test Passed] You've mastered all of rEx's encoding rules. It seems... satisfied.",
+    "onDirectWrite": "[Manual Override] Manual protocol breach. Chapter Two, an elegant close."
+  }
+}

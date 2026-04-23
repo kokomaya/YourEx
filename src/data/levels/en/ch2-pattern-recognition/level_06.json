@@ -1,0 +1,38 @@
+{
+  "id": "level_06",
+  "title": "Hidden Token",
+  "chapter": 2,
+  "story": "[Meridian-7 Log #006] The signal surged. rEx has sent a new data stream, more structured than before. You notice 8-character codes scattered throughout — composed of uppercase letters and digits. These look like rEx's authentication tokens. Perhaps you need to prove you \"understand\" before the conversation can continue.",
+  "difficulty": "easy",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches exactly 8-character strings composed of uppercase letters and digits",
+  "input": [
+    "TOKEN: AB12CD34",
+    "token: ab12cd34",
+    "CODE: ABCD1234",
+    "invalid: ABC123",
+    "noise data here",
+    "KEY: X9Y8Z7W6",
+    "ABCDEFGHIJ"
+  ],
+  "expected": [
+    "TOKEN: AB12CD34",
+    "CODE: ABCD1234",
+    "KEY: X9Y8Z7W6"
+  ],
+  "hints": [
+    "[Hint] Tokens consist only of uppercase letters and digits",
+    "[Hint] The length is exactly 8 characters",
+    "[Hint] The character class [A-Z0-9] describes the valid characters"
+  ],
+  "promptHints": [
+    "Tell the AI the token's character range and exact length",
+    "Use {n} to specify exact length",
+    "Describe what types of characters the token consists of"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] Tokens extracted. The data is starting to make sense.",
+    "onFail": "[Parse Failed] Token unrecognized. Your rules need a more precise character range.",
+    "onPerfect": "[Decryption Success] Precise hit. You're beginning to understand rEx's encoding rules.",
+    "onDirectWrite": "[Manual Override] Manual token extraction. Character classes mastered."
+  }
+}

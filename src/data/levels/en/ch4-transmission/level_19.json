@@ -1,0 +1,41 @@
+{
+  "id": "level_19",
+  "title": "Corrupted Packet",
+  "chapter": 4,
+  "story": "[Meridian-7 Log #019] The communication channel is unstable. Some data packets were corrupted during transmission. You need to extract valid IPv4 addresses — four groups of 0-255 numbers separated by dots. Corrupted data contains out-of-range values that must be precisely filtered. Meridian-7's network module needs these addresses to establish relay links.",
+  "difficulty": "hard",
+  "promptChallenge": "Write a prompt to have AI generate a regex that precisely matches IPv4 addresses (each segment 0-255)",
+  "input": [
+    "192.168.1.1",
+    "10.0.0.1",
+    "256.1.1.1",
+    "0.0.0.0",
+    "255.255.255.255",
+    "192.168.1.999",
+    "1.2.3",
+    "172.16.0.100"
+  ],
+  "expected": [
+    "192.168.1.1",
+    "10.0.0.1",
+    "0.0.0.0",
+    "255.255.255.255",
+    "172.16.0.100"
+  ],
+  "hints": [
+    "[Hint] Each segment's number range is 0-255",
+    "[Hint] 250-255, 200-249, 0-199 need to be handled separately",
+    "[Hint] This is one of the most classic challenges in regex"
+  ],
+  "promptHints": [
+    "Tell the AI the exact format of IPv4 and the numeric range of each segment",
+    "Hint the AI to handle different numeric ranges segment by segment",
+    "Use few-shot examples: 192.168.1.1 is valid, 256.1.1.1 is not"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] Corrupted data filtered. Only valid addresses remain.",
+    "onFail": "[Parse Failed] Filtering failed. Numbers above 255 are not valid addresses.",
+    "onPerfect": "[Decryption Success] Perfect filtering. Range validation precise to every segment.",
+    "onDirectWrite": "[Manual Override] Manual packet repair. IPv4 is just basic work for you."
+  }
+}

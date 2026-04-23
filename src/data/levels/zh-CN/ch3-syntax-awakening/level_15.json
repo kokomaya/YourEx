@@ -1,0 +1,40 @@
+{
+  "id": "level_15",
+  "title": "Memory Blocks",
+  "chapter": 3,
+  "story": "[Meridian-7 日志 #015] rEx 的数据流中包含被引号包围的字符串块——这是 rEx 语言中的\"记忆块\"。但引号内部可能嵌套转义的引号。你必须完整提取每个记忆块，不遗漏、不截断。这是理解 rEx 语法的最后一个关键。",
+  "difficulty": "hard",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配双引号字符串（支持 \\\" 转义）的正则表达式",
+  "input": [
+    "\"hello world\"",
+    "\"say \\\"hi\\\"\"",
+    "no quotes here",
+    "\"\"",
+    "\"rEx signal data\"",
+    "half \" quote",
+    "\"escaped \\\\ backslash\""
+  ],
+  "expected": [
+    "\"hello world\"",
+    "\"say \\\"hi\\\"\"",
+    "\"\"",
+    "\"rEx signal data\"",
+    "\"escaped \\\\ backslash\""
+  ],
+  "hints": [
+    "[Hint] 字符串以双引号开始和结束",
+    "[Hint] 中间可以包含转义字符 \\\\ 或 \\\"",
+    "[Hint] 非贪婪匹配可能会误截断"
+  ],
+  "promptHints": [
+    "描述字符串的起止符号和转义规则",
+    "告诉 AI 需要处理引号内的转义字符",
+    "提示 AI 使用 [^\\\\\"] 或交替来处理内容"
+  ],
+  "feedback": {
+    "onPass": "[语法觉醒] 第三章完成。字符串捕获已掌握。",
+    "onFail": "[Parse Failed] 字符串捕获失败。转义处理是这道题的核心。",
+    "onPerfect": "[语法觉醒] 你已经能读懂 rEx 的完整句子了。是时候开始对话了。",
+    "onDirectWrite": "[Manual Override] 手动捕获。第三章，语法觉醒完成。"
+  }
+}

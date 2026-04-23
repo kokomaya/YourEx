@@ -50,6 +50,11 @@
         "command": "yourex.showCurrentMode",
         "title": "Show Current Mode",
         "category": "YourEx"
+      },
+      {
+        "command": "yourex.switchLanguage",
+        "title": "Switch Language",
+        "category": "YourEx"
       }
     ],
     "configuration": {
@@ -60,6 +65,12 @@
           "enum": ["user", "developer"],
           "default": "user",
           "description": "Default run mode used when no persisted mode exists yet."
+        },
+        "yourex.language": {
+          "type": "string",
+          "enum": ["zh-CN", "en"],
+          "default": "zh-CN",
+          "description": "Display language for YourEx game UI."
         },
         "yourex.mode.allowDeveloper": {
           "type": "boolean",

@@ -1,0 +1,41 @@
+{
+  "id": "level_17",
+  "title": "Protocol Sync",
+  "chapter": 4,
+  "story": "[Meridian-7 Log #017] rEx replied with a set of key-value pair data — this is its information exchange format. key=value, where key consists of lowercase letters, and value is either a number or a quoted string. You need to parse each pair accurately to understand the parameters rEx sent.",
+  "difficulty": "medium",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches key=value pairs (key is lowercase letters, value is a number or quoted string)",
+  "input": [
+    "name=\"rEx\"",
+    "version=42",
+    "signal=\"active\"",
+    "Name=invalid",
+    "=nokey",
+    "status=1",
+    "data=\"test data\"",
+    "bad_key=123"
+  ],
+  "expected": [
+    "name=\"rEx\"",
+    "version=42",
+    "signal=\"active\"",
+    "status=1",
+    "data=\"test data\""
+  ],
+  "hints": [
+    "[Hint] key consists only of lowercase letters (no underscores, no digits)",
+    "[Hint] value is either pure digits or a quoted string",
+    "[Hint] Use grouping and alternation to handle the two value formats"
+  ],
+  "promptHints": [
+    "Describe the rules for key and value step by step",
+    "Tell the AI that value has two possible formats",
+    "Use (pattern1|pattern2) to express alternation"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] Key-value protocol synced. Data transmission format mastered.",
+    "onFail": "[Parse Failed] Protocol mismatch. You need to handle both value formats simultaneously.",
+    "onPerfect": "[Decryption Success] Protocol perfectly synced. A precise combination of grouping and alternation.",
+    "onDirectWrite": "[Manual Override] Manual protocol sync. Combining rules is second nature to you."
+  }
+}

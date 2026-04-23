@@ -1,0 +1,42 @@
+{
+  "id": "level_18",
+  "title": "Nested Signal",
+  "chapter": 4,
+  "story": "[Meridian-7 日志 #018] rEx 发来了指令序列——函数调用格式的嵌套结构。send(42)、decode(\"signal\")、process(100)…… 这是 rEx 在指导你做什么？还是在测试你能否执行它的指令？先准确解析所有合法的指令。",
+  "difficulty": "hard",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配函数调用格式 funcName(args) 的正则表达式",
+  "input": [
+    "send(42)",
+    "decode(\"signal\")",
+    "process(100)",
+    "123(invalid)",
+    "noParens",
+    "parse(\"data\", 5)",
+    "init()",
+    "log(0)"
+  ],
+  "expected": [
+    "send(42)",
+    "decode(\"signal\")",
+    "process(100)",
+    "parse(\"data\", 5)",
+    "init()",
+    "log(0)"
+  ],
+  "hints": [
+    "[Hint] 函数名以字母开头",
+    "[Hint] 括号内可以有零个或多个参数",
+    "[Hint] 参数可以是数字或带引号的字符串"
+  ],
+  "promptHints": [
+    "描述函数调用的结构：名称 + 括号 + 参数",
+    "告诉 AI 参数列表可以为空",
+    "用 Few-shot 示例帮助 AI 理解格式"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 函数调用已识别。嵌套结构正在被解析。",
+    "onFail": "[Parse Failed] 嵌套解析失败。函数调用的结构需要更精确的描述。",
+    "onPerfect": "[Decryption Success] 完美嵌套解析。你的指令越来越结构化。",
+    "onDirectWrite": "[Manual Override] 手动解析嵌套。复杂结构也不在话下。"
+  }
+}

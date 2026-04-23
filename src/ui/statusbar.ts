@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import type { RunMode } from '../mode/runMode';
+import { t } from '../i18n';
 
 export class StatusBarManager {
   private _item: vscode.StatusBarItem;
@@ -13,12 +14,12 @@ export class StatusBarManager {
   }
 
   update(xp: number, combo: number, decryptPercent: number, mode: RunMode = 'user'): void {
-    const comboText = combo > 0 ? ` | $(zap) x${combo}` : '';
-    const modeText = mode === 'developer' ? ' [DEV]' : '';
-    this._item.text = `$(radio-tower) XP: ${xp}${comboText} | Decrypt: ${decryptPercent}%${modeText}`;
+    const comboText = combo > 0 ? t('statusbar.combo', { combo }) : '';
+    const modeText = mode === 'developer' ? t('statusbar.devTag') : '';
+    this._item.text = t('statusbar.progress', { xp, comboText, percent: decryptPercent, modeText });
     this._item.tooltip = mode === 'developer'
-      ? 'YourEx — Signal Progress (Developer Mode)'
-      : 'YourEx — Signal Progress';
+      ? t('statusbar.tooltip.dev')
+      : t('statusbar.tooltip');
     this._item.show();
   }
 

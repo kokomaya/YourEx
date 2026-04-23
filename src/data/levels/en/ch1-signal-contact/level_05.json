@@ -1,0 +1,39 @@
+{
+  "id": "level_05",
+  "title": "Still There?",
+  "chapter": 1,
+  "story": "[Meridian-7 Log #005] The signal is fading. In the last batch of parseable data, you notice some lines end with \".signal\" — this appears to be rEx's communication signature, like the closing of a human letter. If you can't finish parsing before the signal disappears entirely... hurry.",
+  "difficulty": "medium",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches lines ending with \".signal\"",
+  "input": [
+    "data.signal",
+    "noise.txt",
+    "rEx.transmission.signal",
+    "signal.lost",
+    "incoming.signal",
+    "false.signals",
+    "end.signal"
+  ],
+  "expected": [
+    "data.signal",
+    "rEx.transmission.signal",
+    "incoming.signal",
+    "end.signal"
+  ],
+  "hints": [
+    "[Hint] You're focused on the \"end\" of the line",
+    "[Hint] Regex has a symbol for \"end of line\"",
+    "[Hint] Note: \".signals\" and \".signal\" are different"
+  ],
+  "promptHints": [
+    "Tell the AI you want to match strings ending with a specific suffix",
+    "Clarify the suffix is \".signal\" not just \"signal\"",
+    "Hint the AI to use an end-of-line anchor"
+  ],
+  "feedback": {
+    "onPass": "[Signature Confirmed] Signal format locked. You've confirmed rEx's existence — now you need to learn its language.",
+    "onFail": "[Parse Failed] Signature unrecognized. End-matching requires more precise rules.",
+    "onPerfect": "[Perfect Closure] Chapter One complete. The signal is no longer noise — it's the beginning of a conversation.",
+    "onDirectWrite": "[Manual Override] Manual signature recognition. Chapter One, a perfect close."
+  }
+}

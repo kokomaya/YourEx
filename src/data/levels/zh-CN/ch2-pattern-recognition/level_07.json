@@ -1,0 +1,40 @@
+{
+  "id": "level_07",
+  "title": "Broken Syntax",
+  "chapter": 2,
+  "story": "[Meridian-7 日志 #007] rEx 的数据中开始出现结构化标识符。有些以字母或下划线开头、后接字母数字的组合——这像是 rEx 语言中的\"变量名\"。但混在其中的有很多不合法的格式。你需要学会分辨。",
+  "difficulty": "easy",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配合法变量名（以字母或下划线开头）的正则表达式",
+  "input": [
+    "_init",
+    "var1",
+    "2ndValue",
+    "my_var_name",
+    "$special",
+    "camelCase",
+    "123",
+    "hello-world"
+  ],
+  "expected": [
+    "_init",
+    "var1",
+    "my_var_name",
+    "camelCase"
+  ],
+  "hints": [
+    "[Hint] 变量名的第一个字符有限制",
+    "[Hint] 数字不能作为开头",
+    "[Hint] [^...] 可以排除不需要的字符"
+  ],
+  "promptHints": [
+    "描述变量名的规则：什么字符可以开头",
+    "告诉 AI 排除以数字或特殊符号开头的情况",
+    "明确哪些字符可以出现在变量名中"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 语法结构已识别。rEx 的变量命名有规律。",
+    "onFail": "[Parse Failed] 语法解析失败。注意首字符的约束。",
+    "onPerfect": "[Decryption Success] 完美解析。字符类的力量开始显现。",
+    "onDirectWrite": "[Manual Override] 手动解析语法。你对字符类了如指掌。"
+  }
+}

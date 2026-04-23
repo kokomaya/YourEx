@@ -1,0 +1,38 @@
+{
+  "id": "level_09",
+  "title": "Partial Truth",
+  "chapter": 2,
+  "story": "[Meridian-7 日志 #009] 数据包中出现了时间标记，格式是 YYYY-MM-DD。rEx 竟然使用和人类相似的历法？还是说……这些时间戳是为了让你能看懂？不是所有看起来像日期的数据都合法——你必须过滤掉损坏的条目。",
+  "difficulty": "medium",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配 YYYY-MM-DD 格式日期的正则表达式（月份 01-12，日期 01-31）",
+  "input": [
+    "2024-01-15",
+    "2023-12-31",
+    "2024-13-01",
+    "2024-00-15",
+    "2024-06-32",
+    "2024-02-28",
+    "not-a-date"
+  ],
+  "expected": [
+    "2024-01-15",
+    "2023-12-31",
+    "2024-02-28"
+  ],
+  "hints": [
+    "[Hint] 月份只能是 01 到 12",
+    "[Hint] 日期只能是 01 到 31",
+    "[Hint] 你需要用字符范围限制数字的有效值"
+  ],
+  "promptHints": [
+    "告诉 AI 日期的精确格式和有效范围",
+    "明确月份和日期的上下限",
+    "让 AI 注意边界值：00 不是合法月份"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 时间标记已识别。rEx 的信号有时间维度。",
+    "onFail": "[Parse Failed] 日期验证失败。你的约束条件需要更精确。",
+    "onPerfect": "[Decryption Success] 时间线完美对齐。每个日期都是一个坐标。",
+    "onDirectWrite": "[Manual Override] 手动校准时间。你的正则精确到每一天。"
+  }
+}

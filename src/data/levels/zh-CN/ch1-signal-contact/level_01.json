@@ -1,0 +1,38 @@
+{
+  "id": "level_01",
+  "title": "Hello, rEx",
+  "chapter": 1,
+  "story": "[Meridian-7 日志 #001] 传感器在白噪声中捕获到一段微弱的重复信号。在大量杂波数据中，同一个词反复出现——\"hello\"。这是某种打招呼的方式吗？你需要从噪声中精确定位这个词。",
+  "difficulty": "easy",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配包含 \"hello\" 的行的正则表达式",
+  "input": [
+    "hello world",
+    "say hello to rEx",
+    "goodbye cruel world",
+    "HELLO there",
+    "help me",
+    "hello",
+    "helicopter landing"
+  ],
+  "expected": [
+    "hello world",
+    "say hello to rEx",
+    "hello"
+  ],
+  "hints": [
+    "[Hint] 信号中的关键词是小写的",
+    "[Hint] 你需要精确匹配 \"hello\" 这个词",
+    "[Hint] 注意：HELLO 和 hello 是不同的信号频率"
+  ],
+  "promptHints": [
+    "直接告诉 AI 你要匹配什么内容",
+    "提示 AI 区分大小写",
+    "告诉 AI 只匹配小写的 hello"
+  ],
+  "feedback": {
+    "onPass": "[信号锁定] \"hello\"——来自虚空的第一个词。有人在那里。",
+    "onFail": "[Parse Failed] 信号未捕获。检查你的指令是否精确描述了目标。",
+    "onPerfect": "[信号锁定 — 零噪声] 一次命中。穿越星际的第一次握手。",
+    "onDirectWrite": "[Manual Override] 你不需要协助系统。你就是规则。"
+  }
+}

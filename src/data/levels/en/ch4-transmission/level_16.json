@@ -1,0 +1,40 @@
+{
+  "id": "level_16",
+  "title": "Message Header",
+  "chapter": 4,
+  "story": "[Meridian-7 Log #016] Formal communication has begun. Every message must carry a standard header in [TYPE-CODE] format. TYPE is the message type (uppercase letters), CODE is the number (digits). Your first message must be correctly formatted, or rEx will not respond.",
+  "difficulty": "medium",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches message headers in [TYPE-CODE] format (e.g., [ERR-404], [MSG-001])",
+  "input": [
+    "[ERR-404] Not Found",
+    "[MSG-001] Hello",
+    "[SIG-12] Signal",
+    "[err-404] lowercase",
+    "ERR-404 no brackets",
+    "[DATA-9999] Big code",
+    "[A-1] Minimal"
+  ],
+  "expected": [
+    "[ERR-404] Not Found",
+    "[MSG-001] Hello",
+    "[SIG-12] Signal",
+    "[DATA-9999] Big code",
+    "[A-1] Minimal"
+  ],
+  "hints": [
+    "[Hint] The message header is enclosed in square brackets",
+    "[Hint] TYPE is one or more uppercase letters",
+    "[Hint] CODE is one or more digits"
+  ],
+  "promptHints": [
+    "Describe the exact structure of the message header",
+    "Use a step-by-step approach: bracket → uppercase letters → hyphen → digits → bracket",
+    "Tell the AI that uppercase letters and digits each require at least one"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] Message header parsed. The communication protocol structure is emerging.",
+    "onFail": "[Parse Failed] Message header format error. Structured description is key.",
+    "onPerfect": "[Decryption Success] Protocol header parsed perfectly. The power of structured instructions.",
+    "onDirectWrite": "[Manual Override] Manual protocol parsing. Message structure is crystal clear to you."
+  }
+}

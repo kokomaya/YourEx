@@ -1,0 +1,39 @@
+{
+  "id": "level_20",
+  "title": "Reconstruction",
+  "chapter": 4,
+  "story": "[Meridian-7 Log #020] Final step: reconstruct the complete communication log. Each log entry follows the format [HH:MM:SS] LEVEL: message, where LEVEL is INFO/WARN/ERROR. You need to extract all valid log entries from the damaged data, reconstruct the communication record, then package it as a distress signal to send to rEx. This is the decisive step.",
+  "difficulty": "hard",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches log format [HH:MM:SS] LEVEL: message",
+  "input": [
+    "[12:30:45] INFO: System started",
+    "[23:59:59] ERROR: Connection lost",
+    "[08:00:00] WARN: Low memory",
+    "[25:00:00] INFO: Invalid time",
+    "[12:30:45] DEBUG: Not a valid level",
+    "[09:15:30] INFO: rEx signal detected",
+    "No brackets: INFO: test"
+  ],
+  "expected": [
+    "[12:30:45] INFO: System started",
+    "[23:59:59] ERROR: Connection lost",
+    "[08:00:00] WARN: Low memory",
+    "[09:15:30] INFO: rEx signal detected"
+  ],
+  "hints": [
+    "[Hint] Log lines have a fixed format structure",
+    "[Hint] The timestamp is in square brackets, following HH:MM:SS format",
+    "[Hint] LEVEL can only be INFO, WARN, or ERROR"
+  ],
+  "promptHints": [
+    "Describe each component of the log step by step",
+    "Use a structured template: [time] level: message",
+    "Provide concrete examples to help AI understand the format"
+  ],
+  "feedback": {
+    "onPass": "[Distress Signal Sent] Chapter Four complete. Communication log reconstructed, distress signal packaged and transmitted.",
+    "onFail": "[Parse Failed] Log reconstruction failed. Multiple components need simultaneous constraints.",
+    "onPerfect": "[Distress Signal Sent] Communication log reconstruction complete. Meridian-7's coordinates, status, distress message — all packaged in rEx protocol format and transmitted. Now, wait.",
+    "onDirectWrite": "[Manual Override] Manual log reconstruction. Chapter Four — transmission protocol fully mastered."
+  }
+}

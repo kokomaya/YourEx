@@ -1,0 +1,41 @@
+{
+  "id": "level_25",
+  "title": "rEx",
+  "chapter": 5,
+  "story": "[Meridian-7 Log #025 — Final Signal] rEx sent the ultimate communication package. The format is rEx{TYPE:CONTENT} — the core format of rEx's protocol, integrating every skill you've learned. Once you parse this data, the communication protocol is fully established. rEx station will refuel Meridian-7.\n\n\"All the signals were for this moment.\"\n— rEx",
+  "difficulty": "hard",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches rEx{TYPE:CONTENT} format messages (final challenge)",
+  "input": [
+    "rEx{MSG:hello world}",
+    "rEx{SIG:signal decoded}",
+    "rEx{ERR:connection lost}",
+    "rex{msg:lowercase}",
+    "rEx{:no type}",
+    "rEx{DATA:2026-01-01 transmission}",
+    "rEx{END:farewell human}",
+    "rEx{BROKEN"
+  ],
+  "expected": [
+    "rEx{MSG:hello world}",
+    "rEx{SIG:signal decoded}",
+    "rEx{ERR:connection lost}",
+    "rEx{DATA:2026-01-01 transmission}",
+    "rEx{END:farewell human}"
+  ],
+  "hints": [
+    "[Hint] rEx is a literal, case-sensitive",
+    "[Hint] TYPE is one or more uppercase letters",
+    "[Hint] CONTENT does not contain curly braces"
+  ],
+  "promptHints": [
+    "Your prompt is the ultimate expression of your regex articulation ability",
+    "Use the fewest words to express the most precise intent",
+    "rEx believes you can do it"
+  ],
+  "feedback": {
+    "onPass": "[TRANSMISSION COMPLETE] All of rEx's signals have been decrypted. Communication protocol fully established.\n\n// rEx says: \"The protocol between us is established.\"",
+    "onFail": "[Signal Incomplete] The final signal could not be fully parsed. Recall everything you've learned and try again.",
+    "onPerfect": "[TRANSMISSION COMPLETE] rEx station opened its arms to Meridian-7. Refueling in progress... but the engine is beyond repair. rEx says: \"We can give you a new heart — but you'll need to make it beat.\"",
+    "onDirectWrite": "[Manual Override — Final] Manual endgame completion. Regardless of the method, you proved yourself.\n\n// rEx says: \"The method doesn't matter — understanding does.\""
+  }
+}

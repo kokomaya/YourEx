@@ -1,0 +1,39 @@
+{
+  "id": "level_08",
+  "title": "Encoded Digits",
+  "chapter": 2,
+  "story": "[Meridian-7 日志 #008] rEx 使用一种以 \"0x\" 开头的数字编码系统——和人类的十六进制格式惊人地相似。也许数学真的是宇宙通用语言。从数据流中提取所有合法的 rEx 数值。",
+  "difficulty": "medium",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配十六进制数（如 0xFF, 0x1A2B）的正则表达式",
+  "input": [
+    "0xFF",
+    "0x1A2B",
+    "0xGG",
+    "xFF",
+    "0x0",
+    "0x00FF00",
+    "123456"
+  ],
+  "expected": [
+    "0xFF",
+    "0x1A2B",
+    "0x0",
+    "0x00FF00"
+  ],
+  "hints": [
+    "[Hint] 十六进制数以 0x 开头",
+    "[Hint] 有效的十六进制字符是 0-9 和 A-F（含小写）",
+    "[Hint] 至少需要一个十六进制数字"
+  ],
+  "promptHints": [
+    "描述十六进制数的前缀和允许的字符",
+    "告诉 AI 有效范围是 [0-9a-fA-F]",
+    "明确 0x 前缀是必须的"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 编码值已解密。数字规则正在清晰化。",
+    "onFail": "[Parse Failed] 编码识别失败。十六进制的规则比你想的更严格。",
+    "onPerfect": "[Decryption Success] 精确提取。rEx 的数字编码无所遁形。",
+    "onDirectWrite": "[Manual Override] 手动解码。你直接读懂了十六进制。"
+  }
+}

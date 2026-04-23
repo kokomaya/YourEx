@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import type { Level } from '../types';
+import { type Locale, DEFAULT_LOCALE } from '../i18n/types';
 
 const CHAPTER_DIRS: Record<number, string> = {
   1: 'ch1-signal-contact',
@@ -15,9 +16,14 @@ const TOTAL_CHAPTERS = 5;
 const LEVELS_PER_CHAPTER = 5;
 
 let dataRoot: string | null = null;
+let currentLocale: Locale = DEFAULT_LOCALE;
 
 export function setDataRoot(root: string): void {
   dataRoot = root;
+}
+
+export function setLevelLocale(locale: Locale): void {
+  currentLocale = locale;
 }
 
 function getDataRoot(): string {
@@ -27,13 +33,27 @@ function getDataRoot(): string {
   return path.join(__dirname, '..', 'data', 'levels');
 }
 
+/**
+ * Resolve the chapter directory for the current locale.
+ * Tries locale-specific path first, falls back to root-level chapter dir.
+ */
+function resolveChapterPath(dir: string): string {
+  const root = getDataRoot();
+  const localePath = path.join(root, currentLocale, dir);
+  if (fs.existsSync(localePath)) {
+    return localePath;
+  }
+  // Fallback: non-locale path (legacy)
+  return path.join(root, dir);
+}
+
 export function loadChapterLevels(chapter: number): Level[] {
   const dir = CHAPTER_DIRS[chapter];
   if (!dir) {
     return [];
   }
 
-  const fullPath = path.join(getDataRoot(), dir);
+  const fullPath = resolveChapterPath(dir);
   if (!fs.existsSync(fullPath)) {
     return [];
   }

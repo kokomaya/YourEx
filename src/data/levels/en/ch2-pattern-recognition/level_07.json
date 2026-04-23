@@ -1,0 +1,40 @@
+{
+  "id": "level_07",
+  "title": "Broken Syntax",
+  "chapter": 2,
+  "story": "[Meridian-7 Log #007] Structured identifiers have begun appearing in rEx's data. Some start with a letter or underscore, followed by alphanumeric combinations — these resemble \"variable names\" in rEx's language. But many invalid formats are mixed in. You need to learn to distinguish them.",
+  "difficulty": "easy",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches valid variable names (starting with a letter or underscore)",
+  "input": [
+    "_init",
+    "var1",
+    "2ndValue",
+    "my_var_name",
+    "$special",
+    "camelCase",
+    "123",
+    "hello-world"
+  ],
+  "expected": [
+    "_init",
+    "var1",
+    "my_var_name",
+    "camelCase"
+  ],
+  "hints": [
+    "[Hint] The first character of a variable name is restricted",
+    "[Hint] Digits cannot be the starting character",
+    "[Hint] [^...] can exclude unwanted characters"
+  ],
+  "promptHints": [
+    "Describe the rules for variable names: what characters can start them",
+    "Tell the AI to exclude names starting with digits or special symbols",
+    "Clarify which characters can appear in variable names"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] Syntax structure recognized. rEx's variable naming follows a pattern.",
+    "onFail": "[Parse Failed] Syntax parsing failed. Pay attention to the first-character constraint.",
+    "onPerfect": "[Decryption Success] Perfect parsing. The power of character classes is emerging.",
+    "onDirectWrite": "[Manual Override] Manual syntax parsing. You know character classes inside out."
+  }
+}

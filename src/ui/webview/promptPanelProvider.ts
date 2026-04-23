@@ -3,6 +3,7 @@ import { getWebviewContent, getVisualConfigFromSettings } from './webviewHelper'
 import type { IAIProvider } from '../../ai/IAIProvider';
 import type { GameStateManager } from '../../state/gameState';
 import type { Level, WebViewMessage, ExtensionMessage } from '../../types';
+import type { Locale } from '../../i18n/types';
 import { getLevelById, loadChapterLevels, shouldUnlockNextChapter, getNextChapter, shouldUnlockHiddenChapter, HIDDEN_CHAPTER } from '../../engine/levelLoader';
 import { runDecryptionPipeline, runManualJudge } from '../../engine/decryptionPipeline';
 import { getFeedbackText } from '../feedback';
@@ -21,10 +22,20 @@ export class PromptPanelProvider {
   private _aiProvider: IAIProvider | undefined;
   private _gameState: GameStateManager | undefined;
   private _devMode = false;
+  private _locale: Locale = 'zh-CN';
   private _onDidUpdate = new vscode.EventEmitter<void>();
   readonly onDidUpdate = this._onDidUpdate.event;
 
   constructor(private readonly _extensionUri: vscode.Uri) {}
+
+  setLocale(locale: Locale): void {
+    this._locale = locale;
+  }
+
+  broadcastLocale(locale: Locale): void {
+    this._locale = locale;
+    this.postMessage({ command: 'localeChanged', locale });
+  }
 
   setDependencies(aiProvider: IAIProvider, gameState: GameStateManager, devMode?: boolean): void {
     this._aiProvider = aiProvider;
@@ -53,7 +64,8 @@ export class PromptPanelProvider {
         this._panel.webview,
         this._extensionUri,
         'promptPanel',
-        getVisualConfigFromSettings()
+        getVisualConfigFromSettings(),
+        this._locale
       );
 
       this._panel.webview.onDidReceiveMessage((msg: WebViewMessage) => {
@@ -107,6 +119,10 @@ export class PromptPanelProvider {
 
       case 'viewLeaderboard':
         vscode.commands.executeCommand('yourex.showLeaderboard');
+        break;
+
+      case 'switchLanguage':
+        vscode.commands.executeCommand('yourex.switchLanguage', msg.locale);
         break;
     }
   }

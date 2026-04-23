@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useVSCode } from '../../hooks/useVSCode';
+import { useTranslation } from '../../i18n';
 import { useRewardPhase } from './useRewardPhase';
 import type { LevelRewardData } from '../../types/messages';
 import './Reward.css';
@@ -11,6 +12,7 @@ interface RewardOverlayProps {
 
 export function RewardOverlay({ reward, onDismiss }: RewardOverlayProps) {
   const { postMessage } = useVSCode();
+  const { t } = useTranslation();
   const { phase, skipToActions } = useRewardPhase(
     true,
     reward.isChapterComplete,
@@ -54,7 +56,7 @@ export function RewardOverlay({ reward, onDismiss }: RewardOverlayProps) {
           {isPerfect ? '⭐' : '✓'}
         </span>
         <TypewriterText
-          text={isPerfect ? 'PERFECT DECODE — 零噪声。零误差。' : 'SIGNAL DECODED — 信号已解析'}
+          text={isPerfect ? t('reward.perfect') : t('reward.pass')}
           active={phase !== 'idle'}
         />
       </div>
@@ -65,35 +67,35 @@ export function RewardOverlay({ reward, onDismiss }: RewardOverlayProps) {
       <div className={`reward-scores ${phaseAtLeast(phase, 'score') ? 'reward-scores--visible' : ''}`}>
         {reward.score && reward.score.total > 0 && (
           <div className="reward-score-card">
-            <div className="reward-score-card__header">SIGNAL ANALYSIS</div>
+            <div className="reward-score-card__header">{t('reward.signalAnalysis')}</div>
             <div className="reward-score-row">
-              <span>📏 简洁度</span>
+              <span>{t('reward.scoreBrevity')}</span>
               <span className="reward-score-val">{reward.score.brevityScore}</span>
             </div>
             <div className="reward-score-row">
-              <span>🎯 一次性</span>
+              <span>{t('reward.scoreFirstTry')}</span>
               <span className="reward-score-val">{reward.score.firstTryScore}</span>
             </div>
             <div className="reward-score-row">
-              <span>🧠 优雅度</span>
+              <span>{t('reward.scoreElegance')}</span>
               <span className="reward-score-val">{reward.score.eleganceScore}</span>
             </div>
             <div className="reward-score-row">
-              <span>⚔️ 规则质量</span>
+              <span>{t('reward.scoreRegex')}</span>
               <span className="reward-score-val">{reward.score.regexQualityScore}</span>
             </div>
             <div className="reward-score-total">
-              <span>TOTAL</span>
+              <span>{t('reward.total')}</span>
               <span className="reward-score-val reward-score-val--total">{reward.score.total}</span>
             </div>
           </div>
         )}
 
         <div className="reward-xp">
-          <span className="reward-xp__label">XP</span>
+          <span className="reward-xp__label">{t('reward.xpLabel')}</span>
           <span className="reward-xp__value">+{reward.xpGained}</span>
           {reward.comboCount > 1 && (
-            <span className="reward-combo">x{reward.comboCount} COMBO</span>
+            <span className="reward-combo">{t('reward.combo', { count: reward.comboCount })}</span>
           )}
         </div>
 
@@ -126,22 +128,22 @@ export function RewardOverlay({ reward, onDismiss }: RewardOverlayProps) {
       <div className={`reward-actions ${phase === 'actions' ? 'reward-actions--visible' : ''}`}>
         {!reward.isGameComplete && !reward.isOriginComplete && (
           <button className="reward-btn reward-btn--primary" onClick={handleNextLevel}>
-            {reward.isChapterComplete ? '▶ 进入下一章' : '▶ 下一关'}
+            {reward.isChapterComplete ? t('reward.nextChapter') : t('reward.nextLevel')}
           </button>
         )}
         <button className="reward-btn reward-btn--secondary" onClick={handleReplay}>
-          ↺ 重新挑战
+          {t('reward.replay')}
         </button>
         <button className="reward-btn reward-btn--secondary" onClick={handleLeaderboard}>
-          📊 排行榜
+          {t('reward.leaderboard')}
         </button>
         {reward.isGameComplete && !reward.isOriginComplete && (
-          <p className="reward-hint">外星动力模块需要协议适配…</p>
+          <p className="reward-hint">{t('reward.originHint')}</p>
         )}
       </div>
 
       {phase !== 'actions' && (
-        <div className="reward-skip-hint">点击任意处跳过</div>
+        <div className="reward-skip-hint">{t('reward.skipHint')}</div>
       )}
     </div>
   );
@@ -159,35 +161,36 @@ function TypewriterText({ text, active }: { text: string; active: boolean }) {
 }
 
 function ChapterPanel({ summary }: { summary: NonNullable<LevelRewardData['chapterSummary']> }) {
+  const { t } = useTranslation();
   return (
     <div className="reward-chapter">
       <div className="reward-chapter__title">
-        📡 Chapter {summary.chapter} Complete — {summary.chapterName}
+        {t('reward.chapterComplete', { chapter: summary.chapter, name: summary.chapterName })}
       </div>
       <p className="reward-chapter__line">{summary.completeLine}</p>
 
       <div className="reward-chapter__stats">
         <div className="reward-stat-row">
-          <span>Levels</span>
+          <span>{t('reward.levels')}</span>
           <span>{summary.levelsCompleted}/{summary.totalLevels} ✓</span>
         </div>
         <div className="reward-stat-row">
-          <span>Perfect</span>
+          <span>{t('reward.perfect.label')}</span>
           <span>{summary.levelsPerfect}/{summary.totalLevels} ⭐</span>
         </div>
         <div className="reward-stat-row">
-          <span>Total XP</span>
+          <span>{t('reward.totalXp')}</span>
           <span>+{summary.totalXp}</span>
         </div>
         <div className="reward-stat-row">
-          <span>Best Combo</span>
+          <span>{t('reward.bestCombo')}</span>
           <span>x{summary.bestCombo}</span>
         </div>
       </div>
 
       {summary.achievements.length > 0 && (
         <div className="reward-chapter__achievements">
-          <div className="reward-chapter__ach-title">Achievements Unlocked:</div>
+          <div className="reward-chapter__ach-title">{t('reward.achievementsUnlocked')}</div>
           {summary.achievements.map(a => (
             <span key={a.id} className="reward-mini-badge">{a.name}</span>
           ))}
@@ -196,7 +199,7 @@ function ChapterPanel({ summary }: { summary: NonNullable<LevelRewardData['chapt
 
       {summary.nextChapter !== null && (
         <div className="reward-chapter__next">
-          <span className="reward-next-label">&gt;&gt; CHAPTER {summary.nextChapter} UNLOCKED</span>
+          <span className="reward-next-label">{t('reward.chapterUnlocked', { n: summary.nextChapter })}</span>
           {summary.nextChapterIntro && (
             <p className="reward-next-intro">{summary.nextChapterIntro}</p>
           )}
@@ -213,49 +216,46 @@ function FinalePanel({
   isOrigin: boolean;
   summary: NonNullable<LevelRewardData['chapterSummary']>;
 }) {
+  const { t } = useTranslation();
   const elapsedMin = summary.elapsedMs ? Math.round(summary.elapsedMs / 60000) : 0;
 
   if (isOrigin) {
     return (
       <div className="reward-finale reward-finale--origin">
-        <div className="reward-finale__static">[PROTOCOL ADAPTATION COMPLETE]</div>
-        <p className="reward-finale__line">&gt;&gt; 协议适配完成。</p>
-        <p className="reward-finale__line">&gt;&gt; 外星动力模块已上线。</p>
-        <p className="reward-finale__line">&gt;&gt; 引擎点火……成功。</p>
-        <div className="reward-finale__reveal">Meridian-7，起飞。</div>
-        <p className="reward-finale__sub">
-          你用 rEx 的语言驯服了外星引擎。
-          <br />
-          人类的飞船，装着外星的心脏，驶向回家的航路。
-        </p>
+        <div className="reward-finale__static">{t('reward.finale.protocol')}</div>
+        <p className="reward-finale__line">{t('reward.finale.origin1')}</p>
+        <p className="reward-finale__line">{t('reward.finale.origin2')}</p>
+        <p className="reward-finale__line">{t('reward.finale.origin3')}</p>
+        <div className="reward-finale__reveal">{t('reward.finale.originReveal')}</div>
+        <p className="reward-finale__sub" dangerouslySetInnerHTML={{ __html: t('reward.finale.originSub') }} />
       </div>
     );
   }
 
   return (
     <div className="reward-finale reward-finale--game">
-      <p className="reward-finale__line">…protocol established…</p>
-      <p className="reward-finale__line">…the language is yours…</p>
-      <p className="reward-finale__line">…but your engine is gone. We can give you a new heart.…</p>
-      <div className="reward-finale__reveal">rEx 协议建立完成</div>
-      <p className="reward-finale__sub">Meridian-7 的引擎已损毁。rEx 提供了外星动力模块。</p>
-      <p className="reward-finale__sub">还需要完成最后的协议适配……</p>
+      <p className="reward-finale__line">{t('reward.finale.game1')}</p>
+      <p className="reward-finale__line">{t('reward.finale.game2')}</p>
+      <p className="reward-finale__line">{t('reward.finale.game3')}</p>
+      <div className="reward-finale__reveal">{t('reward.finale.gameReveal')}</div>
+      <p className="reward-finale__sub">{t('reward.finale.gameSub1')}</p>
+      <p className="reward-finale__sub">{t('reward.finale.gameSub2')}</p>
       <div className="reward-finale__stats">
         <div className="reward-stat-row">
-          <span>解密关卡</span>
+          <span>{t('reward.finale.decryptedLevels')}</span>
           <span>{summary.totalCompletedLevels}/{summary.totalStandardLevels}</span>
         </div>
         <div className="reward-stat-row">
-          <span>总 XP</span>
+          <span>{t('reward.finale.totalXp')}</span>
           <span>{summary.totalXp}</span>
         </div>
         <div className="reward-stat-row">
-          <span>游玩时间</span>
-          <span>{elapsedMin} 分钟</span>
+          <span>{t('reward.finale.playTime')}</span>
+          <span>{t('reward.finale.playTimeValue', { min: elapsedMin })}</span>
         </div>
         <div className="reward-stat-row">
-          <span>成就</span>
-          <span>{summary.achievements.length} 个</span>
+          <span>{t('reward.finale.achievementCount')}</span>
+          <span>{t('reward.finale.achievementUnit', { count: summary.achievements.length })}</span>
         </div>
       </div>
     </div>

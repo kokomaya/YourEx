@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useVSCode, useMessageListener } from '../../hooks/useVSCode';
+import { useTranslation } from '../../i18n';
 import type { Level, JudgeResult, PromptScore, LevelRewardData, ExtensionMessage } from '../../types/messages';
 import { RewardOverlay } from '../Reward';
 import { useVisualScene } from '../../visual/hooks/useVisualScene';
@@ -13,6 +14,7 @@ import './PromptPanel.css';
 
 export function PromptPanel() {
   const { postMessage } = useVSCode();
+  const { t } = useTranslation();
   const visual = useVisualPreferences();
   const [level, setLevel] = useState<Level | null>(null);
   const [prompt, setPrompt] = useState('');
@@ -147,9 +149,9 @@ export function PromptPanel() {
       <VisualScene scene={scene}>
         <MonitorViewportShell monitor={monitor}>
           <div className="prompt-panel prompt-panel--waiting">
-            <h2>[Signal Decryption Terminal]</h2>
-            <p className="text-secondary">&gt; Awaiting signal data…</p>
-            <p className="text-muted hint">选择侧边栏中的关卡以开始解密</p>
+            <h2>{t('promptPanel.title')}</h2>
+            <p className="text-secondary">{t('promptPanel.awaiting')}</p>
+            <p className="text-muted hint">{t('promptPanel.selectHint')}</p>
           </div>
         </MonitorViewportShell>
       </VisualScene>
@@ -164,7 +166,7 @@ export function PromptPanel() {
       <div className="prompt-panel">
         <header className="signal-header">
           <h2>[Signal #{level.id.replace('level_', '')} — {level.title}]</h2>
-          <span className="chapter-chip">Chapter {level.chapter}</span>
+          <span className="chapter-chip">{t('promptPanel.chapter', { n: level.chapter })}</span>
           <span className="difficulty-badge" data-difficulty={level.difficulty}>
             {level.difficulty}
           </span>
@@ -175,12 +177,12 @@ export function PromptPanel() {
       </section>
 
       <section className="signal-challenge">
-        <h3>📋 任务</h3>
+        <h3>{t('promptPanel.mission')}</h3>
         <p>{level.promptChallenge}</p>
       </section>
 
       <section className="test-data">
-        <h3>📡 测试数据</h3>
+        <h3>{t('promptPanel.testData')}</h3>
         <ul className="data-list">
           {level.input.map((item, i) => (
             <li key={i} className={getMatchClass(item, result)}>
@@ -194,7 +196,7 @@ export function PromptPanel() {
           ))}
         </ul>
         <div className="expected-label">
-          <span className="text-muted">Expected: </span>
+          <span className="text-muted">{t('promptPanel.expected')}</span>
           {level.expected.map((e, i) => (
             <code key={i} className="expected-item">"{e}"</code>
           ))}
@@ -202,66 +204,66 @@ export function PromptPanel() {
       </section>
 
       <section className="prompt-input">
-        <h3>✍️ 你的指令</h3>
+        <h3>{t('promptPanel.yourPrompt')}</h3>
         <textarea
           className="console-input"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="向解码协助系统下达指令……"
+          placeholder={t('promptPanel.placeholder')}
           rows={3}
           disabled={loading}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleExecute();
           }}
         />
-        <div className="char-count text-muted">{prompt.length} 字符</div>
+        <div className="char-count text-muted">{t('promptPanel.charCount', { count: prompt.length })}</div>
       </section>
 
         <div className="action-buttons">
           <button className={`btn-primary ${scene.buttonClassName}`} onClick={handleExecute} disabled={loading || !prompt.trim()}>
-            {loading ? '🔄 解析中…' : '🤖 Execute Parse'}
+            {loading ? t('promptPanel.loading') : t('promptPanel.execute')}
           </button>
           <button className={`btn-secondary ${scene.buttonClassName}`} onClick={handleManual} disabled={loading}>
-            ⚔️ Manual
+            {t('promptPanel.manual')}
           </button>
         </div>
 
         {result && (
           <section className="result-panel" data-status={result.judgeResult.status}>
-            <h3>{statusIcon} {getStatusLabel(result.judgeResult.status)}</h3>
+            <h3>{statusIcon} {t(getStatusLabel(result.judgeResult.status))}</h3>
             <p className="feedback-text">{result.feedback}</p>
 
           {result.rawRegex && (
             <div className="regex-display">
-              <span className="text-muted">🤖 生成规则：</span>
+              <span className="text-muted">{t('promptPanel.aiRegex')}</span>
               <code>{result.rawRegex}</code>
             </div>
           )}
 
           <div className="match-stats">
-            <span>Signal: {result.judgeResult.matched.length}/{level.expected.length}</span>
-            {result.score && <span> | Prompt 评分: {result.score.total}</span>}
+            <span>{t('promptPanel.signal', { matched: result.judgeResult.matched.length, total: level.expected.length })}</span>
+            {result.score && <span> | {t('promptPanel.promptScore', { score: result.score.total })}</span>}
           </div>
 
           {result.score && result.score.total > 0 && (
             <div className="score-breakdown">
               <div className="score-row">
-                <span>📏 简洁度</span>
+                <span>{t('promptPanel.scoreBrevity')}</span>
                 <div className="score-bar"><div style={{ width: `${result.score.brevityScore}%` }} /></div>
                 <span>{result.score.brevityScore}</span>
               </div>
               <div className="score-row">
-                <span>🎯 一次性</span>
+                <span>{t('promptPanel.scoreFirstTry')}</span>
                 <div className="score-bar"><div style={{ width: `${result.score.firstTryScore}%` }} /></div>
                 <span>{result.score.firstTryScore}</span>
               </div>
               <div className="score-row">
-                <span>🧠 优雅度</span>
+                <span>{t('promptPanel.scoreElegance')}</span>
                 <div className="score-bar"><div style={{ width: `${result.score.eleganceScore}%` }} /></div>
                 <span>{result.score.eleganceScore}</span>
               </div>
               <div className="score-row">
-                <span>⚔️ 规则质量</span>
+                <span>{t('promptPanel.scoreRegex')}</span>
                 <div className="score-bar"><div style={{ width: `${result.score.regexQualityScore}%` }} /></div>
                 <span>{result.score.regexQualityScore}</span>
               </div>
@@ -285,7 +287,7 @@ export function PromptPanel() {
           }}>
             <Oscilloscope active={true} width={280} height={48} />
             <span className="signal-fragment__code">{signalFragment}</span>
-            <span className="signal-fragment__hint">SIGNAL LOCKED — 自动跳转中…</span>
+            <span className="signal-fragment__hint">{t('promptPanel.signalLocked')}</span>
           </div>
         )}
       </div>
@@ -305,13 +307,14 @@ function getStatusIcon(status: string): string {
 }
 
 function getStatusLabel(status: string): string {
-  switch (status) {
-    case 'perfect': return '[Full Decode]';
-    case 'pass': return '[Decoded]';
-    case 'partial': return '[Partial Match]';
-    case 'error': return '[System Error]';
-    default: return '[Parse Failed]';
-  }
+  const STATUS_KEY: Record<string, string> = {
+    perfect: 'promptPanel.statusPerfect',
+    pass: 'promptPanel.statusPass',
+    partial: 'promptPanel.statusPartial',
+    error: 'promptPanel.statusError',
+  };
+  // Can't use hook here - return the key for the component to translate
+  return STATUS_KEY[status] ?? 'promptPanel.statusFail';
 }
 
 function getMatchClass(item: string, result: { judgeResult: JudgeResult } | null): string {

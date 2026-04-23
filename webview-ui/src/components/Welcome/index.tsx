@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useVSCode } from '../../hooks/useVSCode';
+import { useTranslation } from '../../i18n';
 import { useVisualScene } from '../../visual/hooks/useVisualScene';
 import { VisualScene } from '../../visual/components/VisualScene';
 import { useVisualPreferences } from '../../visual/hooks/useVisualPreferences';
@@ -8,37 +9,32 @@ import { MonitorViewportShell } from '../../visual/monitor/MonitorViewportShell'
 import '../../visual/monitor/MonitorFrame.css';
 import './Welcome.css';
 
-const BOOT_LINES = [
-  '>> [Meridian-7 系统日志 — 第 47 周期]',
-  '>> 燃料储备：2.3%',
-  '>> 生命维持：剩余 312 小时',
-  '>> 标准求救频段：无回应',
-  '',
-  '>> [异常检测]',
-  '>> 频谱扫描发现未知信号源…',
-  '>> 协议识别失败…',
-  '>> 语言结构：非人类编码',
-  '',
-  '所有异常数据中，反复出现同一个标记：',
-];
-
 const REX_REVEAL = '            r E x';
-
-const STORY_LINES = [
-  '这不是攻击。不是噪声。',
-  '这是一种语言。',
-  '',
-  '如果你能破解它，',
-  '也许我们还有机会回家。',
-];
 
 export function Welcome() {
   const { postMessage } = useVSCode();
+  const { t } = useTranslation();
   const visual = useVisualPreferences();
   const [visibleLines, setVisibleLines] = useState(0);
   const [showRex, setShowRex] = useState(false);
   const [showStory, setShowStory] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
+
+  const bootLines = useMemo(() => {
+    const lines: string[] = [];
+    for (let i = 1; i <= 11; i++) {
+      lines.push(t(`welcome.boot.line${i}`));
+    }
+    return lines;
+  }, [t]);
+
+  const storyLines = useMemo(() => {
+    const lines: string[] = [];
+    for (let i = 1; i <= 5; i++) {
+      lines.push(t(`welcome.story.line${i}`));
+    }
+    return lines;
+  }, [t]);
 
   const scene = useVisualScene({
     chapterId: 1,
@@ -67,7 +63,7 @@ export function Welcome() {
 
   useEffect(() => {
     // Typewriter effect for boot lines
-    const totalLines = BOOT_LINES.length;
+    const totalLines = bootLines.length;
     let current = 0;
     const interval = setInterval(() => {
       current++;
@@ -80,7 +76,7 @@ export function Welcome() {
       }
     }, 300);
     return () => clearInterval(interval);
-  }, []);
+  }, [bootLines.length]);
 
   const handleStart = () => {
     postMessage({ command: 'startDecryption' });
@@ -90,10 +86,10 @@ export function Welcome() {
     <VisualScene scene={scene}>
       <MonitorViewportShell monitor={monitor}>
       <div className="welcome">
-        <h2 className="boot-title">[Meridian-7 System Log]</h2>
+        <h2 className="boot-title">{t('welcome.title')}</h2>
 
       <div className="boot-lines">
-        {BOOT_LINES.slice(0, visibleLines).map((line, i) => (
+        {bootLines.slice(0, visibleLines).map((line, i) => (
           <p key={i} className="boot-line">{line || '\u00A0'}</p>
         ))}
       </div>
@@ -106,7 +102,7 @@ export function Welcome() {
 
       {showStory && (
         <div className="story-lines">
-          {STORY_LINES.map((line, i) => (
+          {storyLines.map((line, i) => (
             <p key={i} className="story-line">{line || '\u00A0'}</p>
           ))}
         </div>
@@ -115,7 +111,7 @@ export function Welcome() {
         {showButtons && (
           <div className="welcome-actions">
             <button className={`btn-primary ${scene.buttonClassName}`} onClick={handleStart}>
-              🤖 启动信号解析
+              {t('welcome.startButton')}
             </button>
           </div>
         )}

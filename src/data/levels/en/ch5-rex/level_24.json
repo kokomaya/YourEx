@@ -1,0 +1,40 @@
+{
+  "id": "level_24",
+  "title": "You Understand",
+  "chapter": 5,
+  "story": "[Meridian-7 Log #024] rEx sent a navigation document using a link format similar to Markdown — [description](coordinates). These links point to different modules of rEx's space station. You need to parse every link to plan Meridian-7's docking path. rEx says: \"You understand.\"",
+  "difficulty": "hard",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches Markdown link format [text](url)",
+  "input": [
+    "[rEx](https://rex.signal)",
+    "[click here](http://example.com)",
+    "plain text",
+    "[no url]",
+    "(no text)",
+    "[docs](./readme.md)",
+    "![image](img.png)",
+    "[link](https://a.b/path?q=1)"
+  ],
+  "expected": [
+    "[rEx](https://rex.signal)",
+    "[click here](http://example.com)",
+    "[docs](./readme.md)",
+    "[link](https://a.b/path?q=1)"
+  ],
+  "hints": [
+    "[Hint] Markdown link format: [text](url)",
+    "[Hint] text does not start with ! (to exclude image syntax)",
+    "[Hint] url can contain various characters but no parentheses"
+  ],
+  "promptHints": [
+    "Precisely describe the [text](url) structure",
+    "Tell the AI what characters text and url can each contain",
+    "Hint to exclude ![image] image syntax"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] You understand. Markdown links — seemingly simple, yet elegant.",
+    "onFail": "[Parse Failed] Almost there. The nesting of square brackets and parentheses requires precise matching.",
+    "onPerfect": "[Decryption Success] Perfect understanding. rEx says: \"You are ready.\"",
+    "onDirectWrite": "[Manual Override] Manual completion. You no longer need AI's help."
+  }
+}

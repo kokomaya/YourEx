@@ -1,0 +1,38 @@
+{
+  "id": "level_06",
+  "title": "Hidden Token",
+  "chapter": 2,
+  "story": "[Meridian-7 日志 #006] 信号突然增强了。rEx 发来了新的数据流，比之前更有结构。你注意到其中散布着一些 8 位编码——由大写字母和数字组成。这像是 rEx 的认证令牌。也许你需要先证明自己\"听得懂\"才能继续对话。",
+  "difficulty": "easy",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配由大写字母和数字组成的恰好 8 位字符串的正则表达式",
+  "input": [
+    "TOKEN: AB12CD34",
+    "token: ab12cd34",
+    "CODE: ABCD1234",
+    "invalid: ABC123",
+    "noise data here",
+    "KEY: X9Y8Z7W6",
+    "ABCDEFGHIJ"
+  ],
+  "expected": [
+    "TOKEN: AB12CD34",
+    "CODE: ABCD1234",
+    "KEY: X9Y8Z7W6"
+  ],
+  "hints": [
+    "[Hint] 令牌只由大写字母和数字组成",
+    "[Hint] 长度恰好为 8 位",
+    "[Hint] 字符类 [A-Z0-9] 可以描述有效字符"
+  ],
+  "promptHints": [
+    "告诉 AI 令牌的字符范围和精确长度",
+    "用 {n} 指定精确长度",
+    "描述令牌由哪些类型的字符组成"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 令牌已提取。数据开始有意义了。",
+    "onFail": "[Parse Failed] 令牌未识别。你的规则需要更精确的字符范围。",
+    "onPerfect": "[Decryption Success] 精确命中。你开始理解 rEx 的编码规则。",
+    "onDirectWrite": "[Manual Override] 手动提取令牌。字符类已掌握。"
+  }
+}

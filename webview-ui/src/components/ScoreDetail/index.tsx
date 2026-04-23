@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useMessageListener } from '../../hooks/useVSCode';
+import { useTranslation } from '../../i18n';
 import type { PromptScore, LevelAttemptView, ExtensionMessage } from '../../types/messages';
 import './ScoreDetail.css';
 
@@ -9,11 +10,11 @@ interface ScoreDetailState {
   bestScore?: PromptScore;
 }
 
-const DIMENSION_LABELS: Record<string, { label: string; weight: string }> = {
-  brevityScore: { label: 'Brevity', weight: '30%' },
-  firstTryScore: { label: 'First Try', weight: '30%' },
-  eleganceScore: { label: 'Elegance', weight: '20%' },
-  regexQualityScore: { label: 'Regex Quality', weight: '20%' },
+const DIMENSION_LABELS: Record<string, { labelKey: string; weight: string }> = {
+  brevityScore: { labelKey: 'score.brevity', weight: '30%' },
+  firstTryScore: { labelKey: 'score.firstTry', weight: '30%' },
+  eleganceScore: { labelKey: 'score.elegance', weight: '20%' },
+  regexQualityScore: { labelKey: 'score.regexQuality', weight: '20%' },
 };
 
 function ScoreBar({ label, weight, value }: { label: string; weight: string; value: number }) {
@@ -34,6 +35,7 @@ function ScoreBar({ label, weight, value }: { label: string; weight: string; val
 
 export function ScoreDetail() {
   const [data, setData] = useState<ScoreDetailState | null>(null);
+  const { t } = useTranslation();
 
   useMessageListener((raw) => {
     const msg = raw as ExtensionMessage;
@@ -49,8 +51,8 @@ export function ScoreDetail() {
   if (!data) {
     return (
       <div className="score-detail">
-        <h2>[Score Analysis]</h2>
-        <p className="score-waiting">{'>'} Awaiting decryption data…</p>
+        <h2>{t('score.title')}</h2>
+        <p className="score-waiting">{t('score.waiting')}</p>
       </div>
     );
   }
@@ -59,19 +61,19 @@ export function ScoreDetail() {
 
   return (
     <div className="score-detail">
-      <h2>[Score Analysis] {levelTitle}</h2>
+      <h2>{t('score.title')} {levelTitle}</h2>
 
       {bestScore && (
         <div className="best-score-section">
           <div className="total-score">
-            <span className="total-label">Total Score</span>
+            <span className="total-label">{t('score.totalScore')}</span>
             <span className="total-value">{bestScore.total}</span>
           </div>
           <div className="dimensions">
-            {Object.entries(DIMENSION_LABELS).map(([key, { label, weight }]) => (
+            {Object.entries(DIMENSION_LABELS).map(([key, { labelKey, weight }]) => (
               <ScoreBar
                 key={key}
-                label={label}
+                label={t(labelKey)}
                 weight={weight}
                 value={bestScore[key as keyof PromptScore]}
               />
@@ -81,7 +83,7 @@ export function ScoreDetail() {
       )}
 
       <div className="attempts-section">
-        <h3>[Attempt Log] {attempts.length} total</h3>
+        <h3>{t('score.attemptLog', { count: attempts.length })}</h3>
         <div className="attempts-list">
           {attempts.map((attempt, i) => (
             <div key={i} className={`attempt-row status-${attempt.judgeResult.status}`}>

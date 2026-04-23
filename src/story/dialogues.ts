@@ -1,116 +1,34 @@
 import type { GameState } from '../types';
+import type { Locale } from '../i18n/types';
+import { DEFAULT_LOCALE } from '../i18n/types';
+import type { Dialogue, DialogueSet } from '../data/dialogues/types';
+import { DIALOGUES_ZH_CN } from '../data/dialogues/zh-CN';
+import { DIALOGUES_EN } from '../data/dialogues/en';
 
-export interface Dialogue {
-  title: string;
-  lines: string[];
+export type { Dialogue, DialogueSet };
+
+const DIALOGUE_MAP: Record<Locale, DialogueSet> = {
+  'zh-CN': DIALOGUES_ZH_CN,
+  'en': DIALOGUES_EN,
+};
+
+let currentLocale: Locale = DEFAULT_LOCALE;
+
+export function setDialogueLocale(locale: Locale): void {
+  currentLocale = locale;
 }
 
+export function getDialogues(locale?: Locale): DialogueSet {
+  const l = locale ?? currentLocale;
+  return DIALOGUE_MAP[l] ?? DIALOGUE_MAP[DEFAULT_LOCALE];
+}
+
+// Keep backward-compatible DIALOGUES reference (points to current locale)
 export const DIALOGUES = {
-  welcome: {
-    title: '[Meridian-7 System Log]',
-    lines: [
-      '>> [Meridian-7 系统日志 — 第 47 周期]',
-      '>> 燃料储备：2.3%',
-      '>> 生命维持：剩余 312 小时',
-      '>> 标准求救频段：无回应',
-      '',
-      '>> [异常检测]',
-      '>> 频谱扫描发现未知信号源…',
-      '>> 协议识别失败…',
-      '>> 语言结构：非人类编码',
-      '',
-      '所有异常数据中，反复出现同一个标记：',
-      '',
-      '            r E x',
-      '',
-      '这不是攻击。不是噪声。',
-      '这是一种语言。',
-      '',
-      '如果你能破解它，',
-      '也许我们还有机会回家。',
-    ],
-  },
-
-  chapterIntro: {
-    1: {
-      title: '[📡 第一章 — 信号接触]',
-      lines: [
-        '>> Meridian-7 传感器阵列检测到异常电磁波。',
-        '>> 信号极其微弱，在宇宙背景噪声中若隐若现。',
-        '>> 你的第一个任务：从混沌中分离出信号。',
-      ],
-    },
-    2: {
-      title: '[🔍 第二章 — 模式识别]',
-      lines: [
-        '>> 信号恢复了，而且更强了。',
-        '>> rEx 似乎注意到了你的回应。',
-        '>> 新的数据更加结构化——它在测试你。',
-      ],
-    },
-    3: {
-      title: '[⚡ 第三章 — 语法觉醒]',
-      lines: [
-        '>> rEx 的信号发生了质变。',
-        '>> 不再是碎片和编码——这是结构化的信息。',
-        '>> 它在尝试告诉你什么。你需要理解它的语法。',
-      ],
-    },
-    4: {
-      title: '[🛰️ 第四章 — 通信建立]',
-      lines: [
-        '>> 你已经能读懂 rEx 的语言了。',
-        '>> 现在，你需要建立正式的通信协议。',
-        '>> Meridian-7 的求救信息必须用 rEx 能理解的格式发送。',
-        '>> 燃料还剩 0.8%。没有第二次机会。',
-      ],
-    },
-    5: {
-      title: '[🌌 第五章 — rEx 的回应]',
-      lines: [
-        '>> ……信号回来了。',
-        '>> 不是你发出的信号。是新的。',
-        '>> rEx 收到了你的消息。它在回应。',
-        '>> 但它的回应比之前所有信号都更复杂。',
-        '>> 证明你理解它——然后，它会帮你。',
-      ],
-    },
-    6: {
-      title: '[🔧 第六章 — 起源]',
-      lines: [
-        '>> rEx 空间站提供了外星动力模块。',
-        '>> 燃料已补充。但引擎无法启动。',
-        '>> 原因：外星零件使用 rEx 协议通信，',
-        '>> 而 Meridian-7 的系统无法识别。',
-        '>> 最后一步——协议适配。让人类系统读懂外星硬件。',
-      ],
-    },
-  } as Record<number, Dialogue>,
-
-  chapterComplete: {
-    1: '信号源已确认。这不是自然现象——有人在对你说话。',
-    2: '测试通过。rEx 的编码规则——令牌、标识符、数字系统——你已经掌握了。',
-    3: '语法已掌握。你不再只是在解码——你开始理解 rEx 在"说"什么了。',
-    4: '通信协议建立完成。你的求救信息已发送。现在……等待回应。',
-    5: '所有信号已解密。rEx 说："协议已建立。我们来帮你。"',
-    6: '协议适配完成。外星动力模块已上线。Meridian-7，起飞。',
-  } as Record<number, string>,
-} as const;
-
-const REX_SIGNALS = [
-  '…you are parsing…',
-  '…pattern detected…',
-  '…signal accepted…',
-  '…you are close…',
-  '…syntax recognized…',
-  '…transmission received…',
-];
-
-const REX_FINAL_SIGNALS = [
-  '…you understand now…',
-  '…the language is yours…',
-  '…protocol established. We will help.…',
-];
+  get welcome() { return getDialogues().welcome; },
+  get chapterIntro() { return getDialogues().chapterIntro as Record<number, Dialogue>; },
+  get chapterComplete() { return getDialogues().chapterComplete as Record<number, string>; },
+};
 
 /**
  * Get a dialogue for the current game state context.
@@ -136,12 +54,14 @@ export function getRexSignal(state: GameState): string | null {
   // 20% chance to show
   if (Math.random() > 0.2) return null;
 
+  const dialogues = getDialogues();
+
   // Use final signals if XP >= 400
   if (state.xp >= 400) {
-    return REX_FINAL_SIGNALS[Math.floor(Math.random() * REX_FINAL_SIGNALS.length)];
+    return dialogues.rexFinalSignals[Math.floor(Math.random() * dialogues.rexFinalSignals.length)];
   }
 
-  return REX_SIGNALS[Math.floor(Math.random() * REX_SIGNALS.length)];
+  return dialogues.rexSignals[Math.floor(Math.random() * dialogues.rexSignals.length)];
 }
 
 /**

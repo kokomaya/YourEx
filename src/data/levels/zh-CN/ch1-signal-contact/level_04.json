@@ -1,0 +1,38 @@
+{
+  "id": "level_04",
+  "title": "Echo Pattern",
+  "chapter": 1,
+  "story": "[Meridian-7 日志 #004] 信号中出现了奇怪的重复模式。某些数据行里同一个词连续出现了两次。这不是传输错误——rEx 似乎用重复来强调关键信息，就像人类用加粗一样。找出这些\"回声\"。",
+  "difficulty": "medium",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配包含连续重复单词的行的正则表达式",
+  "input": [
+    "the the signal repeats",
+    "hello world",
+    "is is this real",
+    "no repeats here",
+    "rEx rEx calling",
+    "almost almost there"
+  ],
+  "expected": [
+    "the the signal repeats",
+    "is is this real",
+    "rEx rEx calling",
+    "almost almost there"
+  ],
+  "hints": [
+    "[Hint] 重复意味着：同一个词，出现两次，紧挨着",
+    "[Hint] 正则中有一种方式可以 \"记住\" 前面匹配到的内容",
+    "[Hint] 想想单词边界和反向引用"
+  ],
+  "promptHints": [
+    "告诉 AI 你要找 \"连续出现两次的同一个单词\"",
+    "提示 AI 使用反向引用（backreference）",
+    "描述单词之间用空格分隔"
+  ],
+  "feedback": {
+    "onPass": "[回声解析] 重复不是噪声。rEx 在强调什么……",
+    "onFail": "[Parse Failed] 回声未捕获。重复结构比你想象的更精确。",
+    "onPerfect": "[完美回声] 你听懂了重复中的含义。rEx 的强调机制已破解。",
+    "onDirectWrite": "[Manual Override] 手动解码回声。令人印象深刻。"
+  }
+}

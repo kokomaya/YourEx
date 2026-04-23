@@ -1,0 +1,37 @@
+{
+  "id": "level_02",
+  "title": "Signal in Noise",
+  "chapter": 1,
+  "story": "[Meridian-7 日志 #002] 信号量增加了。数据流中混杂着文字和数字，但你注意到一个规律：所有包含数字的行都来自同一个源头。数字似乎是 rEx 通信的基础结构——从噪声中筛选出它们。",
+  "difficulty": "easy",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配包含至少一个数字的行的正则表达式",
+  "input": [
+    "signal received at 0800",
+    "no data here",
+    "frequency 42.7 MHz",
+    "static noise",
+    "code 3 confirmed",
+    "all quiet"
+  ],
+  "expected": [
+    "signal received at 0800",
+    "frequency 42.7 MHz",
+    "code 3 confirmed"
+  ],
+  "hints": [
+    "[Hint] 有效信号中都包含数字",
+    "[Hint] 正则中有专门匹配数字的简写",
+    "[Hint] 你只需要行中 \"包含\" 数字即可"
+  ],
+  "promptHints": [
+    "告诉 AI 你要匹配 \"包含数字\" 的行",
+    "用 \"至少一个数字\" 来描述条件",
+    "不需要描述整行的格式，只需要有数字"
+  ],
+  "feedback": {
+    "onPass": "[数据过滤完成] 数字是 rEx 语言的骨架。你开始看到信号的纹理了。",
+    "onFail": "[Parse Failed] 信号筛选失败。你的规则是否遗漏了某些数据行？",
+    "onPerfect": "[零噪声过滤] 完美。你的过滤器没有漏掉任何一个有效数据包。",
+    "onDirectWrite": "[Manual Override] 手动过滤噪声。效率惊人。"
+  }
+}

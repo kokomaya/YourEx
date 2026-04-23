@@ -1,0 +1,40 @@
+{
+  "id": "level_10",
+  "title": "Repeat Protocol",
+  "chapter": 2,
+  "story": "[Meridian-7 日志 #010] rEx 的编码中有一种重复协议：某些信号由同一个字符重复 3-5 次组成。这是某种压缩格式，还是一种情感表达？无论如何，你需要从数据中精确提取这些重复模式。这是 rEx 对你的最后一项测试。",
+  "difficulty": "hard",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配由同一字母重复 3-5 次组成的字符串的正则表达式",
+  "input": [
+    "aaa",
+    "BBBBB",
+    "cccc",
+    "dd",
+    "EEEEEE",
+    "abcabc",
+    "fff",
+    "xy"
+  ],
+  "expected": [
+    "aaa",
+    "BBBBB",
+    "cccc",
+    "fff"
+  ],
+  "hints": [
+    "[Hint] 需要匹配 \"同一个\" 字母的重复",
+    "[Hint] 反向引用可以匹配之前捕获的内容",
+    "[Hint] 量词 {n,m} 可以指定重复次数"
+  ],
+  "promptHints": [
+    "告诉 AI 要匹配的是同一字母的重复，而不是任意字母",
+    "提示 AI 使用反向引用来确保字母一致",
+    "明确重复次数的范围是 3 到 5"
+  ],
+  "feedback": {
+    "onPass": "[测试通过] 重复协议已破解。第二章信号全部解析。",
+    "onFail": "[Parse Failed] 重复模式识别失败。同一字母的重复和随机字母不同。",
+    "onPerfect": "[测试通过] rEx 的编码规则你已全部掌握。它似乎……满意了。",
+    "onDirectWrite": "[Manual Override] 手动破解协议。第二章，优雅收官。"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "id": "level_05",
+  "title": "Still There?",
+  "chapter": 1,
+  "story": "[Meridian-7 日志 #005] 信号开始减弱了。在最后一批可解析的数据中，你发现有些行以 \".signal\" 结尾——这像是 rEx 通信的签名标记，类似人类信件的落款。如果你不能在信号彻底消失前完成解析……抓紧时间。",
+  "difficulty": "medium",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配以 \".signal\" 结尾的行的正则表达式",
+  "input": [
+    "data.signal",
+    "noise.txt",
+    "rEx.transmission.signal",
+    "signal.lost",
+    "incoming.signal",
+    "false.signals",
+    "end.signal"
+  ],
+  "expected": [
+    "data.signal",
+    "rEx.transmission.signal",
+    "incoming.signal",
+    "end.signal"
+  ],
+  "hints": [
+    "[Hint] 你关注的是行的 \"结尾\"",
+    "[Hint] 正则中有一个符号代表 \"行尾\"",
+    "[Hint] 注意：\".signals\" 和 \".signal\" 不同"
+  ],
+  "promptHints": [
+    "告诉 AI 你要匹配以某个特定后缀结尾的字符串",
+    "明确后缀是 \".signal\" 而不是 \"signal\"",
+    "提示 AI 使用行尾锚点"
+  ],
+  "feedback": {
+    "onPass": "[签名确认] 信号格式已锁定。你确认了 rEx 的存在——现在需要学会它的语言。",
+    "onFail": "[Parse Failed] 签名未识别。结尾匹配需要更精确的规则。",
+    "onPerfect": "[完美收束] 第一章完成。信号不再是噪声，它是对话的开始。",
+    "onDirectWrite": "[Manual Override] 手动识别签名。第一章，完美收官。"
+  }
+}

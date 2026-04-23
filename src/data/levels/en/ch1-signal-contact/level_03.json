@@ -1,0 +1,38 @@
+{
+  "id": "level_03",
+  "title": "Signal Coordinates",
+  "chapter": 1,
+  "story": "[Meridian-7 Log #003] Signal analysis has yielded a new discovery — coordinate identifiers are embedded in the data stream. Their format resembles human email addresses: an identifier, a locator symbol @, and a domain marker. This could be rEx's spatial positioning system. Extract all valid coordinate identifiers.",
+  "difficulty": "medium",
+  "promptChallenge": "Write a prompt to have AI generate a regex that precisely matches valid email addresses",
+  "input": [
+    "test@example.com",
+    "bad@@example",
+    "user@mail.co",
+    "not-an-email",
+    "signal@rex.org",
+    "@missing.user",
+    "spaces in@name.com"
+  ],
+  "expected": [
+    "test@example.com",
+    "user@mail.co",
+    "signal@rex.org"
+  ],
+  "hints": [
+    "[Hint] This type of identifier contains only one @ symbol",
+    "[Hint] The domain part contains at least one separator",
+    "[Hint] Your instructions need to clearly describe the identifier's structure"
+  ],
+  "promptHints": [
+    "Try describing the components of an email in your prompt",
+    "Tell the AI: what characters can the username part contain?",
+    "Don't forget to have the AI handle edge cases"
+  ],
+  "feedback": {
+    "onPass": "[Coordinates Extracted] This isn't random data. They point to a location.",
+    "onFail": "[Parse Failed] Incomplete structure. The signal remains in disarray.",
+    "onPerfect": "[Precise Lock] Every coordinate is accurate. The signal source's location is becoming clear.",
+    "onDirectWrite": "[Manual Override] You don't need the assist system. You are the rules."
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "id": "level_11",
+  "title": "Time Signature",
+  "chapter": 3,
+  "story": "[Meridian-7 日志 #011] rEx 发来了一组时间标记，格式为 HH:MM（24小时制）。这些时间点是什么意思？也许是 rEx 文明的作息周期，也许是某种约定的通信窗口。先提取所有合法时间——弄清含义的前提是准确读取。",
+  "difficulty": "medium",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配 24 小时制时间（HH:MM，如 09:30, 23:59）的正则表达式",
+  "input": [
+    "09:30",
+    "23:59",
+    "00:00",
+    "24:00",
+    "12:60",
+    "3:45",
+    "15:30",
+    "99:99"
+  ],
+  "expected": [
+    "09:30",
+    "23:59",
+    "00:00",
+    "15:30"
+  ],
+  "hints": [
+    "[Hint] 小时范围是 00-23",
+    "[Hint] 分钟范围是 00-59",
+    "[Hint] 你需要分别约束小时和分钟"
+  ],
+  "promptHints": [
+    "告诉 AI 时间的精确格式和有效范围",
+    "明确小时和分钟的数字约束",
+    "注意 24:00 和 12:60 都是非法的"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 时间同步成功。信号有了时间轴。",
+    "onFail": "[Parse Failed] 时间格式错误。你的约束没有覆盖所有边界。",
+    "onPerfect": "[Decryption Success] 完美同步。每个时间戳都精确到分钟。",
+    "onDirectWrite": "[Manual Override] 手动校时。时间对你来说不是问题。"
+  }
+}

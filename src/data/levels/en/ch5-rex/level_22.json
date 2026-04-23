@@ -1,0 +1,39 @@
+{
+  "id": "level_22",
+  "title": "Not Just Pattern",
+  "chapter": 5,
+  "story": "[Meridian-7 Log #022] rEx sent a set of access credentials, but their strength needs verification. Only passwords meeting the requirements can activate the encrypted communication channel: at least 8 characters, containing uppercase letters, lowercase letters, and digits. rEx says: \"Security is the prerequisite for trust.\"",
+  "difficulty": "hard",
+  "promptChallenge": "Write a prompt to have AI generate a regex that validates password strength (at least 8 characters, containing uppercase, lowercase, and digits)",
+  "input": [
+    "Passw0rd",
+    "abcdefgh",
+    "ABCDEFGH",
+    "12345678",
+    "rEx2026Go",
+    "Sh0rt",
+    "GoodPass1",
+    "nouppercase1"
+  ],
+  "expected": [
+    "Passw0rd",
+    "rEx2026Go",
+    "GoodPass1"
+  ],
+  "hints": [
+    "[Hint] The password must satisfy three conditions simultaneously",
+    "[Hint] Lookahead assertions can check multiple conditions at the same position",
+    "[Hint] (?=.*[A-Z]) ensures at least one uppercase letter"
+  ],
+  "promptHints": [
+    "List all conditions the password must satisfy",
+    "Tell the AI to use multiple lookahead assertions to check conditions in parallel",
+    "Each condition uses one (?=...)"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] Password validation passed. Multiple assertions checking in parallel — you understood.",
+    "onFail": "[Parse Failed] Validation failed. All three conditions must be met simultaneously.",
+    "onPerfect": "[Decryption Success] Perfect validation. Precise orchestration of multiple lookaheads.",
+    "onDirectWrite": "[Manual Override] Manual validation. You've transcended simple pattern matching."
+  }
+}

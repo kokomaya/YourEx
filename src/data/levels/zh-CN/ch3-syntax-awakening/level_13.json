@@ -1,0 +1,41 @@
+{
+  "id": "level_13",
+  "title": "Sealed Packets",
+  "chapter": 3,
+  "story": "[Meridian-7 日志 #013] rEx 的数据使用了一种封装格式，类似于自闭合的容器标记：以 < 开头、/> 结尾的标签。有些是成对的开闭标签（包含内容），有些是自闭合的（独立数据包）。你需要提取所有自闭合的数据包——它们是独立的、完整的信息单元。",
+  "difficulty": "medium",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配 HTML 自闭合标签（如 <br/>, <img src='x'/>）的正则表达式",
+  "input": [
+    "<br/>",
+    "<img src='photo.jpg'/>",
+    "<div>content</div>",
+    "<hr />",
+    "<input type='text'/>",
+    "<p>",
+    "</p>",
+    "<meta charset='utf-8'/>"
+  ],
+  "expected": [
+    "<br/>",
+    "<img src='photo.jpg'/>",
+    "<hr />",
+    "<input type='text'/>",
+    "<meta charset='utf-8'/>"
+  ],
+  "hints": [
+    "[Hint] 自闭合标签以 < 开头，以 /> 结尾",
+    "[Hint] 标签名和属性之间可能有空格和内容",
+    "[Hint] /> 前面可能有一个可选的空格"
+  ],
+  "promptHints": [
+    "描述自闭合标签的起始和结束标记",
+    "告诉 AI 标签中间可以有任意属性内容",
+    "提示 AI 使用分组来组织正则结构"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] 标签结构已识别。信号的语法越来越复杂。",
+    "onFail": "[Parse Failed] 标签匹配失败。自闭合的关键特征是什么？",
+    "onPerfect": "[Decryption Success] 分组完美运用。复杂结构也难不倒你。",
+    "onDirectWrite": "[Manual Override] 手动解析标签。分组对你来说轻而易举。"
+  }
+}

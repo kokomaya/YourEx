@@ -1,0 +1,39 @@
+{
+  "id": "level_20",
+  "title": "Reconstruction",
+  "chapter": 4,
+  "story": "[Meridian-7 日志 #020] 最后一步：重建完整的通信日志。每条日志格式为 [HH:MM:SS] LEVEL: message，LEVEL 是 INFO/WARN/ERROR。你需要从残损数据中提取所有合法的日志条目，重建通信记录，然后打包成求救信号发送给 rEx。这是决定性的一步。",
+  "difficulty": "hard",
+  "promptChallenge": "写一个 prompt，让 AI 生成能匹配日志格式 [HH:MM:SS] LEVEL: message 的正则表达式",
+  "input": [
+    "[12:30:45] INFO: System started",
+    "[23:59:59] ERROR: Connection lost",
+    "[08:00:00] WARN: Low memory",
+    "[25:00:00] INFO: Invalid time",
+    "[12:30:45] DEBUG: Not a valid level",
+    "[09:15:30] INFO: rEx signal detected",
+    "No brackets: INFO: test"
+  ],
+  "expected": [
+    "[12:30:45] INFO: System started",
+    "[23:59:59] ERROR: Connection lost",
+    "[08:00:00] WARN: Low memory",
+    "[09:15:30] INFO: rEx signal detected"
+  ],
+  "hints": [
+    "[Hint] 日志行有固定的格式结构",
+    "[Hint] 时间戳在方括号内，遵循 HH:MM:SS 格式",
+    "[Hint] LEVEL 只能是 INFO, WARN, 或 ERROR"
+  ],
+  "promptHints": [
+    "分步描述日志的每个组成部分",
+    "用结构化模板：[时间] 级别: 消息",
+    "提供具体的示例帮助 AI 理解格式"
+  ],
+  "feedback": {
+    "onPass": "[求救信号已发送] 第四章完成。通信日志重建，求救信息已打包发出。",
+    "onFail": "[Parse Failed] 日志重构失败。多个组件需要同时约束。",
+    "onPerfect": "[求救信号已发送] 通信日志重建完成。Meridian-7 的坐标、状态、求救信息——全部以 rEx 协议格式打包发出。现在，等待。",
+    "onDirectWrite": "[Manual Override] 手动重构日志。第四章，传输协议完全掌控。"
+  }
+}

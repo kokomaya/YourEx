@@ -1,0 +1,42 @@
+{
+  "id": "level_18",
+  "title": "Nested Signal",
+  "chapter": 4,
+  "story": "[Meridian-7 Log #018] rEx sent an instruction sequence — nested structures in function call format. send(42), decode(\"signal\"), process(100)... Is rEx telling you what to do? Or testing whether you can execute its commands? First, accurately parse all valid instructions.",
+  "difficulty": "hard",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches function call format funcName(args)",
+  "input": [
+    "send(42)",
+    "decode(\"signal\")",
+    "process(100)",
+    "123(invalid)",
+    "noParens",
+    "parse(\"data\", 5)",
+    "init()",
+    "log(0)"
+  ],
+  "expected": [
+    "send(42)",
+    "decode(\"signal\")",
+    "process(100)",
+    "parse(\"data\", 5)",
+    "init()",
+    "log(0)"
+  ],
+  "hints": [
+    "[Hint] Function names start with a letter",
+    "[Hint] Parentheses can contain zero or more arguments",
+    "[Hint] Arguments can be numbers or quoted strings"
+  ],
+  "promptHints": [
+    "Describe the structure of a function call: name + parentheses + arguments",
+    "Tell the AI the argument list can be empty",
+    "Use few-shot examples to help AI understand the format"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] Function calls identified. Nested structures are being parsed.",
+    "onFail": "[Parse Failed] Nested parsing failed. Function call structure needs a more precise description.",
+    "onPerfect": "[Decryption Success] Perfect nested parsing. Your instructions are becoming increasingly structured.",
+    "onDirectWrite": "[Manual Override] Manual nested parsing. Complex structures are no challenge for you."
+  }
+}

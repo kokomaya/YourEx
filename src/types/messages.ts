@@ -20,6 +20,7 @@ export type WebViewMessage =
   | { command: 'nextLevel' }
   | { command: 'replayLevel'; levelId: string }
   | { command: 'viewLeaderboard' }
+  | { command: 'switchLanguage'; locale: string }
   | { command: 'ready' };
 
 export interface AchievementInfo {
@@ -67,4 +68,5 @@ export type ExtensionMessage =
   | { command: 'showError'; message: string }
   | { command: 'setLoading'; loading: boolean }
   | { command: 'showScoreDetail'; levelTitle: string; attempts: Omit<LevelAttempt, 'judgeResult'> & { judgeResult: Omit<JudgeResult, 'regex'> }[]; bestScore?: PromptScore }
-  | { command: 'showLeaderboard'; entries: LeaderboardEntry[] };
+  | { command: 'showLeaderboard'; entries: LeaderboardEntry[] }
+  | { command: 'localeChanged'; locale: string };

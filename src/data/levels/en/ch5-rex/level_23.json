@@ -1,0 +1,41 @@
+{
+  "id": "level_23",
+  "title": "Language Formed",
+  "chapter": 5,
+  "story": "[Meridian-7 Log #023] rEx sent its contact directory — a set of contact identifiers with formats strikingly similar to human email addresses. These are addresses of other nodes in rEx's network. If you can extract them accurately, you can connect to rEx's communication network and receive more support.",
+  "difficulty": "hard",
+  "promptChallenge": "Write a prompt to have AI generate a regex that matches email addresses (user@domain.tld format)",
+  "input": [
+    "user@example.com",
+    "rex.signal@data.org",
+    "test+tag@gmail.com",
+    "@nodomain.com",
+    "noat.com",
+    "a@b.cc",
+    "name@domain",
+    "signal.2026@rex.io"
+  ],
+  "expected": [
+    "user@example.com",
+    "rex.signal@data.org",
+    "test+tag@gmail.com",
+    "a@b.cc",
+    "signal.2026@rex.io"
+  ],
+  "hints": [
+    "[Hint] An email contains two parts separated by the @ symbol",
+    "[Hint] The domain part must contain at least one dot",
+    "[Hint] The top-level domain is typically 2-6 letters"
+  ],
+  "promptHints": [
+    "Describe the user part and domain part of the email step by step",
+    "Tell the AI the username can contain letters, digits, dots, plus signs",
+    "Hint that the domain must have a TLD (e.g., .com, .org)"
+  ],
+  "feedback": {
+    "onPass": "[Pattern Accepted] Language formed. Email format — parsing a micro-language.",
+    "onFail": "[Parse Failed] Language incomplete. Every part of the email has strict rules.",
+    "onPerfect": "[Decryption Success] Language perfectly formed. A precise symphony of character classes, quantifiers, and groups.",
+    "onDirectWrite": "[Manual Override] Manual language crafting. rEx is witnessing your growth."
+  }
+}

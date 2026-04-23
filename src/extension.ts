@@ -12,11 +12,16 @@ import { GameStateManager } from './state/gameState';
 import { MockProvider } from './ai/mockProvider';
 import { CopilotProvider } from './ai/copilotProvider';
 import type { IAIProvider } from './ai/IAIProvider';
-import { setDataRoot, getAllLevels, getLevelById } from './engine/levelLoader';
+import { setDataRoot, getAllLevels, getLevelById, setLevelLocale } from './engine/levelLoader';
 import { ModeService } from './mode/modeService';
 import { createAccessPolicy } from './access/accessPolicyFactory';
 import { parseRunMode, getModeLabel, type RunMode } from './mode/runMode';
 import { computeAllowDeveloperMode } from './mode/modeGuards';
+import { LocaleService, readLocaleFromConfig, detectDefaultLocale } from './i18n/localeService';
+import { initTranslations } from './i18n/t';
+import { setDialogueLocale } from './story/dialogues';
+import { setAchievementLocale } from './engine/achievementManager';
+import { type Locale, SUPPORTED_LOCALES, LOCALE_LABELS } from './i18n/types';
 
 function resolveDataRoot(extensionRoot: string): string {
   const candidates = [
@@ -35,6 +40,14 @@ export function activate(context: vscode.ExtensionContext) {
   // --- Data root ---
   const dataRoot = resolveDataRoot(context.extensionUri.fsPath);
   setDataRoot(dataRoot);
+
+  // --- Locale initialization ---
+  const initialLocale = readLocaleFromConfig() ?? detectDefaultLocale();
+  const localeService = new LocaleService(initialLocale);
+  initTranslations(initialLocale);
+  setLevelLocale(initialLocale);
+  setDialogueLocale(initialLocale);
+  setAchievementLocale(initialLocale);
 
   // --- Dependency assembly ---
   const gameState = new GameStateManager();
@@ -99,10 +112,13 @@ export function activate(context: vscode.ExtensionContext) {
   const promptPanel = new PromptPanelProvider(context.extensionUri);
   const isDevMode = getEffectiveMode(modeService.getMode()) === 'developer';
   promptPanel.setDependencies(aiProvider, gameState, isDevMode);
+  promptPanel.setLocale(initialLocale);
 
   const welcomeProvider = new WelcomeProvider(context.extensionUri);
+  welcomeProvider.setLocale(initialLocale);
   const leaderboardProvider = new LeaderboardProvider(context.extensionUri);
   leaderboardProvider.setGameState(gameState);
+  leaderboardProvider.setLocale(initialLocale);
   const statusBar = new StatusBarManager();
 
   // --- UI refresh helper ---
@@ -199,6 +215,45 @@ export function activate(context: vscode.ExtensionContext) {
       welcomeProvider.show();
     }),
 
+    vscode.commands.registerCommand('yourex.switchLanguage', async (localeArg?: string) => {
+      let targetLocale: Locale;
+
+      if (localeArg && SUPPORTED_LOCALES.includes(localeArg as Locale)) {
+        targetLocale = localeArg as Locale;
+      } else {
+        const items = SUPPORTED_LOCALES.map(code => ({
+          label: LOCALE_LABELS[code],
+          description: code === localeService.locale ? '(current)' : '',
+          value: code,
+        }));
+        const picked = await vscode.window.showQuickPick(items, {
+          placeHolder: `Current: ${LOCALE_LABELS[localeService.locale]}`,
+        });
+        if (!picked) return;
+        targetLocale = picked.value;
+      }
+
+      if (targetLocale === localeService.locale) return;
+
+      // Update all subsystems
+      localeService.setLocale(targetLocale);
+      initTranslations(targetLocale);
+      setLevelLocale(targetLocale);
+      setDialogueLocale(targetLocale);
+      setAchievementLocale(targetLocale);
+
+      // Persist to settings
+      await vscode.workspace.getConfiguration('yourex').update('language', targetLocale, vscode.ConfigurationTarget.Global);
+
+      // Broadcast to all webviews
+      promptPanel.broadcastLocale(targetLocale);
+      welcomeProvider.broadcastLocale(targetLocale);
+      leaderboardProvider.broadcastLocale(targetLocale);
+
+      // Refresh extension-side UI
+      refreshUI();
+    }),
+
     vscode.commands.registerCommand('yourex.promptReplay', async () => {
       const completedIds = gameState.getCompletedLevelIds();
       if (completedIds.length === 0) {
@@ -264,6 +319,7 @@ export function activate(context: vscode.ExtensionContext) {
       welcomeProvider.dispose();
       leaderboardProvider.dispose();
       statusBar.dispose();
+      localeService.dispose();
     },
   });
 

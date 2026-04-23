@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import type { WebViewType } from '../../types';
+import type { Locale } from '../../i18n/types';
 
 export interface VisualConfigPayload {
   effectsEnabled: boolean;
@@ -28,7 +29,8 @@ export function getWebviewContent(
   webview: vscode.Webview,
   extensionUri: vscode.Uri,
   viewType: WebViewType,
-  visualConfig: VisualConfigPayload = getVisualConfigFromSettings()
+  visualConfig: VisualConfigPayload = getVisualConfigFromSettings(),
+  locale: Locale = 'zh-CN'
 ): string {
   const distUri = vscode.Uri.joinPath(extensionUri, 'webview-ui', 'dist');
   const scriptUri = webview.asWebviewUri(
@@ -53,6 +55,7 @@ export function getWebviewContent(
   <script nonce="${nonce}">
     window.__YOUREX_VIEW_TYPE__ = '${viewType}';
     window.__YOUREX_VISUAL_CONFIG__ = ${JSON.stringify(visualConfig)};
+    window.__YOUREX_LOCALE__ = '${locale}';
   </script>
   <script nonce="${nonce}" src="${scriptUri}"></script>
 </body>

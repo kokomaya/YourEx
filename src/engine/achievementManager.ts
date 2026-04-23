@@ -1,12 +1,30 @@
 import type { Achievement, GameState } from '../types';
 import { getAllLevels } from './levelLoader';
+import { type Locale, DEFAULT_LOCALE } from '../i18n/types';
+import { ACHIEVEMENT_TEXTS_ZH_CN } from '../data/achievements/zh-CN';
+import { ACHIEVEMENT_TEXTS_EN } from '../data/achievements/en';
+
+const ACHIEVEMENT_TEXTS: Record<Locale, Record<string, { name: string; description: string }>> = {
+  'zh-CN': ACHIEVEMENT_TEXTS_ZH_CN,
+  'en': ACHIEVEMENT_TEXTS_EN,
+};
+
+let currentLocale: Locale = DEFAULT_LOCALE;
+
+export function setAchievementLocale(locale: Locale): void {
+  currentLocale = locale;
+}
+
+function getAchievementText(id: string): { name: string; description: string } {
+  const texts = ACHIEVEMENT_TEXTS[currentLocale] ?? ACHIEVEMENT_TEXTS[DEFAULT_LOCALE];
+  return texts[id] ?? { name: id, description: '' };
+}
 
 function defineAchievements(): Achievement[] {
   return [
     {
       id: 'first_signal',
-      name: '📡 First Signal',
-      description: '信号清晰。无需校准。',
+      ...getAchievementText('first_signal'),
       condition: (state) =>
         Object.values(state.completedLevels).some(attempts =>
           attempts.some(a =>
@@ -18,8 +36,7 @@ function defineAchievements(): Achievement[] {
     },
     {
       id: 'speed_parse',
-      name: '⚡ Speed Parse',
-      description: '解析速度超出预期',
+      ...getAchievementText('speed_parse'),
       condition: (state) => {
         if (!state.startTime) return false;
         return Object.values(state.completedLevels).some(attempts =>
@@ -34,8 +51,7 @@ function defineAchievements(): Achievement[] {
     },
     {
       id: 'minimal_instruction',
-      name: '📏 Minimal Instruction',
-      description: '极简指令。极致效果。',
+      ...getAchievementText('minimal_instruction'),
       condition: (state) =>
         Object.values(state.completedLevels).some(attempts =>
           attempts.some(a =>
@@ -47,8 +63,7 @@ function defineAchievements(): Achievement[] {
     },
     {
       id: 'noise_overflow',
-      name: '📖 Noise Overflow',
-      description: '指令噪声过大。信号丢失。',
+      ...getAchievementText('noise_overflow'),
       condition: (state) =>
         Object.values(state.completedLevels).some(attempts =>
           attempts.some(a =>
@@ -60,8 +75,7 @@ function defineAchievements(): Achievement[] {
     },
     {
       id: 'manual_override',
-      name: '⚔️ Manual Override',
-      description: '你不需要协助系统。你就是规则。',
+      ...getAchievementText('manual_override'),
       condition: (state) =>
         Object.values(state.completedLevels).some(attempts =>
           attempts.some(a =>
@@ -73,8 +87,7 @@ function defineAchievements(): Achievement[] {
     },
     {
       id: 'full_manual',
-      name: '🗡️ Full Manual',
-      description: 'The system was never needed. You were the parser.',
+      ...getAchievementText('full_manual'),
       condition: (state) => {
         const levels = getAllLevels();
         if (levels.length === 0) return false;
@@ -90,15 +103,13 @@ function defineAchievements(): Achievement[] {
     },
     {
       id: 'chain_decode',
-      name: '🔥 Chain Decode',
-      description: '解析链路稳定。零误差。',
+      ...getAchievementText('chain_decode'),
       condition: (state) => state.maxCombo >= 10,
       unlocked: false,
     },
     {
       id: 'persistent_parser',
-      name: '💀 Persistent Parser',
-      description: '信号最终被解析。无论花了多久。',
+      ...getAchievementText('persistent_parser'),
       condition: (state) =>
         Object.values(state.completedLevels).some(attempts =>
           attempts.length >= 10 &&
@@ -110,8 +121,7 @@ function defineAchievements(): Achievement[] {
     },
     {
       id: 'night_shift',
-      name: '🌙 Night Shift',
-      description: '有些信号，只在深夜才清晰',
+      ...getAchievementText('night_shift'),
       condition: (state) =>
         Object.values(state.completedLevels).some(attempts =>
           attempts.some(a => {
@@ -124,8 +134,7 @@ function defineAchievements(): Achievement[] {
     },
     {
       id: 'human_machine_sync',
-      name: '🤖 Human-Machine Sync',
-      description: '人机协同。完美输出。',
+      ...getAchievementText('human_machine_sync'),
       condition: (state) =>
         Object.values(state.completedLevels).some(attempts => {
           const hasPromptPass = attempts.some(a =>
@@ -140,8 +149,7 @@ function defineAchievements(): Achievement[] {
     },
     {
       id: 'multi_vector',
-      name: '🧪 Multi-Vector',
-      description: '通往解密的路径不止一条',
+      ...getAchievementText('multi_vector'),
       condition: (state) =>
         Object.values(state.completedLevels).some(attempts => {
           const passingPrompts = new Set(
@@ -158,8 +166,7 @@ function defineAchievements(): Achievement[] {
     },
     {
       id: 'perfect_engineer',
-      name: '📐 Perfect Engineer',
-      description: '你的指令不是文字，是精密仪器',
+      ...getAchievementText('perfect_engineer'),
       condition: (state) => {
         const levels = getAllLevels();
         if (levels.length === 0) return false;
