@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useVSCode, useMessageListener } from '../../hooks/useVSCode';
 import { useTranslation } from '../../i18n';
-import type { Level, JudgeResult, PromptScore, LevelRewardData, HintData, ExtensionMessage } from '../../types/messages';
+import type { Level, JudgeResult, PromptScore, LevelRewardData, HintData, ExtensionMessage, LevelRecall } from '../../types/messages';
 import { RewardOverlay } from '../Reward';
 import { useVisualScene } from '../../visual/hooks/useVisualScene';
 import { VisualScene } from '../../visual/components/VisualScene';
@@ -32,6 +32,9 @@ export function PromptPanel() {
   const [signalFragment, setSignalFragment] = useState<string | null>(null);
   const [hintData, setHintData] = useState<HintData | null>(null);
   const [hintPanelOpen, setHintPanelOpen] = useState(false);
+  const [recall, setRecall] = useState<LevelRecall | null>(null);
+  const [recallDismissed, setRecallDismissed] = useState(false);
+  const [recallExpanded, setRecallExpanded] = useState(false);
   const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const stateHint = loading
@@ -63,12 +66,37 @@ export function PromptPanel() {
     switch (data.command) {
       case 'loadLevel':
         setLevel(data.level);
-        setResult(null);
         setReward(null);
         setSignalFragment(null);
         setHintData(null);
         setHintPanelOpen(false);
-        setPrompt('');
+        // Recall: pre-fill the prompt input with the player's best previous
+        // attempt so revisiting a cleared level shows the answer they used.
+        // Manual-mode recall does not pre-fill (the player would need a
+        // textarea with regex syntax); a collapsible card surfaces it instead.
+        setRecall(data.recall ?? null);
+        setRecallDismissed(false);
+        setRecallExpanded(false);
+        setPrompt(data.recall?.mode === 'prompt' ? (data.recall.prompt ?? '') : '');
+        // Restore the result panel from recall so revisiting a cleared
+        // level still shows score breakdown + matches + feedback exactly
+        // as it appeared on clear. Without recall (= never cleared, or
+        // freshly reset) the panel stays blank.
+        if (data.recall) {
+          setResult({
+            judgeResult: {
+              status: data.recall.status,
+              matched: data.recall.matched,
+              expected: data.level.expected,
+              rawRegexString: data.recall.regex,
+            },
+            score: data.recall.score,
+            feedback: data.recall.feedback,
+            rawRegex: data.recall.regex,
+          });
+        } else {
+          setResult(null);
+        }
         if (autoAdvanceTimer.current) {
           clearTimeout(autoAdvanceTimer.current);
           autoAdvanceTimer.current = null;
@@ -221,6 +249,69 @@ export function PromptPanel() {
             disabled={!hintData || (hintData.totalPromptHints === 0 && hintData.totalHints === 0)}
           />
         </div>
+        {recall && !recallDismissed && recall.mode === 'prompt' && (
+          <div className="recall-chip" data-status={recall.status}>
+            <span className="recall-chip__icon" aria-hidden="true">↺</span>
+            <span className="recall-chip__label">{t('promptPanel.recall.label')}</span>
+            {recall.scoreTotal !== undefined && (
+              <span className="recall-chip__score">
+                {t('promptPanel.recall.scoreSuffix', {
+                  score: recall.scoreTotal,
+                  status: t(
+                    recall.status === 'perfect'
+                      ? 'promptPanel.recall.statusPerfect'
+                      : 'promptPanel.recall.statusPass'
+                  ),
+                })}
+              </span>
+            )}
+            <span className="recall-chip__dot" aria-hidden="true">·</span>
+            <span className="recall-chip__attempts">
+              {t('promptPanel.recall.attemptsSuffix', { n: recall.totalAttempts })}
+            </span>
+            <button
+              type="button"
+              className="recall-chip__clear"
+              onClick={() => {
+                setPrompt('');
+                setRecallDismissed(true);
+              }}
+            >
+              {t('promptPanel.recall.clearButton')}
+            </button>
+          </div>
+        )}
+        {recall && recall.mode === 'manual' && (
+          <div
+            className={`recall-manual ${recallExpanded ? 'recall-manual--open' : ''}`}
+            data-status={recall.status}
+          >
+            <button
+              type="button"
+              className="recall-manual__header"
+              onClick={() => setRecallExpanded(v => !v)}
+              aria-expanded={recallExpanded}
+            >
+              <span className="recall-manual__icon" aria-hidden="true">{recallExpanded ? '▾' : '▸'}</span>
+              <span className="recall-manual__title">
+                {t('promptPanel.recall.manualHeader', {
+                  status: t(
+                    recall.status === 'perfect'
+                      ? 'promptPanel.recall.statusPerfect'
+                      : 'promptPanel.recall.statusPass'
+                  ),
+                  score: recall.scoreTotal ?? '—',
+                })}
+              </span>
+              {!recallExpanded && (
+                <span className="recall-manual__hint">{t('promptPanel.recall.manualExpandHint')}</span>
+              )}
+            </button>
+            {recallExpanded && (
+              <pre className="recall-manual__regex">{recall.regex}</pre>
+            )}
+          </div>
+        )}
         <textarea
           className="console-input"
           value={prompt}

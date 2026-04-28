@@ -48,7 +48,11 @@ export class PromptPanelProvider {
       const reloaded = getLevelById(this._currentLevel.id);
       if (reloaded) {
         this._currentLevel = reloaded;
-        this.postMessage({ command: 'loadLevel', level: reloaded });
+        this.postMessage({
+          command: 'loadLevel',
+          level: reloaded,
+          recall: this.buildRecall(reloaded.id),
+        });
       }
     }
   }
@@ -106,8 +110,45 @@ export class PromptPanelProvider {
     const level = getLevelById(levelId);
     if (!level) return;
     this._currentLevel = level;
-    this.postMessage({ command: 'loadLevel', level });
+    this.postMessage({ command: 'loadLevel', level, recall: this.buildRecall(levelId) });
     this.sendHintState(level);
+  }
+
+  /**
+   * Look up the player's best previous attempt and hand back the data
+   * needed to restore both the prompt input AND the result/score panel
+   * exactly as it appeared on clear. Returns undefined when the level
+   * has never been passed (or after `yourex.resetProgress` cleared the
+   * store) so the panel renders blank.
+   */
+  private buildRecall(levelId: string): import('../../types/messages').LevelRecall | undefined {
+    if (!this._gameState) return undefined;
+    const best = this._gameState.getBestAttempt(levelId);
+    if (!best) return undefined;
+    const status = best.judgeResult.status;
+    if (status !== 'perfect' && status !== 'pass') return undefined;
+
+    const level = getLevelById(levelId);
+    // Feedback text is locale-dependent (level JSONs are loaded per-locale),
+    // so we recompute it from the current level rather than persist a stale
+    // string. Falls back to the raw `onPass`/`onPerfect` strings if the
+    // locale getter is not yet wired.
+    const feedback = level
+      ? getFeedbackText(best.judgeResult, level, best.mode)
+      : '';
+    const totalAttempts = this._gameState.getLevelAttempts(levelId).length;
+    return {
+      mode: best.mode,
+      prompt: best.mode === 'prompt' ? best.prompt : undefined,
+      regex: best.judgeResult.rawRegexString || best.regex,
+      scoreTotal: best.promptScore?.total,
+      status,
+      totalAttempts,
+      score: best.promptScore,
+      matched: best.judgeResult.matched ?? [],
+      feedback,
+      timestamp: best.timestamp,
+    };
   }
 
   private sendHintState(level: Level, isNewFail = false): void {
@@ -133,7 +174,11 @@ export class PromptPanelProvider {
     switch (msg.command) {
       case 'ready':
         if (this._currentLevel) {
-          this.postMessage({ command: 'loadLevel', level: this._currentLevel });
+          this.postMessage({
+            command: 'loadLevel',
+            level: this._currentLevel,
+            recall: this.buildRecall(this._currentLevel.id),
+          });
           this.sendHintState(this._currentLevel);
         }
         break;

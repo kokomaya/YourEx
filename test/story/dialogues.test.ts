@@ -1,13 +1,31 @@
-import { describe, it, expect } from 'vitest';
-import { getRexSignal, isAllPerfect, getChapterDialogue, DIALOGUES } from '../../src/story/dialogues';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import {
+  getRexSignal,
+  isAllPerfect,
+  getChapterDialogue,
+  setDialogueLocale,
+  DIALOGUES,
+} from '../../src/story/dialogues';
 import { DEFAULT_GAME_STATE } from '../../src/types';
 import type { GameState } from '../../src/types';
+import { DEFAULT_LOCALE } from '../../src/i18n/types';
 
 function makeState(overrides: Partial<GameState> = {}): GameState {
   return { ...structuredClone(DEFAULT_GAME_STATE), ...overrides };
 }
 
 describe('dialogues', () => {
+  // The dialogues module holds a module-level `currentLocale` that defaults
+  // to 'en'. Tests that assert on Chinese strings must pin it to zh-CN
+  // first, and we restore the default at the end so we don't leak state
+  // into sibling test files that run in the same Vitest worker.
+  beforeAll(() => {
+    setDialogueLocale('zh-CN');
+  });
+  afterAll(() => {
+    setDialogueLocale(DEFAULT_LOCALE);
+  });
+
   describe('DIALOGUES', () => {
     it('has welcome dialogue with lines', () => {
       expect(DIALOGUES.welcome.title).toBeTruthy();

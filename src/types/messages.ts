@@ -85,9 +85,33 @@ export interface HintData {
   peekPenalty: number;
 }
 
+/**
+ * Snapshot of a player's best previous attempt on a level. Sent inside
+ * `loadLevel` so the prompt panel can pre-fill the input with their
+ * historical solution AND restore the result/score panel that was shown
+ * the moment they cleared it. Built from `gameState.getBestAttempt(levelId)`;
+ * absent when no passing attempt exists.
+ */
+export interface LevelRecall {
+  mode: 'prompt' | 'manual';
+  prompt?: string;
+  regex: string;
+  scoreTotal?: number;
+  status: 'perfect' | 'pass';
+  totalAttempts: number;
+  /** Full breakdown so the result panel renders identically to first clear. */
+  score?: PromptScore;
+  /** Stored matched lines from the winning attempt (extras stripped at build). */
+  matched: string[];
+  /** Localized feedback string (the `onPerfect`/`onPass` text shown originally). */
+  feedback: string;
+  /** Timestamp of the winning attempt, for the optional "cleared on …" footnote. */
+  timestamp: number;
+}
+
 // Extension → WebView
 export type ExtensionMessage =
-  | { command: 'loadLevel'; level: Level }
+  | { command: 'loadLevel'; level: Level; recall?: LevelRecall }
   | { command: 'showResult'; result: JudgeResult; score?: PromptScore; feedback: string; rawRegex?: string; reward?: LevelRewardData }
   | { command: 'showError'; message: string }
   | { command: 'setLoading'; loading: boolean }

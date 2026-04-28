@@ -189,9 +189,27 @@ export interface JourneyCertificateData {
   isOriginComplete: boolean;
 }
 
+/**
+ * Mirror of src/types/messages.ts LevelRecall. The best previous passing
+ * attempt for a level, used to pre-fill the prompt panel and restore the
+ * full result/score panel that was originally shown on clear.
+ */
+export interface LevelRecall {
+  mode: 'prompt' | 'manual';
+  prompt?: string;
+  regex: string;
+  scoreTotal?: number;
+  status: 'perfect' | 'pass';
+  totalAttempts: number;
+  score?: PromptScore;
+  matched: string[];
+  feedback: string;
+  timestamp: number;
+}
+
 // Extension → WebView
 export type ExtensionMessage =
-  | { command: 'loadLevel'; level: Level }
+  | { command: 'loadLevel'; level: Level; recall?: LevelRecall }
   | { command: 'showResult'; result: JudgeResult; score?: PromptScore; feedback: string; rawRegex?: string; reward?: LevelRewardData }
   | { command: 'showError'; message: string }
   | { command: 'setLoading'; loading: boolean }

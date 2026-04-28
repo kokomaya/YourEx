@@ -338,3 +338,122 @@
   .signal-fragment { animation: none; }
   .signal-fragment__code { animation: none; }
 }
+
+/* ── Recall chip: surface previous best prompt for replayed levels ────── */
+.recall-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 8px 0;
+  padding: 5px 10px;
+  border: 1px solid rgba(52, 245, 197, 0.3);
+  border-left: 2px solid #34f5c5;
+  background: linear-gradient(90deg, rgba(52, 245, 197, 0.08), rgba(52, 245, 197, 0.02) 70%);
+  font-family: 'JetBrains Mono', Consolas, 'Courier New', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.5px;
+  color: rgba(230, 237, 247, 0.78);
+  border-radius: 2px;
+  animation: recallFadeIn 0.35s ease-out;
+}
+.recall-chip[data-status="perfect"] {
+  border-color: rgba(255, 210, 122, 0.45);
+  border-left-color: #ffd27a;
+  background: linear-gradient(90deg, rgba(255, 210, 122, 0.10), rgba(255, 210, 122, 0.02) 70%);
+}
+.recall-chip__icon {
+  color: #34f5c5;
+  font-size: 13px;
+  line-height: 1;
+}
+.recall-chip[data-status="perfect"] .recall-chip__icon { color: #ffd27a; }
+.recall-chip__label {
+  color: #34f5c5;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.recall-chip[data-status="perfect"] .recall-chip__label { color: #ffd27a; }
+.recall-chip__score {
+  color: rgba(230, 237, 247, 0.92);
+}
+.recall-chip__dot { color: rgba(230, 237, 247, 0.35); }
+.recall-chip__attempts { color: rgba(230, 237, 247, 0.55); }
+.recall-chip__clear {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid rgba(230, 237, 247, 0.18);
+  color: rgba(230, 237, 247, 0.65);
+  font-family: inherit;
+  font-size: 9.5px;
+  letter-spacing: 1px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.recall-chip__clear:hover {
+  color: #ff8fa3;
+  border-color: rgba(255, 92, 122, 0.55);
+  background: rgba(255, 92, 122, 0.08);
+}
+
+/* ── Recall (manual mode) collapsible card ────────────────────────────── */
+.recall-manual {
+  margin: 4px 0 8px 0;
+  border: 1px solid rgba(52, 245, 197, 0.3);
+  border-left: 2px solid #34f5c5;
+  background: rgba(52, 245, 197, 0.04);
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  border-radius: 2px;
+  animation: recallFadeIn 0.35s ease-out;
+}
+.recall-manual[data-status="perfect"] {
+  border-color: rgba(255, 210, 122, 0.45);
+  border-left-color: #ffd27a;
+  background: rgba(255, 210, 122, 0.05);
+}
+.recall-manual__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: rgba(230, 237, 247, 0.78);
+  font-family: inherit;
+  font-size: 10.5px;
+  letter-spacing: 0.5px;
+  padding: 6px 10px;
+  cursor: pointer;
+  text-align: left;
+}
+.recall-manual__icon {
+  color: #34f5c5;
+  width: 10px;
+  display: inline-block;
+}
+.recall-manual[data-status="perfect"] .recall-manual__icon { color: #ffd27a; }
+.recall-manual__title { flex: 1; text-transform: uppercase; }
+.recall-manual__hint { color: rgba(230, 237, 247, 0.4); font-size: 9.5px; }
+.recall-manual__regex {
+  margin: 0;
+  padding: 8px 10px;
+  background: rgba(5, 7, 13, 0.45);
+  color: #e6edf7;
+  font-size: 11px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  border-top: 1px dashed rgba(52, 245, 197, 0.25);
+}
+.recall-manual[data-status="perfect"] .recall-manual__regex {
+  border-top-color: rgba(255, 210, 122, 0.3);
+}
+
+@keyframes recallFadeIn {
+  from { opacity: 0; transform: translateY(-2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .recall-chip, .recall-manual { animation: none; }
+}

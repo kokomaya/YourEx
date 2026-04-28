@@ -70,7 +70,7 @@ export function getWebviewContent(
     window.__YOUREX_LOCALE__ = '${locale}';
     window.__YOUREX_BOOT_CONTEXT__ = ${JSON.stringify(bootContext)};
   </script>
-  <script nonce="${nonce}" src="${scriptUri}"></script>
+  <script nonce="${nonce}" type="module" src="${scriptUri}"></script>
 </body>
 </html>`;
 }
