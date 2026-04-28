@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import type { IMapDataSource } from './IMapDataSource';
 import type { MapWebviewToExt } from './mapMessages';
+import { t } from '../../../i18n/t';
 
 export class MissionMapProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'yourex-levels';
@@ -21,7 +22,15 @@ export class MissionMapProvider implements vscode.WebviewViewProvider {
     if (!this._view || !this._dataSource) return;
     const chapters = this._dataSource.getChapters();
     const certificateUnlocked = this._dataSource.isCertificateUnlocked();
-    this._view.webview.postMessage({ command: 'loadMap', chapters, certificateUnlocked });
+    const hasProgress = this._dataSource.hasAnyProgress();
+    this._view.webview.postMessage({
+      command: 'loadMap',
+      chapters,
+      certificateUnlocked,
+      hasProgress,
+      resetLabel: t('reset.sidebarButton'),
+      resetTooltip: t('reset.sidebarTooltip'),
+    });
     if (this._activeLevelId) {
       this._view.webview.postMessage({ command: 'highlightLevel', levelId: this._activeLevelId });
     }
@@ -59,6 +68,10 @@ export class MissionMapProvider implements vscode.WebviewViewProvider {
         case 'openJourneyCertificate':
           vscode.commands.executeCommand('yourex.openJourneyCertificate');
           break;
+        case 'resetProgress':
+          // Sidebar already enforced its own hold-to-confirm; skip the modal.
+          vscode.commands.executeCommand('yourex.resetProgress', { skipConfirm: true });
+          break;
       }
     });
   }
@@ -83,6 +96,16 @@ export class MissionMapProvider implements vscode.WebviewViewProvider {
       <span class="cert-footer-icon">📜</span>
       <span class="cert-footer-label">Journey Certificate</span>
     </button>
+  </div>
+  <div id="reset-footer" hidden>
+    <button id="reset-footer-btn" type="button" data-state="idle">
+      <span class="reset-footer__chevron">&gt;&gt;</span>
+      <span class="reset-footer__label">PURGE_TIMELINE</span>
+      <span class="reset-footer__hint">[HOLD]</span>
+      <span class="reset-footer__progress" aria-hidden="true"></span>
+      <span class="reset-footer__scanline" aria-hidden="true"></span>
+    </button>
+    <div class="reset-footer__status" aria-live="polite"></div>
   </div>
 </div>
 <script nonce="${nonce}">${MAP_JS}</script>
@@ -352,6 +375,159 @@ body {
   font-weight: 600;
   letter-spacing: 0.5px;
 }
+
+/* ── Reset progress: terminal-style PURGE_TIMELINE control ── */
+#reset-footer {
+  margin-top: 10px;
+  padding: 0 8px 14px 8px;
+}
+#reset-footer-btn {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 92, 122, 0.28);
+  border-radius: 3px;
+  background:
+    linear-gradient(180deg, rgba(255, 92, 122, 0.05) 0%, rgba(255, 92, 122, 0.02) 100%),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 2px,
+      rgba(255, 92, 122, 0.04) 2px,
+      rgba(255, 92, 122, 0.04) 3px
+    );
+  color: #ff8fa3;
+  font-family: 'JetBrains Mono', Consolas, 'Courier New', monospace;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  cursor: pointer;
+  text-align: left;
+  text-transform: uppercase;
+  transition: border-color 0.18s, color 0.18s, background-color 0.18s, text-shadow 0.18s;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#reset-footer-btn:hover {
+  border-color: #ff5c7a;
+  color: #ffd5dd;
+  text-shadow: 0 0 6px rgba(255, 92, 122, 0.55);
+}
+#reset-footer-btn:hover .reset-footer__scanline {
+  transform: translateY(120%);
+}
+#reset-footer-btn .reset-footer__chevron {
+  color: #ff5c7a;
+  opacity: 0.85;
+}
+#reset-footer-btn .reset-footer__label {
+  flex: 1;
+}
+#reset-footer-btn .reset-footer__hint {
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: rgba(255, 143, 163, 0.55);
+  border: 1px solid rgba(255, 92, 122, 0.35);
+  padding: 1px 4px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+#reset-footer-btn .reset-footer__scanline {
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, #ff5c7a 50%, transparent 100%);
+  opacity: 0.7;
+  transform: translateY(-100%);
+  transition: transform 1.6s cubic-bezier(0.45, 0, 0.55, 1);
+  pointer-events: none;
+}
+#reset-footer-btn .reset-footer__progress {
+  position: absolute;
+  left: 0; bottom: 0; top: 0;
+  width: 0%;
+  background: linear-gradient(90deg, rgba(255,92,122,0.18), rgba(255,92,122,0.32));
+  border-right: 1px solid #ff5c7a;
+  transition: width 60ms linear;
+  pointer-events: none;
+  z-index: 0;
+}
+#reset-footer-btn > *:not(.reset-footer__progress):not(.reset-footer__scanline) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Charging state: red intensifies, hint flips to ABORT */
+#reset-footer-btn[data-state="charging"] {
+  border-color: #ff5c7a;
+  color: #ffd5dd;
+  text-shadow: 0 0 8px rgba(255, 92, 122, 0.8);
+  animation: resetPulse 0.6s ease-in-out infinite;
+}
+#reset-footer-btn[data-state="charging"] .reset-footer__hint::before {
+  content: 'RELEASE TO ABORT';
+}
+#reset-footer-btn[data-state="charging"] .reset-footer__hint {
+  color: #ff5c7a;
+  border-color: #ff5c7a;
+  font-size: 0; /* hide static [HOLD] text, show ::before only */
+}
+#reset-footer-btn[data-state="charging"] .reset-footer__hint::before {
+  font-size: 9px;
+}
+#reset-footer-btn[data-state="charging"] .reset-footer__chevron {
+  animation: resetBlink 0.4s steps(2) infinite;
+}
+
+/* Triggered: full red flash before command fires */
+#reset-footer-btn[data-state="triggered"] {
+  border-color: #ff5c7a;
+  background: #ff5c7a;
+  color: #05070d;
+  text-shadow: none;
+  animation: resetFlash 0.3s ease-out 1;
+}
+#reset-footer-btn[data-state="triggered"] .reset-footer__chevron,
+#reset-footer-btn[data-state="triggered"] .reset-footer__hint {
+  display: none;
+}
+#reset-footer-btn[data-state="triggered"] .reset-footer__label::before {
+  content: 'TIMELINE PURGED · ';
+  color: #05070d;
+}
+
+.reset-footer__status {
+  margin-top: 4px;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: rgba(255, 143, 163, 0.6);
+  min-height: 11px;
+  text-align: right;
+  padding-right: 4px;
+}
+
+@keyframes resetPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 92, 122, 0); }
+  50% { box-shadow: 0 0 12px 2px rgba(255, 92, 122, 0.35); }
+}
+@keyframes resetBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+@keyframes resetFlash {
+  0% { background: #ffd5dd; }
+  100% { background: #ff5c7a; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #reset-footer-btn[data-state="charging"] { animation: none; }
+  #reset-footer-btn[data-state="charging"] .reset-footer__chevron { animation: none; }
+  #reset-footer-btn .reset-footer__scanline { transition: none; }
+}
 `;
 
 /* ─── Inline JS ─── */
@@ -365,9 +541,83 @@ const MAP_JS = `
   const panelEl = document.getElementById('chapter-panel');
   const footerEl = document.getElementById('cert-footer');
   const footerBtn = document.getElementById('cert-footer-btn');
+  const resetFooterEl = document.getElementById('reset-footer');
+  const resetFooterBtn = document.getElementById('reset-footer-btn');
+  const resetFooterLabel = resetFooterBtn ? resetFooterBtn.querySelector('.reset-footer__label') : null;
+  const resetFooterProgress = resetFooterBtn ? resetFooterBtn.querySelector('.reset-footer__progress') : null;
+  const resetFooterStatus = resetFooterEl ? resetFooterEl.querySelector('.reset-footer__status') : null;
   if (footerBtn) {
     footerBtn.addEventListener('click', () => {
       vscode.postMessage({ command: 'openJourneyCertificate' });
+    });
+  }
+
+  /* ─ Hold-to-purge interaction ──────────────────────────────────────────
+   * Plain modal dialogs feel out of place in a cockpit UI. Instead the reset
+   * control charges over HOLD_MS while held; releasing early aborts.
+   * Reaching full charge fires the (still safety-gated) extension command. */
+  const HOLD_MS = 1400;
+  let holdStart = 0;
+  let holdRaf = 0;
+  let holdTriggered = false;
+
+  function resetVisualReset() {
+    if (resetFooterBtn) resetFooterBtn.dataset.state = 'idle';
+    if (resetFooterProgress) resetFooterProgress.style.width = '0%';
+  }
+  function setStatus(text) {
+    if (resetFooterStatus) resetFooterStatus.textContent = text || '';
+  }
+  function tickHold(now) {
+    if (!holdStart) return;
+    const elapsed = now - holdStart;
+    const ratio = Math.min(1, elapsed / HOLD_MS);
+    if (resetFooterProgress) resetFooterProgress.style.width = (ratio * 100).toFixed(1) + '%';
+    const remaining = Math.max(0, HOLD_MS - elapsed);
+    setStatus('CHARGING ' + (remaining / 1000).toFixed(1) + 's');
+    if (ratio >= 1) {
+      holdTriggered = true;
+      holdStart = 0;
+      if (resetFooterBtn) resetFooterBtn.dataset.state = 'triggered';
+      setStatus('PURGE EXECUTED');
+      vscode.postMessage({ command: 'resetProgress' });
+      // Visual reset shortly after so the next mount looks clean.
+      setTimeout(() => { resetVisualReset(); setStatus(''); }, 1100);
+      return;
+    }
+    holdRaf = requestAnimationFrame(tickHold);
+  }
+  function startHold(e) {
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
+    if (!resetFooterBtn || resetFooterBtn.dataset.state === 'triggered') return;
+    holdTriggered = false;
+    holdStart = performance.now();
+    resetFooterBtn.dataset.state = 'charging';
+    holdRaf = requestAnimationFrame(tickHold);
+  }
+  function endHold(reason) {
+    if (holdTriggered) return; // already fired
+    if (!holdStart) return;
+    cancelAnimationFrame(holdRaf);
+    holdStart = 0;
+    if (resetFooterBtn) resetFooterBtn.dataset.state = 'idle';
+    if (resetFooterProgress) resetFooterProgress.style.width = '0%';
+    setStatus(reason === 'leave' ? 'POINTER LOST · ABORTED' : 'ABORTED');
+    setTimeout(() => setStatus(''), 1400);
+  }
+  if (resetFooterBtn) {
+    resetFooterBtn.addEventListener('pointerdown', startHold);
+    resetFooterBtn.addEventListener('pointerup', () => endHold('release'));
+    resetFooterBtn.addEventListener('pointercancel', () => endHold('cancel'));
+    resetFooterBtn.addEventListener('pointerleave', () => endHold('leave'));
+    // Keyboard accessibility: Space / Enter still triggers via the slow path
+    // (extension's command palette confirm flow), since you can't "hold" a key
+    // press with sane semantics here.
+    resetFooterBtn.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter' || ev.key === ' ') {
+        ev.preventDefault();
+        vscode.postMessage({ command: 'resetProgress' });
+      }
     });
   }
   function setCertFooter(visible) {
@@ -378,6 +628,19 @@ const MAP_JS = `
       footerEl.setAttribute('hidden', '');
     }
   }
+  function setResetFooter(visible, _label, tooltip) {
+    if (!resetFooterEl) return;
+    if (visible) {
+      resetFooterEl.removeAttribute('hidden');
+    } else {
+      resetFooterEl.setAttribute('hidden', '');
+    }
+    // Label is intentionally fixed ("PURGE_TIMELINE") — terminal-style identifier
+    // shouldn't be translated. Only the tooltip carries the localized explanation.
+    if (resetFooterBtn && typeof tooltip === 'string') resetFooterBtn.title = tooltip;
+    void _label;
+    void resetFooterLabel;
+  }
 
   window.addEventListener('message', (e) => {
     const msg = e.data;
@@ -385,6 +648,7 @@ const MAP_JS = `
       case 'loadMap':
         chapters = msg.chapters;
         setCertFooter(!!msg.certificateUnlocked);
+        setResetFooter(!!msg.hasProgress, msg.resetLabel, msg.resetTooltip);
         if (!chapters.find(c => c.chapter === activeChapter)) {
           activeChapter = chapters[0]?.chapter ?? 1;
         }

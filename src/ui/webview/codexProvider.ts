@@ -47,4 +47,8 @@ export class CodexProvider {
       this._panel = undefined;
     });
   }
+
+  dispose(): void {
+    this._panel?.dispose();
+  }
 }

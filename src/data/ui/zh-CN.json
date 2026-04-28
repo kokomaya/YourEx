@@ -85,5 +85,16 @@
   "certificate.achievementsTitle": ">> 已解锁的成就",
   "certificate.achievementLockedHint": "未解锁",
   "certificate.brandFooter": "yourex.dev",
-  "certificate.openWebviewTitle": "YourEx — 旅程证书"
+  "certificate.openWebviewTitle": "YourEx — 旅程证书",
+  "reset.commandTitle": "重置游戏进度",
+  "reset.confirmTitle": "⚠️ 重置游戏进度？",
+  "reset.confirmDetail": "这会永久删除所有关卡记录、XP、成就、证书与玩家名等本地数据。此操作不可恢复。",
+  "reset.confirmButton": "重置",
+  "reset.cancelButton": "取消",
+  "reset.typePrompt": "输入 RESET 以确认",
+  "reset.typeError": "请输入大写 RESET 以确认",
+  "reset.successNotification": "[YourEx] 游戏进度已重置。准备好开启新的旅程了吗？",
+  "reset.sidebarButton": "🗑️ 重置进度",
+  "reset.sidebarTooltip": "清除全部本地游戏数据，重新开始",
+  "reset.welcomeLink": "重置存档并重新开始"
 }

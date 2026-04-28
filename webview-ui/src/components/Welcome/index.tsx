@@ -1,6 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useVSCode } from '../../hooks/useVSCode';
 import { useTranslation } from '../../i18n';
+
+declare global {
+  interface Window {
+    __YOUREX_BOOT_CONTEXT__?: { hasProgress?: boolean };
+  }
+}
 import { useVisualScene } from '../../visual/hooks/useVisualScene';
 import { VisualScene } from '../../visual/components/VisualScene';
 import { useVisualPreferences } from '../../visual/hooks/useVisualPreferences';
@@ -78,8 +84,14 @@ export function Welcome() {
     return () => clearInterval(interval);
   }, [bootLines.length]);
 
+  const hasProgress = window.__YOUREX_BOOT_CONTEXT__?.hasProgress === true;
+
   const handleStart = () => {
     postMessage({ command: 'startDecryption' });
+  };
+
+  const handleReset = () => {
+    postMessage({ command: 'resetProgress' });
   };
 
   return (
@@ -113,6 +125,16 @@ export function Welcome() {
             <button className={`btn-primary ${scene.buttonClassName}`} onClick={handleStart}>
               {t('welcome.startButton')}
             </button>
+            {hasProgress && (
+              <button
+                type="button"
+                className="welcome-reset-link"
+                onClick={handleReset}
+                title={t('reset.sidebarTooltip')}
+              >
+                {t('reset.welcomeLink')}
+              </button>
+            )}
           </div>
         )}
       </div>

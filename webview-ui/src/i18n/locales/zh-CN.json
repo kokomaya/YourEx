@@ -238,5 +238,8 @@
   "certificate.previewNext": "下一页",
   "certificate.playerNameLabel": "署名",
   "certificate.playerNameSave": "保存署名",
-  "certificate.regenerateNote": "下载时会即时生成 PDF，与预览一致。"
+  "certificate.regenerateNote": "下载时会即时生成 PDF，与预览一致。",
+  "reset.welcomeLink": "重置存档并重新开始",
+  "reset.sidebarButton": "🗑️ 重置进度",
+  "reset.sidebarTooltip": "清除全部本地游戏数据，重新开始"
 }

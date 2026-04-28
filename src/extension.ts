@@ -21,7 +21,7 @@ import { createAccessPolicy } from './access/accessPolicyFactory';
 import { parseRunMode, getModeLabel, type RunMode } from './mode/runMode';
 import { computeAllowDeveloperMode } from './mode/modeGuards';
 import { LocaleService, readLocaleFromConfig, detectDefaultLocale } from './i18n/localeService';
-import { initTranslations } from './i18n/t';
+import { initTranslations, t } from './i18n/t';
 import { setDialogueLocale } from './story/dialogues';
 import { setAchievementLocale } from './engine/achievementManager';
 import { HintTracker } from './engine/hintTracker';
@@ -113,6 +113,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   const welcomeProvider = new WelcomeProvider(context.extensionUri);
   welcomeProvider.setLocale(initialLocale);
+  welcomeProvider.setGameState(gameState);
   const leaderboardProvider = new LeaderboardProvider(context.extensionUri);
   leaderboardProvider.setGameState(gameState);
   leaderboardProvider.setLocale(initialLocale);
@@ -240,6 +241,65 @@ export function activate(context: vscode.ExtensionContext) {
 
     vscode.commands.registerCommand('yourex.showCh6Interlude', () => {
       ch6InterludeProvider.show();
+    }),
+
+    vscode.commands.registerCommand('yourex.resetProgress', async (arg?: { skipConfirm?: boolean }) => {
+      // Sidebar invokes with skipConfirm=true after its own hold-to-purge gesture
+      // already provided deliberate confirmation. Command Palette / Welcome link
+      // still go through the modal + typed-RESET flow because those entries have
+      // no built-in friction of their own.
+      const skipConfirm = arg && arg.skipConfirm === true;
+
+      if (!skipConfirm) {
+        // Step 1 — modal warning. Cancel here = no-op.
+        const confirmed = await vscode.window.showWarningMessage(
+          t('reset.confirmTitle'),
+          { modal: true, detail: t('reset.confirmDetail') },
+          t('reset.confirmButton'),
+        );
+        if (confirmed !== t('reset.confirmButton')) {
+          return;
+        }
+
+        // Step 2 — typed confirmation, only when the player has meaningful progress
+        // (>= 5 cleared levels = at least one full chapter). New players bypass this.
+        const completedCount = gameState.getCompletedLevelIds().length;
+        if (completedCount >= 5) {
+          const typed = await vscode.window.showInputBox({
+            prompt: t('reset.typePrompt'),
+            placeHolder: 'RESET',
+            ignoreFocusOut: true,
+            validateInput: (v) => (v.length === 0 || v === 'RESET' ? null : t('reset.typeError')),
+          });
+          if (typed !== 'RESET') {
+            return;
+          }
+        }
+      }
+
+      // Wipe persisted progress. gameState.reset() rewrites the storage with
+      // DEFAULT_GAME_STATE; the auxiliary key (Ch6 interlude seen) lives outside
+      // gameState and must be cleared separately.
+      gameState.reset();
+      await context.globalState.update('yourex.ch6InterludeSeen', undefined);
+
+      // Re-seat in-memory trackers that don't persist to disk.
+      promptPanel.setHintTracker(new HintTracker());
+
+      // Tear down any open game webviews so their React state can't reference
+      // the now-stale data — they will re-create cleanly when reopened.
+      promptPanel.dispose();
+      welcomeProvider.dispose();
+      leaderboardProvider.dispose();
+      codexProvider.dispose();
+      ch6InterludeProvider.dispose();
+      certificateProvider.dispose();
+
+      // Mirror first-launch behavior: refresh sidebar/status bar and pop Welcome.
+      refreshUI();
+      welcomeProvider.show();
+
+      vscode.window.showInformationMessage(t('reset.successNotification'));
     }),
 
     vscode.commands.registerCommand('yourex.openJourneyCertificate', () => {

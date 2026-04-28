@@ -1,15 +1,21 @@
 import * as vscode from 'vscode';
 import { getWebviewContent, getVisualConfigFromSettings } from './webviewHelper';
 import type { Locale } from '../../i18n/types';
+import type { GameStateManager } from '../../state/gameState';
 
 export class WelcomeProvider {
   private _panel: vscode.WebviewPanel | undefined;
   private _locale: Locale = 'zh-CN';
+  private _gameState: GameStateManager | undefined;
 
   constructor(private readonly _extensionUri: vscode.Uri) {}
 
   setLocale(locale: Locale): void {
     this._locale = locale;
+  }
+
+  setGameState(gameState: GameStateManager): void {
+    this._gameState = gameState;
   }
 
   broadcastLocale(locale: Locale): void {
@@ -35,12 +41,17 @@ export class WelcomeProvider {
       }
     );
 
+    const hasProgress =
+      !!this._gameState &&
+      (this._gameState.state.startTime !== null || this._gameState.state.totalAttempts > 0);
+
     this._panel.webview.html = getWebviewContent(
       this._panel.webview,
       this._extensionUri,
       'welcome',
       getVisualConfigFromSettings(),
-      this._locale
+      this._locale,
+      { hasProgress }
     );
 
     this._panel.webview.onDidReceiveMessage((message: { command: string; locale?: string }) => {
@@ -49,6 +60,8 @@ export class WelcomeProvider {
         vscode.commands.executeCommand('yourex.startDecryption');
       } else if (message.command === 'switchLanguage' && message.locale) {
         vscode.commands.executeCommand('yourex.switchLanguage', message.locale);
+      } else if (message.command === 'resetProgress') {
+        vscode.commands.executeCommand('yourex.resetProgress');
       }
     });
 

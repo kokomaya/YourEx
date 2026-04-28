@@ -22,7 +22,7 @@ export interface ChapterMapData {
 }
 
 export type MapExtToWebview =
-  | { command: 'loadMap'; chapters: ChapterMapData[]; certificateUnlocked: boolean }
+  | { command: 'loadMap'; chapters: ChapterMapData[]; certificateUnlocked: boolean; hasProgress: boolean; resetLabel: string; resetTooltip: string }
   | { command: 'updateNode'; nodeId: string; status: MapNode['status']; score: number | null }
   | { command: 'setActiveChapter'; chapterId: number }
   | { command: 'setCertificateUnlocked'; unlocked: boolean };
@@ -30,4 +30,5 @@ export type MapExtToWebview =
 export type MapWebviewToExt =
   | { command: 'ready' }
   | { command: 'selectLevel'; levelId: string }
-  | { command: 'openJourneyCertificate' };
+  | { command: 'openJourneyCertificate' }
+  | { command: 'resetProgress' };

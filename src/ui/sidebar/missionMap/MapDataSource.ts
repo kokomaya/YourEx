@@ -85,4 +85,9 @@ export class MapDataSource implements IMapDataSource {
   isCertificateUnlocked(): boolean {
     return checkCertificateUnlocked(this.gameState.state, getAllLevels());
   }
+
+  hasAnyProgress(): boolean {
+    const s = this.gameState.state;
+    return s.totalAttempts > 0 || s.startTime !== null;
+  }
 }

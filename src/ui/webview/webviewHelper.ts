@@ -25,12 +25,18 @@ export function getVisualConfigFromSettings(): VisualConfigPayload {
   };
 }
 
+export interface WebviewBootContext {
+  /** Whether the player has any persisted progress. Drives optional UI like the Welcome reset link. */
+  hasProgress?: boolean;
+}
+
 export function getWebviewContent(
   webview: vscode.Webview,
   extensionUri: vscode.Uri,
   viewType: WebViewType,
   visualConfig: VisualConfigPayload = getVisualConfigFromSettings(),
-  locale: Locale = 'zh-CN'
+  locale: Locale = 'zh-CN',
+  bootContext: WebviewBootContext = {},
 ): string {
   const distUri = vscode.Uri.joinPath(extensionUri, 'webview-ui', 'dist');
   // Certificate has its own Vite entry so the heavy @react-pdf/renderer chunk
@@ -62,6 +68,7 @@ export function getWebviewContent(
     window.__YOUREX_VIEW_TYPE__ = '${viewType}';
     window.__YOUREX_VISUAL_CONFIG__ = ${JSON.stringify(visualConfig)};
     window.__YOUREX_LOCALE__ = '${locale}';
+    window.__YOUREX_BOOT_CONTEXT__ = ${JSON.stringify(bootContext)};
   </script>
   <script nonce="${nonce}" src="${scriptUri}"></script>
 </body>

@@ -77,6 +77,11 @@
         "command": "yourex.openJourneyCertificate",
         "title": "Generate Journey Certificate",
         "category": "YourEx"
+      },
+      {
+        "command": "yourex.resetProgress",
+        "title": "Reset Game Progress",
+        "category": "YourEx"
       }
     ],
     "configuration": {

@@ -85,5 +85,16 @@
   "certificate.achievementsTitle": ">> ACHIEVEMENTS UNLOCKED",
   "certificate.achievementLockedHint": "LOCKED",
   "certificate.brandFooter": "yourex.dev",
-  "certificate.openWebviewTitle": "YourEx \u2014 Journey Certificate"
+  "certificate.openWebviewTitle": "YourEx \u2014 Journey Certificate",
+  "reset.commandTitle": "Reset Game Progress",
+  "reset.confirmTitle": "\u26a0\ufe0f Reset Game Progress?",
+  "reset.confirmDetail": "This will permanently erase all level records, XP, achievements, certificate state, and the saved player name. This cannot be undone.",
+  "reset.confirmButton": "Reset",
+  "reset.cancelButton": "Cancel",
+  "reset.typePrompt": "Type RESET to confirm.",
+  "reset.typeError": "Type RESET (uppercase) to confirm.",
+  "reset.successNotification": "[YourEx] Game progress reset. Ready for a new journey?",
+  "reset.sidebarButton": "\ud83d\uddd1\ufe0f Reset Progress",
+  "reset.sidebarTooltip": "Erase all local game data and start over",
+  "reset.welcomeLink": "Reset save and start over"
 }

@@ -238,5 +238,8 @@
   "certificate.previewNext": "Next",
   "certificate.playerNameLabel": "Display name",
   "certificate.playerNameSave": "Save name",
-  "certificate.regenerateNote": "PDF generates fresh on download — visuals match the preview."
+  "certificate.regenerateNote": "PDF generates fresh on download — visuals match the preview.",
+  "reset.welcomeLink": "Reset save and start over",
+  "reset.sidebarButton": "🗑️ Reset Progress",
+  "reset.sidebarTooltip": "Erase all local game data and start over"
 }
