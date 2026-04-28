@@ -3,8 +3,8 @@ import { projectInput } from '../../src/engine/inputProjection';
 
 describe('projectInput', () => {
   const sample = [
-    '00000000  7F 45 4C 46 02 01 01 00 41 55 4D 4F 56 49 4F 00  .ELF....AUMOVIO.',
-    '00000010  45 33 5F 47 41 54 45 57 41 59 5F 56 43 55 00 00  E3_GATEWAY_VCU..',
+    '00000000  7F 45 4C 46 02 01 01 00 50 52 4F 4D 50 54 41 54  .ELF....PROMPTAT',
+    '00000010  48 4F 4E 00 45 33 5F 47 41 54 45 57 41 59 5F 00  HON.E3_GATEWAY_.',
   ];
 
   it('returns raw input when projection is empty', () => {
@@ -24,8 +24,8 @@ describe('projectInput', () => {
       ],
     });
     expect(out).toEqual([
-      '00000000.ELF....AUMOVIO.',
-      '00000010E3_GATEWAY_VCU..',
+      '00000000.ELF....PROMPTAT',
+      '00000010HON.E3_GATEWAY_.',
     ]);
   });
 
@@ -44,7 +44,7 @@ describe('projectInput', () => {
       columnRanges: [{ start: 10, end: 57 }],
       decode: 'hex-bytes',
     });
-    expect(out).toEqual(['\x7FELF\x02\x01\x01\x00AUMOVIO\x00']);
+    expect(out).toEqual(['\x7FELF\x02\x01\x01\x00PROMPTAT']);
   });
 
   it('mergeLines joins with given joiner', () => {
@@ -59,7 +59,7 @@ describe('projectInput', () => {
       mergeLines: true,
       joiner: '',
     });
-    expect(out).toEqual(['\x7FELF\x02\x01\x01\x00AUMOVIO\x00E3_GATEWAY_VCU\x00\x00']);
+    expect(out).toEqual(['\x7FELF\x02\x01\x01\x00PROMPTATHON\x00E3_GATEWAY_\x00']);
   });
 
   it('trims each segment when requested', () => {

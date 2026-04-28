@@ -32,6 +32,17 @@ export interface JudgeProfile {
   match: MatchPolicy;
   /** Falls back to level.expected when omitted. */
   expected?: string[];
+  /** Optional ordered transforms applied to collected match results before status comparison. */
+  normalizeMatches?: MatchTransform[];
+}
+
+export interface MatchTransform {
+  /** Replacement regex source applied in order to each collected match. */
+  pattern: string;
+  /** Optional regex flags for the replacement pattern. */
+  flags?: string;
+  /** Replacement string passed to String.prototype.replace. */
+  replacement: string;
 }
 
 export interface InputProjection {

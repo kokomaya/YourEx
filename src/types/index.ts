@@ -2,6 +2,7 @@ export type {
   Level,
   JudgeConfig,
   JudgeProfile,
+  MatchTransform,
   InputProjection,
   MatchPolicy,
 } from './level';

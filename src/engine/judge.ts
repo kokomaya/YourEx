@@ -4,6 +4,7 @@ import type {
   Level,
   JudgeProfile,
   MatchPolicy,
+  MatchTransform,
 } from '../types';
 import { projectInput } from './inputProjection';
 
@@ -138,7 +139,10 @@ function runProfile(regex: RegExp, level: Level, profile: JudgeProfile): JudgeRe
       resultMode: profile.match.resultMode ?? 'matched-lines',
     };
 
-    const matched = collectMatches(cloneRegex(regex), projected, policy);
+    const matched = normalizeCollectedMatches(
+      collectMatches(cloneRegex(regex), projected, policy),
+      profile.normalizeMatches,
+    );
     const status = determineStatus(matched, expected);
 
     return {
@@ -215,6 +219,21 @@ function execAll(regex: RegExp, s: string): string[] {
 
 function uniq(arr: string[]): string[] {
   return Array.from(new Set(arr));
+}
+
+function normalizeCollectedMatches(matches: string[], transforms?: MatchTransform[]): string[] {
+  if (!transforms || transforms.length === 0) {
+    return matches;
+  }
+  return uniq(matches.map(match => applyMatchTransforms(match, transforms)));
+}
+
+function applyMatchTransforms(value: string, transforms: MatchTransform[]): string {
+  let out = value;
+  for (const transform of transforms) {
+    out = out.replace(new RegExp(transform.pattern, transform.flags), transform.replacement);
+  }
+  return out;
 }
 
 function cloneRegex(r: RegExp): RegExp {

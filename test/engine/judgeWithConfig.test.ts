@@ -130,6 +130,42 @@ describe('judgeWithConfig — profile selection', () => {
     expect(result.matched).toEqual(['ab']);
     expect(result.status).toBe('perfect');
   });
+
+  it('normalizes addressed hexdump matches before status comparison', () => {
+    const canonical = '72 45 78 5B 42 45';
+    const level: Level = {
+      ...baseLevel,
+      input: [
+        '00000000  72 45 78 5B',
+        '00000010  42 45',
+        '00000100  72 45 78 5B',
+        '00000110  42 45',
+      ],
+      expected: [canonical],
+      judgeConfig: {
+        includeLegacy: false,
+        profiles: [
+          {
+            id: 'addressed-hexdump',
+            source: { mergeLines: true, joiner: '\n' },
+            match: { scope: 'whole-input', resultMode: 'matched-substrings' },
+            normalizeMatches: [
+              { pattern: '^[0-9A-Fa-f]{8}\\s{2}', flags: 'gm', replacement: '' },
+              { pattern: '\\r?\\n', flags: 'g', replacement: ' ' },
+              { pattern: '\\s+', flags: 'g', replacement: ' ' },
+              { pattern: '^\\s+|\\s+$', flags: 'g', replacement: '' },
+            ],
+          },
+        ],
+      },
+    };
+
+    const result = judgeWithConfig(/[0-9A-F]{8}\s{2}72 45 78 5B\s*\n[0-9A-F]{8}\s{2}42 45/g, level);
+
+    expect(result.status).toBe('perfect');
+    expect(result.matched).toEqual([canonical]);
+    expect(result.profileId).toBe('addressed-hexdump');
+  });
 });
 
 describe('judgeWithConfig — Level 26 hex-decoded scenario', () => {
