@@ -1,7 +1,7 @@
 import type { IAIProvider } from '../ai/IAIProvider';
 import type { JudgeResult, PromptScore, Level } from '../types';
 import { extractRegex, extractRegexWithMeta } from './regexExtractor';
-import { judge } from './judge';
+import { judgeWithConfig, judgeFromStringWithConfig } from './judge';
 import { scorePrompt } from './promptScorer';
 
 export interface DecryptionResult {
@@ -39,7 +39,7 @@ export async function runDecryptionPipeline(
     };
   }
 
-  const judgeResult = judge(extracted.regex, level.input, level.expected);
+  const judgeResult = judgeWithConfig(extracted.regex, level);
 
   const passed = judgeResult.status === 'perfect' || judgeResult.status === 'pass';
   const promptScore = scorePrompt(prompt, attemptNumber, extracted.raw.length, passed, peekPenalty);
@@ -57,28 +57,5 @@ export function runManualJudge(
   rawRegex: string,
   level: Level
 ): JudgeResult {
-  const match = rawRegex.match(/^\/(.+)\/([gimsuy]*)$/s);
-  if (!match) {
-    return {
-      status: 'error',
-      matched: [],
-      expected: level.expected,
-      regex: null,
-      rawRegexString: rawRegex,
-      errorMessage: 'Invalid regex format',
-    };
-  }
-  try {
-    const regex = new RegExp(match[1], match[2]);
-    return judge(regex, level.input, level.expected);
-  } catch (e: unknown) {
-    return {
-      status: 'error',
-      matched: [],
-      expected: level.expected,
-      regex: null,
-      rawRegexString: rawRegex,
-      errorMessage: e instanceof Error ? e.message : String(e),
-    };
-  }
+  return judgeFromStringWithConfig(rawRegex, level);
 }

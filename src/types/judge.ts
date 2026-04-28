@@ -7,4 +7,6 @@ export interface JudgeResult {
   regex: RegExp | null;
   rawRegexString: string;
   errorMessage?: string;
+  /** ID of the JudgeProfile that produced this result, or '__legacy__' for the fallback. */
+  profileId?: string;
 }

@@ -142,5 +142,24 @@
     "onFail": "[Adaptation Incomplete] You captured fragments, but noise still got through. Check field boundaries and length constraints.",
     "onPerfect": "[PERFECT ADAPTATION] Protocol adaptation complete. Alien power module online. Engine ignition... success. Meridian-7, liftoff.",
     "onDirectWrite": "[Manual Adaptation] You bypassed the prompt process but still completed the adaptation. Engine ready, protocol confirmed."
+  },
+  "judgeConfig": {
+    "profiles": [
+      {
+        "id": "hex-decoded-whole",
+        "label": "Hex column decoded to ASCII, whole-input match",
+        "description": "Take hex column [10,57) of every line, decode each /[0-9A-Fa-f]{2}/ token to a byte, concat into one stream, then run the regex against the whole stream and collect substring matches.",
+        "source": {
+          "columnRanges": [{ "start": 10, "end": 57 }],
+          "decode": "hex-bytes",
+          "mergeLines": true,
+          "joiner": ""
+        },
+        "match": {
+          "scope": "whole-input",
+          "resultMode": "matched-substrings"
+        }
+      }
+    ]
   }
 }

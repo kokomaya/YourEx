@@ -142,5 +142,24 @@
     "onFail": "[Adaptation Incomplete] 你捕捉到了片段，但仍有噪声穿透。检查字段边界与长度约束。",
     "onPerfect": "[PERFECT ADAPTATION] 协议适配完成。外星动力模块已上线。引擎点火……成功。Meridian-7，起飞。",
     "onDirectWrite": "[Manual Adaptation] 你绕过了提示流程，但依然完成了适配。引擎已就绪，协议确认。"
+  },
+  "judgeConfig": {
+    "profiles": [
+      {
+        "id": "hex-decoded-whole",
+        "label": "Hex 列解码为 ASCII 后整段匹配",
+        "description": "取每行 [10,57) 的十六进制列，按 /[0-9A-Fa-f]{2}/ 解码为字节流后拼接为一段，再对整段执行正则并收集所有匹配子串。",
+        "source": {
+          "columnRanges": [{ "start": 10, "end": 57 }],
+          "decode": "hex-bytes",
+          "mergeLines": true,
+          "joiner": ""
+        },
+        "match": {
+          "scope": "whole-input",
+          "resultMode": "matched-substrings"
+        }
+      }
+    ]
   }
 }

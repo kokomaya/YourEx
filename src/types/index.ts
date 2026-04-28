@@ -1,4 +1,10 @@
-export type { Level } from './level';
+export type {
+  Level,
+  JudgeConfig,
+  JudgeProfile,
+  InputProjection,
+  MatchPolicy,
+} from './level';
 export type { JudgeResult, JudgeStatus } from './judge';
 export type { PromptScore, LevelAttempt } from './score';
 export type { GameState } from './gameState';
