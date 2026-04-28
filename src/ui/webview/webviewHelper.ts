@@ -33,11 +33,17 @@ export function getWebviewContent(
   locale: Locale = 'zh-CN'
 ): string {
   const distUri = vscode.Uri.joinPath(extensionUri, 'webview-ui', 'dist');
+  // Certificate has its own Vite entry so the heavy @react-pdf/renderer chunk
+  // never loads in the main game webviews (it depends on Node-style globals
+  // that crash plain webviews at module-evaluation time).
+  const isCertificate = viewType === 'certificate';
+  const scriptName = isCertificate ? 'certificate.js' : 'index.js';
+  const styleName = isCertificate ? 'certificate.css' : 'index.css';
   const scriptUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(distUri, 'assets', 'index.js')
+    vscode.Uri.joinPath(distUri, 'assets', scriptName)
   );
   const styleUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(distUri, 'assets', 'index.css')
+    vscode.Uri.joinPath(distUri, 'assets', styleName)
   );
   const nonce = getNonce();
 
@@ -46,7 +52,7 @@ export function getWebviewContent(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}'; font-src ${webview.cspSource}; img-src ${webview.cspSource};">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}'; font-src ${webview.cspSource}; img-src ${webview.cspSource} data: blob:;">
   <link rel="stylesheet" href="${styleUri}">
   <title>YourEx</title>
 </head>
