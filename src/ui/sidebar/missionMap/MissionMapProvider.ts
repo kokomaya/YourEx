@@ -97,15 +97,24 @@ export class MissionMapProvider implements vscode.WebviewViewProvider {
       <span class="cert-footer-label">Journey Certificate</span>
     </button>
   </div>
-  <div id="reset-footer" hidden>
-    <button id="reset-footer-btn" type="button" data-state="idle">
-      <span class="reset-footer__chevron">&gt;&gt;</span>
-      <span class="reset-footer__label">PURGE_TIMELINE</span>
-      <span class="reset-footer__hint">[HOLD]</span>
-      <span class="reset-footer__progress" aria-hidden="true"></span>
-      <span class="reset-footer__scanline" aria-hidden="true"></span>
+  <div id="sys-ops" hidden>
+    <button id="sys-ops-toggle" type="button" aria-expanded="false" aria-controls="sys-ops-panel">
+      <span class="sys-ops__bracket">[</span>
+      <span class="sys-ops__chevron">+</span>
+      <span class="sys-ops__bracket">]</span>
+      <span class="sys-ops__label">SYS_OPS</span>
+      <span class="sys-ops__rule" aria-hidden="true"></span>
     </button>
-    <div class="reset-footer__status" aria-live="polite"></div>
+    <div id="sys-ops-panel" hidden>
+      <button id="reset-footer-btn" type="button" data-state="idle">
+        <span class="reset-footer__chevron">&gt;&gt;</span>
+        <span class="reset-footer__label">PURGE_TIMELINE</span>
+        <span class="reset-footer__hint">[HOLD]</span>
+        <span class="reset-footer__progress" aria-hidden="true"></span>
+        <span class="reset-footer__scanline" aria-hidden="true"></span>
+      </button>
+      <div class="reset-footer__status" aria-live="polite"></div>
+    </div>
   </div>
 </div>
 <script nonce="${nonce}">${MAP_JS}</script>
@@ -376,11 +385,59 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* ── Reset progress: terminal-style PURGE_TIMELINE control ── */
-#reset-footer {
-  margin-top: 10px;
+/* ── SYS_OPS collapsible drawer (hosts dangerous controls below the fold) ── */
+#sys-ops {
+  /* Push well clear of the chapter panel — large gap is the first
+     misclick defense. The drawer is collapsed by default. */
+  margin-top: 28px;
   padding: 0 8px 14px 8px;
 }
+#sys-ops-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 143, 163, 0.55);
+  font-family: 'JetBrains Mono', Consolas, 'Courier New', monospace;
+  font-size: 9.5px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 6px 4px;
+  opacity: 0.75;
+  transition: color 0.15s, opacity 0.15s;
+}
+#sys-ops-toggle:hover {
+  color: #ff8fa3;
+  opacity: 1;
+}
+#sys-ops-toggle .sys-ops__bracket { color: rgba(255, 92, 122, 0.7); }
+#sys-ops-toggle .sys-ops__chevron {
+  color: #ff5c7a;
+  width: 8px;
+  text-align: center;
+  display: inline-block;
+}
+#sys-ops-toggle .sys-ops__rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,92,122,0.25) 0%, transparent 100%);
+  margin-left: 6px;
+}
+#sys-ops-toggle[aria-expanded="true"] .sys-ops__chevron::before { content: ''; }
+#sys-ops-toggle[aria-expanded="true"] .sys-ops__chevron {
+  /* swap + → − when open */
+}
+#sys-ops-panel {
+  margin-top: 8px;
+  /* Subtle indent so the dangerous control reads as nested under SYS_OPS */
+  padding-left: 6px;
+  border-left: 1px dashed rgba(255, 92, 122, 0.22);
+}
+
+/* ── Reset progress: terminal-style PURGE_TIMELINE control ── */
 #reset-footer-btn {
   position: relative;
   width: 100%;
@@ -541,11 +598,27 @@ const MAP_JS = `
   const panelEl = document.getElementById('chapter-panel');
   const footerEl = document.getElementById('cert-footer');
   const footerBtn = document.getElementById('cert-footer-btn');
-  const resetFooterEl = document.getElementById('reset-footer');
+  const sysOpsEl = document.getElementById('sys-ops');
+  const sysOpsToggle = document.getElementById('sys-ops-toggle');
+  const sysOpsPanel = document.getElementById('sys-ops-panel');
+  const sysOpsChevron = sysOpsToggle ? sysOpsToggle.querySelector('.sys-ops__chevron') : null;
   const resetFooterBtn = document.getElementById('reset-footer-btn');
   const resetFooterLabel = resetFooterBtn ? resetFooterBtn.querySelector('.reset-footer__label') : null;
   const resetFooterProgress = resetFooterBtn ? resetFooterBtn.querySelector('.reset-footer__progress') : null;
-  const resetFooterStatus = resetFooterEl ? resetFooterEl.querySelector('.reset-footer__status') : null;
+  const resetFooterStatus = sysOpsPanel ? sysOpsPanel.querySelector('.reset-footer__status') : null;
+  if (sysOpsToggle && sysOpsPanel) {
+    sysOpsToggle.addEventListener('click', () => {
+      const expanded = sysOpsToggle.getAttribute('aria-expanded') === 'true';
+      const next = !expanded;
+      sysOpsToggle.setAttribute('aria-expanded', String(next));
+      if (next) {
+        sysOpsPanel.removeAttribute('hidden');
+      } else {
+        sysOpsPanel.setAttribute('hidden', '');
+      }
+      if (sysOpsChevron) sysOpsChevron.textContent = next ? '−' : '+';
+    });
+  }
   if (footerBtn) {
     footerBtn.addEventListener('click', () => {
       vscode.postMessage({ command: 'openJourneyCertificate' });
@@ -629,11 +702,15 @@ const MAP_JS = `
     }
   }
   function setResetFooter(visible, _label, tooltip) {
-    if (!resetFooterEl) return;
+    if (!sysOpsEl) return;
     if (visible) {
-      resetFooterEl.removeAttribute('hidden');
+      sysOpsEl.removeAttribute('hidden');
     } else {
-      resetFooterEl.setAttribute('hidden', '');
+      sysOpsEl.setAttribute('hidden', '');
+      // Auto-collapse when hidden (e.g., after reset → no progress yet).
+      if (sysOpsToggle) sysOpsToggle.setAttribute('aria-expanded', 'false');
+      if (sysOpsPanel) sysOpsPanel.setAttribute('hidden', '');
+      if (sysOpsChevron) sysOpsChevron.textContent = '+';
     }
     // Label is intentionally fixed ("PURGE_TIMELINE") — terminal-style identifier
     // shouldn't be translated. Only the tooltip carries the localized explanation.

@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { pdf } from '@react-pdf/renderer';
 import { useTranslation } from '../../i18n';
 import { useMessageListener, useVSCode } from '../../hooks/useVSCode';
 import type {
@@ -8,14 +7,21 @@ import type {
   ChapterJourneyView,
   LevelJourneyView,
 } from '../../types/messages';
-import { CertificateDocument } from './CertificateDocument';
 import './Certificate.css';
+
+// PDF export uses the browser's native print-to-PDF (window.print + a print
+// stylesheet) instead of @react-pdf/renderer. The previous approach left
+// the page blank because react-pdf's pdfkit fork blew up at module load
+// time even with polyfills. window.print() opens the OS Save-as-PDF
+// dialog, has perfect CJK support, and adds zero runtime dependencies.
 
 type SaveStatus =
   | { kind: 'idle' }
   | { kind: 'rendering' }
   | { kind: 'success'; message: string }
   | { kind: 'error'; message: string };
+
+const PRINT_DOC_TITLE_PREFIX = 'YourEx_Journey_Certificate';
 
 export function Certificate() {
   const { t } = useTranslation();
@@ -40,29 +46,38 @@ export function Certificate() {
     }
   });
 
-  const fileName = useMemo(() => {
-    if (!data) return 'YourEx_Journey_Certificate.pdf';
+  const docTitle = useMemo(() => {
+    if (!data) return PRINT_DOC_TITLE_PREFIX;
     const safeName = data.playerName.replace(/[^\p{L}\p{N}_-]+/gu, '_');
     const date = new Date(data.generatedAt);
-    return `YourEx_Journey_Certificate_${safeName}_${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}.pdf`;
+    return `${PRINT_DOC_TITLE_PREFIX}_${safeName}_${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}`;
   }, [data]);
 
-  const handleDownload = useCallback(async () => {
+  // The browser's Save-as-PDF dialog uses document.title as the suggested
+  // filename. Set it whenever data arrives so the downloaded file is named
+  // sensibly without the user having to retype it.
+  useEffect(() => {
+    if (data) document.title = docTitle;
+  }, [data, docTitle]);
+
+  const handleExportPdf = useCallback(() => {
     if (!data) return;
     setSaveStatus({ kind: 'rendering' });
-    try {
-      const blob = await pdf(<CertificateDocument data={data} />).toBlob();
-      const buf = await blob.arrayBuffer();
-      postMessage({
-        command: 'generateCertificatePdf',
-        pdfBytes: Array.from(new Uint8Array(buf)),
-        fileName,
-      });
-    } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : String(e);
-      setSaveStatus({ kind: 'error', message });
-    }
-  }, [data, fileName, postMessage]);
+    // Defer to next frame so the status text has a chance to paint before
+    // the print dialog steals focus.
+    requestAnimationFrame(() => {
+      try {
+        window.print();
+        setSaveStatus({
+          kind: 'success',
+          message: t('certificate.printDialogOpened'),
+        });
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
+        setSaveStatus({ kind: 'error', message });
+      }
+    });
+  }, [data, t]);
 
   const handleSaveName = useCallback(() => {
     const trimmed = nameDraft.trim();
@@ -99,10 +114,11 @@ export function Certificate() {
           </button>
           <button
             className="cert-btn cert-btn--primary"
-            onClick={handleDownload}
+            onClick={handleExportPdf}
             disabled={saveStatus.kind === 'rendering'}
+            title={t('certificate.exportTooltip')}
           >
-            {saveStatus.kind === 'rendering' ? t('certificate.regenerating') : t('certificate.downloadButton')}
+            {saveStatus.kind === 'rendering' ? t('certificate.regenerating') : t('certificate.exportPdfButton')}
           </button>
         </div>
       </header>
@@ -113,7 +129,7 @@ export function Certificate() {
         }`}
       >
         {(saveStatus.kind === 'success' || saveStatus.kind === 'error') && saveStatus.message}
-        {saveStatus.kind === 'idle' && t('certificate.regenerateNote')}
+        {saveStatus.kind === 'idle' && t('certificate.exportHint')}
       </div>
 
       <div className="cert-preview">

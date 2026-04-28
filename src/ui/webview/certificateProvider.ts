@@ -99,57 +99,6 @@ export class CertificateProvider {
           }
         }
         return;
-
-      case 'generateCertificatePdf':
-        await this.handleSaveRequest(message);
-        return;
-    }
-  }
-
-  private async handleSaveRequest(
-    message: { pdfBytes?: number[]; fileName?: string },
-  ): Promise<void> {
-    if (!message.pdfBytes || !this._panel) return;
-
-    const buf = Buffer.from(Uint8Array.from(message.pdfBytes));
-    const fileName = message.fileName || 'YourEx_Journey_Certificate.pdf';
-
-    const defaultUri = vscode.Uri.file(
-      vscode.workspace.workspaceFolders?.[0]
-        ? `${vscode.workspace.workspaceFolders[0].uri.fsPath}/${fileName}`
-        : fileName,
-    );
-
-    try {
-      const target = await vscode.window.showSaveDialog({
-        defaultUri,
-        filters: { PDF: ['pdf'] },
-        title: t('certificate.commandTitle'),
-        saveLabel: t('certificate.downloadButton'),
-      });
-      if (!target) return;
-
-      await vscode.workspace.fs.writeFile(target, buf);
-
-      this._panel.webview.postMessage({
-        command: 'certificateSaved',
-        filePath: target.fsPath,
-      });
-
-      const action = await vscode.window.showInformationMessage(
-        t('certificate.savedNotification', { path: target.fsPath }),
-        t('certificate.openFile'),
-      );
-      if (action === t('certificate.openFile')) {
-        await vscode.env.openExternal(target);
-      }
-    } catch (e: unknown) {
-      const error = e instanceof Error ? e.message : String(e);
-      this._panel.webview.postMessage({
-        command: 'certificateSaveFailed',
-        error,
-      });
-      vscode.window.showErrorMessage(t('certificate.saveFailed', { error }));
     }
   }
 
@@ -178,5 +127,4 @@ type WebViewIncoming =
   | { command: 'ready' }
   | { command: 'closeCertificate' }
   | { command: 'switchLanguage'; locale?: string }
-  | { command: 'setCertificatePlayerName'; name?: string }
-  | { command: 'generateCertificatePdf'; pdfBytes?: number[]; fileName?: string };
+  | { command: 'setCertificatePlayerName'; name?: string };

@@ -239,6 +239,10 @@
   "certificate.playerNameLabel": "Display name",
   "certificate.playerNameSave": "Save name",
   "certificate.regenerateNote": "PDF generates fresh on download — visuals match the preview.",
+  "certificate.exportPdfButton": "Export to PDF",
+  "certificate.exportTooltip": "Opens your browser's print dialog — choose 'Save as PDF' as the destination.",
+  "certificate.exportHint": "Tip: click Export to PDF, then choose 'Save as PDF' in your browser's print dialog.",
+  "certificate.printDialogOpened": "Print dialog opened. Choose 'Save as PDF' to export.",
   "reset.welcomeLink": "Reset save and start over",
   "reset.sidebarButton": "🗑️ Reset Progress",
   "reset.sidebarTooltip": "Erase all local game data and start over"
