@@ -5,7 +5,16 @@ export type {
   MatchTransform,
   InputProjection,
   MatchPolicy,
+  CertificateTrigger,
 } from './level';
+export type {
+  JourneyCertificateData,
+  ChapterJourney,
+  LevelJourney,
+  LevelJourneyStatus,
+  AttemptRecord,
+  CertificateAchievement,
+} from './certificate';
 export type { JudgeResult, JudgeStatus } from './judge';
 export type { PromptScore, LevelAttempt } from './score';
 export type { GameState } from './gameState';

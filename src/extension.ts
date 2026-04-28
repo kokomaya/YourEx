@@ -9,6 +9,7 @@ import { WelcomeProvider } from './ui/webview/welcomeProvider';
 import { LeaderboardProvider } from './ui/webview/leaderboardProvider';
 import { CodexProvider } from './ui/webview/codexProvider';
 import { Ch6InterludeProvider } from './ui/webview/ch6InterludeProvider';
+import { CertificateProvider } from './ui/webview/certificateProvider';
 import { StatusBarManager } from './ui/statusbar';
 import { GameStateManager } from './state/gameState';
 import { MockProvider } from './ai/mockProvider';
@@ -119,6 +120,9 @@ export function activate(context: vscode.ExtensionContext) {
   codexProvider.setLocale(initialLocale);
   const ch6InterludeProvider = new Ch6InterludeProvider(context.extensionUri);
   ch6InterludeProvider.setLocale(initialLocale);
+  const certificateProvider = new CertificateProvider(context.extensionUri);
+  certificateProvider.setLocale(initialLocale);
+  certificateProvider.setGameState(gameState);
   const statusBar = new StatusBarManager();
 
   // --- UI refresh helper ---
@@ -238,6 +242,30 @@ export function activate(context: vscode.ExtensionContext) {
       ch6InterludeProvider.show();
     }),
 
+    vscode.commands.registerCommand('yourex.openJourneyCertificate', () => {
+      const allLevels = getAllLevels();
+      const unlocked =
+        gameState.state.certificateUnlocked ||
+        allLevels.some((lv) => {
+          const trigger = lv.certificateTrigger;
+          if (!trigger || trigger.type !== 'journey') return false;
+          const required = trigger.requireStatus ?? 'pass';
+          const attempts = gameState.state.completedLevels[lv.id] ?? [];
+          return attempts.some((a) =>
+            required === 'perfect'
+              ? a.judgeResult.status === 'perfect'
+              : a.judgeResult.status === 'perfect' || a.judgeResult.status === 'pass',
+          );
+        });
+      if (!unlocked) {
+        vscode.window.showInformationMessage(
+          '[YourEx] Complete the rEx final transmission (Ch5) to unlock the journey certificate.',
+        );
+        return;
+      }
+      certificateProvider.show();
+    }),
+
     vscode.commands.registerCommand('yourex.switchLanguage', async (localeArg?: string) => {
       let targetLocale: Locale;
 
@@ -274,6 +302,7 @@ export function activate(context: vscode.ExtensionContext) {
       leaderboardProvider.broadcastLocale(targetLocale);
       codexProvider.broadcastLocale(targetLocale);
       ch6InterludeProvider.broadcastLocale(targetLocale);
+      certificateProvider.broadcastLocale(targetLocale);
 
       // Refresh extension-side UI
       refreshUI();
@@ -344,6 +373,7 @@ export function activate(context: vscode.ExtensionContext) {
       welcomeProvider.dispose();
       leaderboardProvider.dispose();
       ch6InterludeProvider.dispose();
+      certificateProvider.dispose();
       statusBar.dispose();
       localeService.dispose();
     },

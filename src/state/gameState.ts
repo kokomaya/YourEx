@@ -118,6 +118,33 @@ export class GameStateManager {
     }
   }
 
+  // --- Certificate ---
+
+  markCertificateUnlocked(): boolean {
+    if (this._state.certificateUnlocked) {
+      return false;
+    }
+    this._state.certificateUnlocked = true;
+    this.save();
+    return true;
+  }
+
+  setCertificateId(id: string): void {
+    if (this._state.certificateId === id) {
+      return;
+    }
+    this._state.certificateId = id;
+    this.save();
+  }
+
+  setCertificatePlayerName(name: string): void {
+    if (this._state.certificatePlayerName === name) {
+      return;
+    }
+    this._state.certificatePlayerName = name;
+    this.save();
+  }
+
   // --- Timer ---
 
   startTimer(): void {

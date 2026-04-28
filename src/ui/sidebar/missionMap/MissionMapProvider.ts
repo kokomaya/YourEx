@@ -20,7 +20,8 @@ export class MissionMapProvider implements vscode.WebviewViewProvider {
   refresh(): void {
     if (!this._view || !this._dataSource) return;
     const chapters = this._dataSource.getChapters();
-    this._view.webview.postMessage({ command: 'loadMap', chapters });
+    const certificateUnlocked = this._dataSource.isCertificateUnlocked();
+    this._view.webview.postMessage({ command: 'loadMap', chapters, certificateUnlocked });
     if (this._activeLevelId) {
       this._view.webview.postMessage({ command: 'highlightLevel', levelId: this._activeLevelId });
     }
@@ -55,6 +56,9 @@ export class MissionMapProvider implements vscode.WebviewViewProvider {
         case 'selectLevel':
           this._onDidSelectLevel.fire(msg.levelId);
           break;
+        case 'openJourneyCertificate':
+          vscode.commands.executeCommand('yourex.openJourneyCertificate');
+          break;
       }
     });
   }
@@ -74,6 +78,12 @@ export class MissionMapProvider implements vscode.WebviewViewProvider {
 <div id="map-root">
   <div id="chapter-tabs" role="tablist"></div>
   <div id="chapter-panel"></div>
+  <div id="cert-footer" hidden>
+    <button id="cert-footer-btn" type="button" title="Generate Journey Certificate">
+      <span class="cert-footer-icon">📜</span>
+      <span class="cert-footer-label">Journey Certificate</span>
+    </button>
+  </div>
 </div>
 <script nonce="${nonce}">${MAP_JS}</script>
 </body>
@@ -308,6 +318,40 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .node-circle[data-status="available"] { animation: none; }
 }
+
+/* ── Journey certificate footer ── */
+#cert-footer {
+  margin-top: 14px;
+  padding: 10px 8px 4px 8px;
+  border-top: 1px solid var(--vscode-panel-border, #333);
+}
+#cert-footer-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border: 1px solid color-mix(in srgb, var(--vscode-foreground, #ccc) 25%, transparent);
+  border-radius: 6px;
+  background: linear-gradient(120deg, rgba(52,245,197,0.08), rgba(255,210,122,0.08));
+  color: var(--vscode-foreground, #ccc);
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+}
+#cert-footer-btn:hover {
+  background: linear-gradient(120deg, rgba(52,245,197,0.18), rgba(255,210,122,0.18));
+  border-color: #34f5c5;
+  transform: translateY(-1px);
+}
+#cert-footer-btn .cert-footer-icon { font-size: 14px; }
+#cert-footer-btn .cert-footer-label {
+  flex: 1;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
 `;
 
 /* ─── Inline JS ─── */
@@ -319,17 +363,36 @@ const MAP_JS = `
 
   const tabsEl = document.getElementById('chapter-tabs');
   const panelEl = document.getElementById('chapter-panel');
+  const footerEl = document.getElementById('cert-footer');
+  const footerBtn = document.getElementById('cert-footer-btn');
+  if (footerBtn) {
+    footerBtn.addEventListener('click', () => {
+      vscode.postMessage({ command: 'openJourneyCertificate' });
+    });
+  }
+  function setCertFooter(visible) {
+    if (!footerEl) return;
+    if (visible) {
+      footerEl.removeAttribute('hidden');
+    } else {
+      footerEl.setAttribute('hidden', '');
+    }
+  }
 
   window.addEventListener('message', (e) => {
     const msg = e.data;
     switch (msg.command) {
       case 'loadMap':
         chapters = msg.chapters;
+        setCertFooter(!!msg.certificateUnlocked);
         if (!chapters.find(c => c.chapter === activeChapter)) {
           activeChapter = chapters[0]?.chapter ?? 1;
         }
         renderTabs();
         renderPanel();
+        break;
+      case 'setCertificateUnlocked':
+        setCertFooter(!!msg.unlocked);
         break;
       case 'updateNode':
         updateNodeInPlace(msg.nodeId, msg.status, msg.score);

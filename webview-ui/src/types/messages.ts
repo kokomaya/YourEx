@@ -54,7 +54,7 @@ export interface LeaderboardEntry {
   rank: number;
 }
 
-export type WebViewType = 'promptPanel' | 'welcome' | 'leaderboard' | 'scoreDetail' | 'codex' | 'ch6Interlude';
+export type WebViewType = 'promptPanel' | 'welcome' | 'leaderboard' | 'scoreDetail' | 'codex' | 'ch6Interlude' | 'certificate';
 
 // WebView → Extension
 export type WebViewMessage =
@@ -68,6 +68,10 @@ export type WebViewMessage =
   | { command: 'switchLanguage'; locale: string }
   | { command: 'peekHint'; levelId: string }
   | { command: 'openCodex' }
+  | { command: 'openJourneyCertificate' }
+  | { command: 'generateCertificatePdf'; pdfBytes: number[]; fileName: string }
+  | { command: 'setCertificatePlayerName'; name: string }
+  | { command: 'closeCertificate' }
   | { command: 'ready' };
 
 export interface AchievementInfo {
@@ -88,6 +92,8 @@ export interface LevelRewardData {
   isChapterComplete: boolean;
   isGameComplete: boolean;
   isOriginComplete: boolean;
+  certificateJustUnlocked?: boolean;
+  certificateAutoPrompt?: boolean;
   chapterSummary?: ChapterSummary;
 }
 
@@ -121,6 +127,68 @@ export interface HintData {
   peekPenalty: number;
 }
 
+// Journey certificate types (mirror src/types/certificate.ts)
+export interface AttemptRecordView {
+  attemptNumber: number;
+  timestamp: number;
+  mode: 'prompt' | 'manual';
+  prompt?: string;
+  regex?: string;
+  status: 'perfect' | 'pass' | 'fail';
+  scoreTotal?: number;
+}
+
+export type LevelJourneyStatus = 'perfect' | 'pass' | 'attempted' | 'skipped';
+
+export interface LevelJourneyView {
+  levelId: string;
+  levelOrder: number;
+  levelTitle: string;
+  levelStory: string;
+  status: LevelJourneyStatus;
+  attempts: AttemptRecordView[];
+  bestScore?: PromptScore;
+  totalAttempts: number;
+  failCount: number;
+  successCount: number;
+}
+
+export interface ChapterJourneyView {
+  chapter: number;
+  chapterTitle: string;
+  chapterCompleteLine: string;
+  isComplete: boolean;
+  levels: LevelJourneyView[];
+}
+
+export interface CertificateAchievementView {
+  id: string;
+  name: string;
+  description: string;
+  unlocked: boolean;
+}
+
+export interface JourneyCertificateData {
+  certificateId: string;
+  generatedAt: number;
+  playerName: string;
+  totalPlayTime: number;
+  totalAttempts: number;
+  totalPromptLength: number;
+  perfectCount: number;
+  passCount: number;
+  failCount: number;
+  totalXp: number;
+  maxCombo: number;
+  achievements: CertificateAchievementView[];
+  unlockedAchievementIds: string[];
+  chapters: ChapterJourneyView[];
+  totalStandardLevels: number;
+  totalCompletedStandardLevels: number;
+  isOriginUnlocked: boolean;
+  isOriginComplete: boolean;
+}
+
 // Extension → WebView
 export type ExtensionMessage =
   | { command: 'loadLevel'; level: Level }
@@ -130,4 +198,7 @@ export type ExtensionMessage =
   | { command: 'showScoreDetail'; levelTitle: string; attempts: LevelAttemptView[]; bestScore?: PromptScore }
   | { command: 'showLeaderboard'; entries: LeaderboardEntry[] }
   | { command: 'updateHints'; hintData: HintData }
-  | { command: 'localeChanged'; locale: string };
+  | { command: 'localeChanged'; locale: string }
+  | { command: 'loadCertificateData'; data: JourneyCertificateData }
+  | { command: 'certificateSaved'; filePath: string }
+  | { command: 'certificateSaveFailed'; error: string };

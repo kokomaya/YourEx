@@ -16,6 +16,21 @@ export interface Level {
     onDirectWrite: string;
   };
   judgeConfig?: JudgeConfig;
+  /**
+   * When set, completing this level (subject to requireStatus) unlocks the
+   * journey certificate generation entry. The unlock state is data-driven so
+   * future chapters can move or duplicate the trigger without code changes.
+   */
+  certificateTrigger?: CertificateTrigger;
+}
+
+export interface CertificateTrigger {
+  /** Reserved for future certificate templates. Currently always 'journey'. */
+  type: 'journey';
+  /** 'pass' (default) — pass or perfect both trigger; 'perfect' — only perfect. */
+  requireStatus?: 'pass' | 'perfect';
+  /** Whether the reward UI should auto-prompt the certificate on first unlock. Default true. */
+  autoPrompt?: boolean;
 }
 
 export interface JudgeConfig {

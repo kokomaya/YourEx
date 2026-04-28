@@ -11,6 +11,12 @@ export interface GameState {
   totalPromptLength: number;
   totalAttempts: number;
   startTime: number | null;
+  /** Sticky unlock for the journey certificate entry. Set true on first trigger; never auto-cleared. */
+  certificateUnlocked: boolean;
+  /** Stable certificate ID generated on first PDF export (e.g., REX-2026-0428-7A3F). */
+  certificateId?: string;
+  /** Custom display name for the certificate. Falls back to OS username if absent. */
+  certificatePlayerName?: string;
 }
 
 export const DEFAULT_GAME_STATE: GameState = {
@@ -24,4 +30,5 @@ export const DEFAULT_GAME_STATE: GameState = {
   totalPromptLength: 0,
   totalAttempts: 0,
   startTime: null,
+  certificateUnlocked: false,
 };

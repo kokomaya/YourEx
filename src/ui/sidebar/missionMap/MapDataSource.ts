@@ -2,8 +2,9 @@ import type { IMapDataSource } from './IMapDataSource';
 import type { ChapterMapData, MapNode } from './mapMessages';
 import type { GameStateManager } from '../../../state/gameState';
 import type { IAccessPolicy } from '../../../access/IAccessPolicy';
-import { loadChapterLevels, TOTAL_CHAPTERS, HIDDEN_CHAPTER } from '../../../engine/levelLoader';
+import { loadChapterLevels, TOTAL_CHAPTERS, HIDDEN_CHAPTER, getAllLevels } from '../../../engine/levelLoader';
 import { t } from '../../../i18n/t';
+import { isCertificateUnlocked as checkCertificateUnlocked } from '../../../engine/certificateUnlockChecker';
 
 const CHAPTER_COLORS: Record<number, string> = {
   1: '#22d3ee',
@@ -79,5 +80,9 @@ export class MapDataSource implements IMapDataSource {
     }
 
     return chapters;
+  }
+
+  isCertificateUnlocked(): boolean {
+    return checkCertificateUnlocked(this.gameState.state, getAllLevels());
   }
 }

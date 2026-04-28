@@ -8,6 +8,7 @@ import { Leaderboard } from './components/Leaderboard';
 import { ScoreDetail } from './components/ScoreDetail';
 import { Codex } from './components/Codex';
 import { Ch6Interlude } from './components/Ch6Interlude';
+import { Certificate } from './components/Certificate';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 
 declare global {
@@ -41,6 +42,8 @@ function App() {
         return <Codex />;
       case 'ch6Interlude':
         return <Ch6Interlude />;
+      case 'certificate':
+        return <Certificate />;
       case 'promptPanel':
       default:
         return <PromptPanel />;

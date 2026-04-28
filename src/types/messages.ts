@@ -1,6 +1,7 @@
 import type { Level } from './level';
 import type { JudgeResult } from './judge';
 import type { PromptScore, LevelAttempt } from './score';
+import type { JourneyCertificateData } from './certificate';
 
 export interface LeaderboardEntry {
   dimension: string;
@@ -9,7 +10,7 @@ export interface LeaderboardEntry {
   rank: number;
 }
 
-export type WebViewType = 'promptPanel' | 'welcome' | 'leaderboard' | 'scoreDetail' | 'codex' | 'ch6Interlude';
+export type WebViewType = 'promptPanel' | 'welcome' | 'leaderboard' | 'scoreDetail' | 'codex' | 'ch6Interlude' | 'certificate';
 
 // WebView → Extension
 export type WebViewMessage =
@@ -23,6 +24,10 @@ export type WebViewMessage =
   | { command: 'switchLanguage'; locale: string }
   | { command: 'peekHint'; levelId: string }
   | { command: 'openCodex' }
+  | { command: 'openJourneyCertificate' }
+  | { command: 'generateCertificatePdf'; pdfBytes: number[]; fileName: string }
+  | { command: 'setCertificatePlayerName'; name: string }
+  | { command: 'closeCertificate' }
   | { command: 'ready' };
 
 export interface AchievementInfo {
@@ -43,6 +48,10 @@ export interface LevelRewardData {
   isChapterComplete: boolean;
   isGameComplete: boolean;
   isOriginComplete: boolean;
+  /** True iff this attempt JUST flipped the certificate-unlock flag on. */
+  certificateJustUnlocked?: boolean;
+  /** Mirror of trigger.autoPrompt: surface the entry button automatically when true. */
+  certificateAutoPrompt?: boolean;
   chapterSummary?: ChapterSummary;
 }
 
@@ -85,4 +94,7 @@ export type ExtensionMessage =
   | { command: 'showScoreDetail'; levelTitle: string; attempts: Omit<LevelAttempt, 'judgeResult'> & { judgeResult: Omit<JudgeResult, 'regex'> }[]; bestScore?: PromptScore }
   | { command: 'showLeaderboard'; entries: LeaderboardEntry[] }
   | { command: 'updateHints'; hintData: HintData }
-  | { command: 'localeChanged'; locale: string };
+  | { command: 'localeChanged'; locale: string }
+  | { command: 'loadCertificateData'; data: JourneyCertificateData }
+  | { command: 'certificateSaved'; filePath: string }
+  | { command: 'certificateSaveFailed'; error: string };

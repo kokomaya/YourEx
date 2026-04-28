@@ -37,5 +37,10 @@
     "onFail": "[Signal Incomplete] The final signal could not be fully parsed. Recall everything you've learned and try again.",
     "onPerfect": "[TRANSMISSION COMPLETE] rEx station opened its arms to Meridian-7. Refueling in progress... but the engine is beyond repair. rEx says: \"We can give you a new heart — but you'll need to make it beat.\"",
     "onDirectWrite": "[Manual Override — Final] Manual endgame completion. Regardless of the method, you proved yourself.\n\n// rEx says: \"The method doesn't matter — understanding does.\""
+  },
+  "certificateTrigger": {
+    "type": "journey",
+    "requireStatus": "pass",
+    "autoPrompt": true
   }
 }

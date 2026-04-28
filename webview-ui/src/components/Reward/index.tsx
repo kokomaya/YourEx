@@ -40,6 +40,15 @@ export function RewardOverlay({ reward, onDismiss }: RewardOverlayProps) {
     onDismiss();
   }, [postMessage, onDismiss]);
 
+  const handleCertificate = useCallback(() => {
+    postMessage({ command: 'openJourneyCertificate' });
+    onDismiss();
+  }, [postMessage, onDismiss]);
+
+  const showCertificateButton =
+    reward.certificateAutoPrompt !== false &&
+    (reward.certificateJustUnlocked === true || reward.certificateAutoPrompt === true);
+
   const isPerfect = reward.tier === 'perfect';
   const showChapter = reward.isChapterComplete && (phase === 'chapter' || phase === 'finale' || phase === 'actions');
   const showFinale = (reward.isGameComplete || reward.isOriginComplete) && (phase === 'finale' || phase === 'actions');
@@ -126,8 +135,16 @@ export function RewardOverlay({ reward, onDismiss }: RewardOverlayProps) {
 
       {/* Phase 4: Action buttons */}
       <div className={`reward-actions ${phase === 'actions' ? 'reward-actions--visible' : ''}`}>
+        {showCertificateButton && (
+          <button className="reward-btn reward-btn--primary" onClick={handleCertificate}>
+            {t('certificate.entryButton')}
+          </button>
+        )}
         {!reward.isGameComplete && !reward.isOriginComplete && (
-          <button className="reward-btn reward-btn--primary" onClick={handleNextLevel}>
+          <button
+            className={`reward-btn ${showCertificateButton ? 'reward-btn--secondary' : 'reward-btn--primary'}`}
+            onClick={handleNextLevel}
+          >
             {reward.isChapterComplete ? t('reward.nextChapter') : t('reward.nextLevel')}
           </button>
         )}

@@ -173,6 +173,10 @@ export class PromptPanelProvider {
       case 'openCodex':
         vscode.commands.executeCommand('yourex.openCodex');
         break;
+
+      case 'openJourneyCertificate':
+        vscode.commands.executeCommand('yourex.openJourneyCertificate');
+        break;
     }
   }
 
@@ -213,16 +217,17 @@ export class PromptPanelProvider {
       const wasAlreadyCompleted = this._gameState.isLevelCompleted(levelId);
 
       // Record attempt
-      this._gameState.recordAttempt({
+      const promptAttempt = {
         levelId,
-        mode: 'prompt',
+        mode: 'prompt' as const,
         prompt,
         regex: result.rawRegex,
         judgeResult: { ...result.judgeResult, regex: null }, // strip non-serializable
         promptScore: result.promptScore,
         timestamp: Date.now(),
         attemptNumber,
-      });
+      };
+      this._gameState.recordAttempt(promptAttempt);
 
       // XP + combo on success
       if (passed) {
@@ -244,6 +249,7 @@ export class PromptPanelProvider {
           rewardInfo.combo,
           rewardInfo.newAchievementIds,
           wasAlreadyCompleted,
+          promptAttempt,
         );
 
         showJudgeFeedback(result.judgeResult, feedback);
@@ -367,14 +373,15 @@ export class PromptPanelProvider {
     const wasAlreadyCompleted = this._gameState.isLevelCompleted(levelId);
     const attemptNumber = this._gameState.getLevelAttempts(levelId).length + 1;
 
-    this._gameState.recordAttempt({
+    const manualAttempt = {
       levelId,
-      mode: 'manual',
+      mode: 'manual' as const,
       regex: rawRegex,
       judgeResult: { ...judgeResult, regex: null },
       timestamp: Date.now(),
       attemptNumber,
-    });
+    };
+    this._gameState.recordAttempt(manualAttempt);
 
     if (passed) {
       const rewardInfo = this.applySuccessRewards(attemptNumber, 'manual', judgeResult.status === 'perfect', 0, 0, levelId);
@@ -388,6 +395,7 @@ export class PromptPanelProvider {
         rewardInfo.combo,
         rewardInfo.newAchievementIds,
         wasAlreadyCompleted,
+        manualAttempt,
       );
 
       // Also send result to webview if open

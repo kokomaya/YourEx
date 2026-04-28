@@ -1,10 +1,11 @@
 import type { GameStateManager } from '../state/gameState';
-import type { Level } from '../types';
+import type { Level, LevelAttempt } from '../types';
 import type { PromptScore } from '../types/score';
 import { loadChapterLevels, TOTAL_CHAPTERS, HIDDEN_CHAPTER } from './levelLoader';
 import { getAchievements } from './achievementManager';
 import { DIALOGUES } from '../story/dialogues';
 import { t } from '../i18n';
+import { evaluateUnlockOnAttempt, shouldAutoPrompt } from './certificateUnlockChecker';
 
 function getChapterName(ch: number): string {
   return t(`reward.chapterName.${ch}`);
@@ -34,6 +35,8 @@ export interface LevelRewardData {
   isChapterComplete: boolean;
   isGameComplete: boolean;
   isOriginComplete: boolean;
+  certificateJustUnlocked?: boolean;
+  certificateAutoPrompt?: boolean;
   chapterSummary?: ChapterSummary;
 }
 
@@ -64,6 +67,7 @@ export function buildRewardData(
   combo: number,
   newAchievementIds: string[],
   wasAlreadyCompleted?: boolean,
+  attempt?: LevelAttempt,
 ): LevelRewardData {
   const chapter = level.chapter;
   const completedIds = gameState.getCompletedLevelIds();
@@ -139,6 +143,15 @@ export function buildRewardData(
     }
   }
 
+  // Certificate unlock detection: data-driven via Level.certificateTrigger.
+  // Sticky flag lives on GameState; auto-prompt info comes from the trigger.
+  let certificateJustUnlocked = false;
+  let certificateAutoPrompt: boolean | undefined;
+  if (attempt && evaluateUnlockOnAttempt(level, attempt)) {
+    certificateJustUnlocked = gameState.markCertificateUnlocked();
+    certificateAutoPrompt = shouldAutoPrompt(level);
+  }
+
   return {
     tier: isPerfect ? 'perfect' : 'pass',
     levelId: level.id,
@@ -151,6 +164,8 @@ export function buildRewardData(
     isChapterComplete,
     isGameComplete,
     isOriginComplete,
+    certificateJustUnlocked,
+    certificateAutoPrompt,
     chapterSummary,
   };
 }

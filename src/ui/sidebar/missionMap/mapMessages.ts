@@ -22,10 +22,12 @@ export interface ChapterMapData {
 }
 
 export type MapExtToWebview =
-  | { command: 'loadMap'; chapters: ChapterMapData[] }
+  | { command: 'loadMap'; chapters: ChapterMapData[]; certificateUnlocked: boolean }
   | { command: 'updateNode'; nodeId: string; status: MapNode['status']; score: number | null }
-  | { command: 'setActiveChapter'; chapterId: number };
+  | { command: 'setActiveChapter'; chapterId: number }
+  | { command: 'setCertificateUnlocked'; unlocked: boolean };
 
 export type MapWebviewToExt =
   | { command: 'ready' }
-  | { command: 'selectLevel'; levelId: string };
+  | { command: 'selectLevel'; levelId: string }
+  | { command: 'openJourneyCertificate' };
