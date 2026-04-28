@@ -51,6 +51,7 @@
   "certificate.savedNotification": "Certificate saved to {path}",
   "certificate.saveFailed": "Could not save certificate: {error}",
   "certificate.openFile": "Open File",
+  "certificate.revealInExplorer": "Reveal in Explorer",
   "certificate.notUnlocked": "[YourEx] Complete the rEx final transmission (Ch5) to unlock the journey certificate.",
   "certificate.commandTitle": "Generate Journey Certificate",
   "certificate.statsLevels": "Total Levels Completed",

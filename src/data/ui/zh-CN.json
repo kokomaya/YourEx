@@ -51,6 +51,7 @@
   "certificate.savedNotification": "证书已保存至 {path}",
   "certificate.saveFailed": "证书保存失败：{error}",
   "certificate.openFile": "打开文件",
+  "certificate.revealInExplorer": "在文件管理器中显示",
   "certificate.notUnlocked": "[YourEx] 请先通关 rEx 终末通信（第 5 章）以解锁旅程证书。",
   "certificate.commandTitle": "生成旅程证书",
   "certificate.statsLevels": "已通关关卡",

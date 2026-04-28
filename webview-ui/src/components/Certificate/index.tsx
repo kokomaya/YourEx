@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from '../../i18n';
 import { useMessageListener, useVSCode } from '../../hooks/useVSCode';
 import type {
@@ -9,11 +9,11 @@ import type {
 } from '../../types/messages';
 import './Certificate.css';
 
-// PDF export uses the browser's native print-to-PDF (window.print + a print
-// stylesheet) instead of @react-pdf/renderer. The previous approach left
-// the page blank because react-pdf's pdfkit fork blew up at module load
-// time even with polyfills. window.print() opens the OS Save-as-PDF
-// dialog, has perfect CJK support, and adds zero runtime dependencies.
+// PDF export pipeline: html2canvas snapshots each .cert-page node into a
+// canvas, jsPDF wraps those images into a multi-page A4 PDF, and the bytes
+// are shipped to the extension which writes the file straight to the user's
+// Documents folder. Both libs are pure browser code (no Node polyfills, no
+// eval) so the on-screen preview is never blocked by export-side issues.
 
 type SaveStatus =
   | { kind: 'idle' }
@@ -29,6 +29,7 @@ export function Certificate() {
   const [data, setData] = useState<JourneyCertificateData | null>(null);
   const [nameDraft, setNameDraft] = useState('');
   const [saveStatus, setSaveStatus] = useState<SaveStatus>({ kind: 'idle' });
+  const previewRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     postMessage({ command: 'ready' });
@@ -40,44 +41,78 @@ export function Certificate() {
       setData(m.data);
       setNameDraft(m.data.playerName);
     } else if (m.command === 'certificateSaved') {
-      setSaveStatus({ kind: 'success', message: t('certificate.savedNotification') });
+      setSaveStatus({
+        kind: 'success',
+        message: t('certificate.exportSavedTo', { path: m.filePath }),
+      });
     } else if (m.command === 'certificateSaveFailed') {
       setSaveStatus({ kind: 'error', message: m.error });
     }
   });
 
-  const docTitle = useMemo(() => {
-    if (!data) return PRINT_DOC_TITLE_PREFIX;
+  const fileName = useMemo(() => {
+    if (!data) return `${PRINT_DOC_TITLE_PREFIX}.pdf`;
     const safeName = data.playerName.replace(/[^\p{L}\p{N}_-]+/gu, '_');
     const date = new Date(data.generatedAt);
-    return `${PRINT_DOC_TITLE_PREFIX}_${safeName}_${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}`;
+    return `${PRINT_DOC_TITLE_PREFIX}_${safeName}_${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}.pdf`;
   }, [data]);
 
-  // The browser's Save-as-PDF dialog uses document.title as the suggested
-  // filename. Set it whenever data arrives so the downloaded file is named
-  // sensibly without the user having to retype it.
-  useEffect(() => {
-    if (data) document.title = docTitle;
-  }, [data, docTitle]);
-
-  const handleExportPdf = useCallback(() => {
+  const handleExportPdf = useCallback(async () => {
     if (!data) return;
+    const root = previewRef.current;
+    if (!root) {
+      setSaveStatus({ kind: 'error', message: 'Preview not ready' });
+      return;
+    }
     setSaveStatus({ kind: 'rendering' });
-    // Defer to next frame so the status text has a chance to paint before
-    // the print dialog steals focus.
-    requestAnimationFrame(() => {
-      try {
-        window.print();
-        setSaveStatus({
-          kind: 'success',
-          message: t('certificate.printDialogOpened'),
-        });
-      } catch (e: unknown) {
-        const message = e instanceof Error ? e.message : String(e);
-        setSaveStatus({ kind: 'error', message });
+    try {
+      // Lazy-load so the heavy libs only ship when the user actually exports.
+      const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
+        import('html2canvas'),
+        import('jspdf'),
+      ]);
+
+      const pages = Array.from(root.querySelectorAll<HTMLElement>('.cert-page'));
+      if (pages.length === 0) {
+        throw new Error('No certificate pages to export');
       }
-    });
-  }, [data, t]);
+
+      // A4 portrait, mm units. jsPDF's coordinate system matches that.
+      const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+      const pageWmm = pdf.internal.pageSize.getWidth();
+      const pageHmm = pdf.internal.pageSize.getHeight();
+
+      for (let i = 0; i < pages.length; i++) {
+        const node = pages[i];
+        // 2x scale = sharper raster on Retina/4K without 4x file bloat.
+        const canvas = await html2canvas(node, {
+          backgroundColor: '#05070d',
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          windowWidth: node.scrollWidth,
+          windowHeight: node.scrollHeight,
+        });
+        const imgData = canvas.toDataURL('image/jpeg', 0.92);
+        // Fit to page width, preserve aspect; clip vertically if very tall.
+        const imgWmm = pageWmm;
+        const imgHmm = (canvas.height / canvas.width) * pageWmm;
+        const yOffset = imgHmm < pageHmm ? (pageHmm - imgHmm) / 2 : 0;
+        if (i > 0) pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, yOffset, imgWmm, Math.min(imgHmm, pageHmm));
+      }
+
+      const arrayBuf = pdf.output('arraybuffer') as ArrayBuffer;
+      postMessage({
+        command: 'generateCertificatePdf',
+        pdfBytes: Array.from(new Uint8Array(arrayBuf)),
+        fileName,
+      });
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      setSaveStatus({ kind: 'error', message });
+    }
+  }, [data, fileName, postMessage]);
 
   const handleSaveName = useCallback(() => {
     const trimmed = nameDraft.trim();
@@ -118,7 +153,7 @@ export function Certificate() {
             disabled={saveStatus.kind === 'rendering'}
             title={t('certificate.exportTooltip')}
           >
-            {saveStatus.kind === 'rendering' ? t('certificate.regenerating') : t('certificate.exportPdfButton')}
+            {saveStatus.kind === 'rendering' ? t('certificate.exportRendering') : t('certificate.exportPdfButton')}
           </button>
         </div>
       </header>
@@ -132,7 +167,7 @@ export function Certificate() {
         {saveStatus.kind === 'idle' && t('certificate.exportHint')}
       </div>
 
-      <div className="cert-preview">
+      <div className="cert-preview" ref={previewRef}>
         <CoverPreview data={data} t={t} />
         <OverviewPreview data={data} t={t} />
         {data.chapters.map((ch) => (

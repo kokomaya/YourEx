@@ -240,9 +240,10 @@
   "certificate.playerNameSave": "保存署名",
   "certificate.regenerateNote": "下载时会即时生成 PDF，与预览一致。",
   "certificate.exportPdfButton": "导出为 PDF",
-  "certificate.exportTooltip": "将打开浏览器的打印对话框，目标处选择「另存为 PDF」即可。",
-  "certificate.exportHint": "提示：点击「导出为 PDF」，在打印对话框中将目标设为「另存为 PDF」。",
-  "certificate.printDialogOpened": "打印对话框已打开，选择「另存为 PDF」即可导出。",
+  "certificate.exportTooltip": "渲染证书并保存到「文档」文件夹。",
+  "certificate.exportHint": "提示：点击「导出为 PDF」，证书将自动保存到你的「文档」文件夹。",
+  "certificate.exportRendering": "正在渲染证书页面…",
+  "certificate.exportSavedTo": "已保存至 {path}",
   "reset.welcomeLink": "重置存档并重新开始",
   "reset.sidebarButton": "🗑️ 重置进度",
   "reset.sidebarTooltip": "清除全部本地游戏数据，重新开始"

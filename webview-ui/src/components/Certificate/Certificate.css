@@ -363,11 +363,9 @@
   font-family: 'JetBrains Mono', monospace;
 }
 
-/* ── Print stylesheet ─────────────────────────────────────────────────────
-   The browser's Save-as-PDF flow uses these rules. Strip the VS Code
-   chrome and tool bar, force every cert page onto its own A4 sheet, and
-   keep the dark sci-fi background through print (Chromium honours
-   -webkit-print-color-adjust on Save-as-PDF). */
+/* ── Print stylesheet (kept as a fallback for users who pick browser print
+   themselves; the primary export flow uses html2canvas + jsPDF and writes
+   directly to the Documents folder, no print dialog involved). */
 @media print {
   @page {
     size: A4;

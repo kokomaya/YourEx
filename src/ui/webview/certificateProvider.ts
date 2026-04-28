@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
+import * as os from 'os';
 import { getWebviewContent, getVisualConfigFromSettings } from './webviewHelper';
 import type { Locale } from '../../i18n/types';
 import type { GameStateManager } from '../../state/gameState';
@@ -99,6 +101,59 @@ export class CertificateProvider {
           }
         }
         return;
+
+      case 'generateCertificatePdf':
+        await this.handleSaveRequest(message);
+        return;
+    }
+  }
+
+  /**
+   * Persist the rendered PDF straight into the user's Documents folder so
+   * the export feels one-click. We pick a non-colliding filename, write,
+   * and offer "Open File" / "Show in Explorer" as a follow-up toast.
+   */
+  private async handleSaveRequest(
+    message: { pdfBytes?: number[]; fileName?: string },
+  ): Promise<void> {
+    if (!message.pdfBytes || !this._panel) return;
+
+    const buf = Buffer.from(Uint8Array.from(message.pdfBytes));
+    const baseName = (message.fileName || 'YourEx_Journey_Certificate.pdf').replace(/[\\/:*?"<>|]+/g, '_');
+    const targetDir = resolveDocumentsDir();
+    const targetPath = uniquePath(targetDir, baseName);
+    const targetUri = vscode.Uri.file(targetPath);
+
+    try {
+      // Ensure the directory exists (Documents is always present on stock
+      // installs, but be defensive — locked-down profiles vary).
+      await vscode.workspace.fs.createDirectory(vscode.Uri.file(targetDir));
+      await vscode.workspace.fs.writeFile(targetUri, buf);
+
+      this._panel.webview.postMessage({
+        command: 'certificateSaved',
+        filePath: targetPath,
+      });
+
+      const open = t('certificate.openFile');
+      const reveal = t('certificate.revealInExplorer');
+      const choice = await vscode.window.showInformationMessage(
+        t('certificate.savedNotification', { path: targetPath }),
+        open,
+        reveal,
+      );
+      if (choice === open) {
+        await vscode.env.openExternal(targetUri);
+      } else if (choice === reveal) {
+        await vscode.commands.executeCommand('revealFileInOS', targetUri);
+      }
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e.message : String(e);
+      this._panel.webview.postMessage({
+        command: 'certificateSaveFailed',
+        error,
+      });
+      vscode.window.showErrorMessage(t('certificate.saveFailed', { error }));
     }
   }
 
@@ -127,4 +182,39 @@ type WebViewIncoming =
   | { command: 'ready' }
   | { command: 'closeCertificate' }
   | { command: 'switchLanguage'; locale?: string }
-  | { command: 'setCertificatePlayerName'; name?: string };
+  | { command: 'setCertificatePlayerName'; name?: string }
+  | { command: 'generateCertificatePdf'; pdfBytes?: number[]; fileName?: string };
+
+/**
+ * Resolve a user-friendly Documents directory across platforms.
+ * Honors XDG_DOCUMENTS_DIR on Linux when set, otherwise falls back to
+ * the conventional ~/Documents path.
+ */
+function resolveDocumentsDir(): string {
+  const home = os.homedir();
+  // Linux respects XDG_DOCUMENTS_DIR if defined; otherwise default.
+  const xdg = process.env.XDG_DOCUMENTS_DIR;
+  if (xdg && xdg.trim().length > 0) return xdg;
+  return path.join(home, 'Documents');
+}
+
+/**
+ * Avoid clobbering an existing certificate with the same name. Append
+ * "(2)", "(3)", ... before the extension until the path is free.
+ */
+function uniquePath(dir: string, baseName: string): string {
+  const ext = path.extname(baseName);
+  const stem = baseName.slice(0, baseName.length - ext.length);
+  let candidate = path.join(dir, baseName);
+  let i = 1;
+  // Sync existsSync-equivalent via require('fs') to avoid an async dance
+  // for what is just a name-collision check.
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const fs: typeof import('fs') = require('fs');
+  while (fs.existsSync(candidate)) {
+    i += 1;
+    candidate = path.join(dir, `${stem} (${i})${ext}`);
+    if (i > 999) break;
+  }
+  return candidate;
+}
