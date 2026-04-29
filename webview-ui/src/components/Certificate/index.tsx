@@ -70,48 +70,46 @@ export function Certificate() {
       // Lazy-load so the renderer only ships when the user actually exports.
       const { default: html2canvas } = await import('html2canvas');
 
-      // Build an off-screen wrapper that contains the cert pages stacked
-      // vertically with no toolbar/grid gutters. Snapshotting this wrapper
-      // gives us a single tall image — much simpler than walking each page
-      // and stitching, and avoids the multi-column grid layout messing with
-      // proportions.
-      const pages = Array.from(root.querySelectorAll<HTMLElement>('.cert-page'));
-      if (pages.length === 0) {
-        throw new Error('No certificate pages to export');
-      }
-      const stage = document.createElement('div');
-      stage.style.position = 'fixed';
-      stage.style.left = '-99999px';
-      stage.style.top = '0';
-      stage.style.width = '900px';
-      stage.style.background = '#05070d';
-      stage.style.padding = '0';
-      stage.style.display = 'flex';
-      stage.style.flexDirection = 'column';
-      stage.style.gap = '0';
-      stage.className = 'cert-export-stage';
-      for (const p of pages) {
-        const clone = p.cloneNode(true) as HTMLElement;
-        clone.style.width = '100%';
-        clone.style.maxWidth = 'none';
-        clone.style.minHeight = '0';
-        clone.style.margin = '0';
-        clone.style.borderRadius = '0';
-        clone.style.borderLeft = 'none';
-        clone.style.borderRight = 'none';
-        clone.style.borderTop = 'none';
-        stage.appendChild(clone);
-      }
-      document.body.appendChild(stage);
+      // Collect the page's stylesheet text up front. html2canvas builds an
+      // internal iframe to render its clone, and inside that iframe the
+      // original <link rel="stylesheet" href="vscode-webview-resource://…">
+      // tags can't load — so without re-injecting the CSS, every class-based
+      // rule (flex layout, grids, text-align, borders) silently disappears
+      // and the snapshot looks like raw unstyled text.
+      const cssText = collectStylesheetText();
+
+      // Switch the live preview to a single 900px column for the snapshot —
+      // this keeps the in-webview look (centered titles, name plate, grid
+      // rows) instead of squishing pages into the live multi-column grid.
+      root.classList.add('cert-preview--export');
+      void root.offsetHeight;
 
       try {
-        const canvas = await html2canvas(stage, {
+        const canvas = await html2canvas(root, {
           backgroundColor: '#05070d',
           scale: 2,
           useCORS: true,
           logging: false,
-          windowWidth: stage.scrollWidth,
-          windowHeight: stage.scrollHeight,
+          width: root.offsetWidth,
+          height: root.offsetHeight,
+          windowWidth: root.offsetWidth,
+          windowHeight: root.offsetHeight,
+          onclone: (clonedDoc) => {
+            // Re-inject the CSS so class-based styles apply inside the
+            // html2canvas iframe even when the original stylesheet link
+            // can't be fetched from there.
+            if (cssText) {
+              const style = clonedDoc.createElement('style');
+              style.setAttribute('data-cert-export', '');
+              style.textContent = cssText;
+              clonedDoc.head.appendChild(style);
+            }
+            // Make sure the export class is also present on the clone in
+            // case html2canvas snapshots before our class-add takes effect
+            // in the cloned tree.
+            const clonedRoot = clonedDoc.querySelector('.cert-preview');
+            clonedRoot?.classList.add('cert-preview--export');
+          },
         });
         const blob: Blob | null = await new Promise((resolve) =>
           canvas.toBlob((b) => resolve(b), 'image/png')
@@ -124,7 +122,7 @@ export function Certificate() {
           fileName,
         });
       } finally {
-        document.body.removeChild(stage);
+        root.classList.remove('cert-preview--export');
       }
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e);
@@ -447,6 +445,24 @@ function StatRow({ label, value }: { label: string; value: string }) {
 
 function pad(n: number): string {
   return String(n).padStart(2, '0');
+}
+
+function collectStylesheetText(): string {
+  const parts: string[] = [];
+  for (const sheet of Array.from(document.styleSheets)) {
+    let rules: CSSRuleList | null = null;
+    try {
+      rules = sheet.cssRules;
+    } catch {
+      // Cross-origin sheet (very unlikely inside a webview, but be safe).
+      continue;
+    }
+    if (!rules) continue;
+    for (const rule of Array.from(rules)) {
+      parts.push(rule.cssText);
+    }
+  }
+  return parts.join('\n');
 }
 
 function formatDuration(ms: number): string {

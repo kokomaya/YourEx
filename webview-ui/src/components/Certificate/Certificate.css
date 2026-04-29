@@ -100,6 +100,32 @@
   margin-top: 8px;
 }
 
+/* Export mode: lay the cert pages out as a single 900px-wide column so the
+   html2canvas snapshot has a predictable width and matches the in-webview
+   layout (centered titles, grid rows, badges) instead of squishing them
+   into whatever the live grid was at the moment of export. */
+.cert-preview--export {
+  display: block !important;
+  grid-template-columns: none !important;
+  gap: 0 !important;
+  width: 900px !important;
+  max-width: 900px !important;
+  margin: 0 !important;
+}
+
+.cert-preview--export .cert-page {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+.cert-preview--export .cert-page + .cert-page {
+  border-top: none !important;
+}
+
 .cert-page {
   background: #05070d;
   border: 1px solid #1f2a44;
