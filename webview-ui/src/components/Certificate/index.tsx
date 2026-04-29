@@ -9,11 +9,12 @@ import type {
 } from '../../types/messages';
 import './Certificate.css';
 
-// PDF export pipeline: html2canvas snapshots each .cert-page node into a
-// canvas, jsPDF wraps those images into a multi-page A4 PDF, and the bytes
-// are shipped to the extension which writes the file straight to the user's
-// Documents folder. Both libs are pure browser code (no Node polyfills, no
-// eval) so the on-screen preview is never blocked by export-side issues.
+// Image export: html2canvas snapshots the entire stitched preview (all
+// pages laid out vertically) into a single tall PNG, which the extension
+// writes straight into the user's Documents folder. PDF was tried earlier
+// but the multi-page layout fought us on fonts, backgrounds, and page
+// margins — a flat image side-steps all of that and is what most users
+// actually want to share/print.
 
 type SaveStatus =
   | { kind: 'idle' }
@@ -51,13 +52,13 @@ export function Certificate() {
   });
 
   const fileName = useMemo(() => {
-    if (!data) return `${PRINT_DOC_TITLE_PREFIX}.pdf`;
+    if (!data) return `${PRINT_DOC_TITLE_PREFIX}.png`;
     const safeName = data.playerName.replace(/[^\p{L}\p{N}_-]+/gu, '_');
     const date = new Date(data.generatedAt);
-    return `${PRINT_DOC_TITLE_PREFIX}_${safeName}_${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}.pdf`;
+    return `${PRINT_DOC_TITLE_PREFIX}_${safeName}_${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}.png`;
   }, [data]);
 
-  const handleExportPdf = useCallback(async () => {
+  const handleExportImage = useCallback(async () => {
     if (!data) return;
     const root = previewRef.current;
     if (!root) {
@@ -66,48 +67,65 @@ export function Certificate() {
     }
     setSaveStatus({ kind: 'rendering' });
     try {
-      // Lazy-load so the heavy libs only ship when the user actually exports.
-      const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
-        import('html2canvas'),
-        import('jspdf'),
-      ]);
+      // Lazy-load so the renderer only ships when the user actually exports.
+      const { default: html2canvas } = await import('html2canvas');
 
+      // Build an off-screen wrapper that contains the cert pages stacked
+      // vertically with no toolbar/grid gutters. Snapshotting this wrapper
+      // gives us a single tall image — much simpler than walking each page
+      // and stitching, and avoids the multi-column grid layout messing with
+      // proportions.
       const pages = Array.from(root.querySelectorAll<HTMLElement>('.cert-page'));
       if (pages.length === 0) {
         throw new Error('No certificate pages to export');
       }
+      const stage = document.createElement('div');
+      stage.style.position = 'fixed';
+      stage.style.left = '-99999px';
+      stage.style.top = '0';
+      stage.style.width = '900px';
+      stage.style.background = '#05070d';
+      stage.style.padding = '0';
+      stage.style.display = 'flex';
+      stage.style.flexDirection = 'column';
+      stage.style.gap = '0';
+      stage.className = 'cert-export-stage';
+      for (const p of pages) {
+        const clone = p.cloneNode(true) as HTMLElement;
+        clone.style.width = '100%';
+        clone.style.maxWidth = 'none';
+        clone.style.minHeight = '0';
+        clone.style.margin = '0';
+        clone.style.borderRadius = '0';
+        clone.style.borderLeft = 'none';
+        clone.style.borderRight = 'none';
+        clone.style.borderTop = 'none';
+        stage.appendChild(clone);
+      }
+      document.body.appendChild(stage);
 
-      // A4 portrait, mm units. jsPDF's coordinate system matches that.
-      const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-      const pageWmm = pdf.internal.pageSize.getWidth();
-      const pageHmm = pdf.internal.pageSize.getHeight();
-
-      for (let i = 0; i < pages.length; i++) {
-        const node = pages[i];
-        // 2x scale = sharper raster on Retina/4K without 4x file bloat.
-        const canvas = await html2canvas(node, {
+      try {
+        const canvas = await html2canvas(stage, {
           backgroundColor: '#05070d',
           scale: 2,
           useCORS: true,
           logging: false,
-          windowWidth: node.scrollWidth,
-          windowHeight: node.scrollHeight,
+          windowWidth: stage.scrollWidth,
+          windowHeight: stage.scrollHeight,
         });
-        const imgData = canvas.toDataURL('image/jpeg', 0.92);
-        // Fit to page width, preserve aspect; clip vertically if very tall.
-        const imgWmm = pageWmm;
-        const imgHmm = (canvas.height / canvas.width) * pageWmm;
-        const yOffset = imgHmm < pageHmm ? (pageHmm - imgHmm) / 2 : 0;
-        if (i > 0) pdf.addPage();
-        pdf.addImage(imgData, 'JPEG', 0, yOffset, imgWmm, Math.min(imgHmm, pageHmm));
+        const blob: Blob | null = await new Promise((resolve) =>
+          canvas.toBlob((b) => resolve(b), 'image/png')
+        );
+        if (!blob) throw new Error('Could not encode image');
+        const buf = await blob.arrayBuffer();
+        postMessage({
+          command: 'generateCertificateImage',
+          imageBytes: Array.from(new Uint8Array(buf)),
+          fileName,
+        });
+      } finally {
+        document.body.removeChild(stage);
       }
-
-      const arrayBuf = pdf.output('arraybuffer') as ArrayBuffer;
-      postMessage({
-        command: 'generateCertificatePdf',
-        pdfBytes: Array.from(new Uint8Array(arrayBuf)),
-        fileName,
-      });
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e);
       setSaveStatus({ kind: 'error', message });
@@ -149,11 +167,11 @@ export function Certificate() {
           </button>
           <button
             className="cert-btn cert-btn--primary"
-            onClick={handleExportPdf}
+            onClick={handleExportImage}
             disabled={saveStatus.kind === 'rendering'}
             title={t('certificate.exportTooltip')}
           >
-            {saveStatus.kind === 'rendering' ? t('certificate.exportRendering') : t('certificate.exportPdfButton')}
+            {saveStatus.kind === 'rendering' ? t('certificate.exportRendering') : t('certificate.exportImageButton')}
           </button>
         </div>
       </header>

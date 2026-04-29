@@ -102,24 +102,24 @@ export class CertificateProvider {
         }
         return;
 
-      case 'generateCertificatePdf':
+      case 'generateCertificateImage':
         await this.handleSaveRequest(message);
         return;
     }
   }
 
   /**
-   * Persist the rendered PDF straight into the user's Documents folder so
-   * the export feels one-click. We pick a non-colliding filename, write,
+   * Persist the rendered image straight into the user's Documents folder
+   * so the export feels one-click. We pick a non-colliding filename, write,
    * and offer "Open File" / "Show in Explorer" as a follow-up toast.
    */
   private async handleSaveRequest(
-    message: { pdfBytes?: number[]; fileName?: string },
+    message: { imageBytes?: number[]; fileName?: string },
   ): Promise<void> {
-    if (!message.pdfBytes || !this._panel) return;
+    if (!message.imageBytes || !this._panel) return;
 
-    const buf = Buffer.from(Uint8Array.from(message.pdfBytes));
-    const baseName = (message.fileName || 'YourEx_Journey_Certificate.pdf').replace(/[\\/:*?"<>|]+/g, '_');
+    const buf = Buffer.from(Uint8Array.from(message.imageBytes));
+    const baseName = (message.fileName || 'YourEx_Journey_Certificate.png').replace(/[\\/:*?"<>|]+/g, '_');
     const targetDir = resolveDocumentsDir();
     const targetPath = uniquePath(targetDir, baseName);
     const targetUri = vscode.Uri.file(targetPath);
@@ -183,7 +183,7 @@ type WebViewIncoming =
   | { command: 'closeCertificate' }
   | { command: 'switchLanguage'; locale?: string }
   | { command: 'setCertificatePlayerName'; name?: string }
-  | { command: 'generateCertificatePdf'; pdfBytes?: number[]; fileName?: string };
+  | { command: 'generateCertificateImage'; imageBytes?: number[]; fileName?: string };
 
 /**
  * Resolve a user-friendly Documents directory across platforms.

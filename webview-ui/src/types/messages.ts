@@ -69,7 +69,7 @@ export type WebViewMessage =
   | { command: 'peekHint'; levelId: string }
   | { command: 'openCodex' }
   | { command: 'openJourneyCertificate' }
-  | { command: 'generateCertificatePdf'; pdfBytes: number[]; fileName: string }
+  | { command: 'generateCertificateImage'; imageBytes: number[]; fileName: string }
   | { command: 'setCertificatePlayerName'; name: string }
   | { command: 'closeCertificate' }
   | { command: 'ready' };
