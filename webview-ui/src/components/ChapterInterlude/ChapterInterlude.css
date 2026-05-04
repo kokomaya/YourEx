@@ -1,0 +1,96 @@
+@import '../Welcome/Welcome.css';
+
+/* --- Chapter 2: cold-blue --- */
+.chapter-interlude--cold-blue .boot-title {
+  color: #4fc3f7;
+  text-shadow: 0 0 16px #4fc3f7, 0 0 32px rgba(79, 195, 247, 0.3);
+}
+
+.chapter-interlude--cold-blue .rex-reveal pre {
+  color: #4fc3f7;
+  text-shadow: 0 0 20px #4fc3f7, 0 0 40px rgba(79, 195, 247, 0.3);
+}
+
+.chapter-interlude--cold-blue .welcome-actions .btn-primary {
+  background: #4fc3f7;
+  color: var(--bg-primary, #0a0f1a);
+  border-color: #4fc3f7;
+}
+
+/* --- Chapter 3: teal-white --- */
+.chapter-interlude--teal-white .boot-title {
+  color: #80cbc4;
+  text-shadow: 0 0 16px #80cbc4, 0 0 32px rgba(128, 203, 196, 0.4);
+}
+
+.chapter-interlude--teal-white .rex-reveal pre {
+  color: #e0f7fa;
+  text-shadow: 0 0 20px #80cbc4, 0 0 40px rgba(128, 203, 196, 0.4);
+}
+
+.chapter-interlude--teal-white .welcome-actions .btn-primary {
+  background: #80cbc4;
+  color: var(--bg-primary, #0a0f1a);
+  border-color: #80cbc4;
+}
+
+/* --- Chapter 4: orange-red --- */
+.chapter-interlude--orange-red .boot-title {
+  color: #ff7043;
+  text-shadow: 0 0 16px #ff7043, 0 0 32px rgba(255, 112, 67, 0.35);
+}
+
+.chapter-interlude--orange-red .rex-reveal pre {
+  color: #ff7043;
+  text-shadow: 0 0 20px #ff7043, 0 0 40px rgba(255, 112, 67, 0.35);
+}
+
+.chapter-interlude--orange-red .boot-line:last-child {
+  color: #ff7043;
+  font-weight: 600;
+}
+
+.chapter-interlude--orange-red .welcome-actions .btn-primary {
+  background: #ff7043;
+  color: var(--bg-primary, #0a0f1a);
+  border-color: #ff7043;
+}
+
+/* --- Chapter 5: purple-gold --- */
+.chapter-interlude--purple-gold .boot-title {
+  color: #ce93d8;
+  text-shadow: 0 0 16px #ce93d8, 0 0 32px rgba(206, 147, 216, 0.3);
+}
+
+.chapter-interlude--purple-gold .rex-reveal pre {
+  color: #ffd54f;
+  text-shadow: 0 0 20px #ffd54f, 0 0 40px rgba(255, 213, 79, 0.4);
+}
+
+.chapter-interlude--purple-gold .welcome-actions .btn-primary {
+  background: #ffd54f;
+  color: var(--bg-primary, #0a0f1a);
+  border-color: #ffd54f;
+}
+
+/* --- Chapter 5: signal burst effect --- */
+.chapter-interlude--burst .boot-line--burst {
+  color: #ffd54f !important;
+  font-weight: 600;
+  text-shadow: 0 0 8px rgba(255, 213, 79, 0.5);
+}
+
+@keyframes burstFlash {
+  0% { opacity: 1; }
+  50% { opacity: 0.1; }
+  100% { opacity: 1; }
+}
+
+.chapter-interlude--burst::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.15);
+  pointer-events: none;
+  animation: burstFlash 0.15s ease-out forwards;
+}

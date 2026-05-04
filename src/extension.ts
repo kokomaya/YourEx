@@ -9,6 +9,7 @@ import { WelcomeProvider } from './ui/webview/welcomeProvider';
 import { LeaderboardProvider } from './ui/webview/leaderboardProvider';
 import { CodexProvider } from './ui/webview/codexProvider';
 import { Ch6InterludeProvider } from './ui/webview/ch6InterludeProvider';
+import { ChapterInterludeProvider } from './ui/webview/chapterInterludeProvider';
 import { CertificateProvider } from './ui/webview/certificateProvider';
 import { StatusBarManager } from './ui/statusbar';
 import { GameStateManager } from './state/gameState';
@@ -121,6 +122,8 @@ export function activate(context: vscode.ExtensionContext) {
   codexProvider.setLocale(initialLocale);
   const ch6InterludeProvider = new Ch6InterludeProvider(context.extensionUri);
   ch6InterludeProvider.setLocale(initialLocale);
+  const chapterInterludeProvider = new ChapterInterludeProvider(context.extensionUri);
+  chapterInterludeProvider.setLocale(initialLocale);
   const certificateProvider = new CertificateProvider(context.extensionUri);
   certificateProvider.setLocale(initialLocale);
   certificateProvider.setGameState(gameState);
@@ -173,6 +176,30 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showWarningMessage('[YourEx] This level is locked in User Mode. Switch to Developer Mode to bypass locks.');
         return;
       }
+
+      // Chapter interlude gates: show once before the first level of each chapter
+      const chapterFirstLevels: Record<string, number> = {
+        'level_06': 2,
+        'level_11': 3,
+        'level_16': 4,
+        'level_21': 5,
+      };
+      const interludeChapter = chapterFirstLevels[levelId];
+      if (interludeChapter) {
+        const key = `yourex.ch${interludeChapter}InterludeSeen`;
+        const seen = context.globalState.get<boolean>(key, false);
+        if (!seen) {
+          chapterInterludeProvider.show(interludeChapter);
+          const disposable = chapterInterludeProvider.onDidComplete(() => {
+            disposable.dispose();
+            void context.globalState.update(key, true);
+            gameState.startTimer();
+            promptPanel.show(levelId);
+          });
+          return;
+        }
+      }
+
       // Show Ch6 interlude before opening level_26 for the first time
       if (levelId === 'level_26') {
         const seen = context.globalState.get<boolean>('yourex.ch6InterludeSeen', false);
@@ -243,6 +270,12 @@ export function activate(context: vscode.ExtensionContext) {
       ch6InterludeProvider.show();
     }),
 
+    vscode.commands.registerCommand('yourex.showChapterInterlude', (chapterId: number) => {
+      if (chapterId >= 2 && chapterId <= 5) {
+        chapterInterludeProvider.show(chapterId);
+      }
+    }),
+
     vscode.commands.registerCommand('yourex.resetProgress', async (arg?: { skipConfirm?: boolean }) => {
       // Sidebar invokes with skipConfirm=true after its own hold-to-purge gesture
       // already provided deliberate confirmation. Command Palette / Welcome link
@@ -282,6 +315,10 @@ export function activate(context: vscode.ExtensionContext) {
       // gameState and must be cleared separately.
       gameState.reset();
       await context.globalState.update('yourex.ch6InterludeSeen', undefined);
+      await context.globalState.update('yourex.ch2InterludeSeen', undefined);
+      await context.globalState.update('yourex.ch3InterludeSeen', undefined);
+      await context.globalState.update('yourex.ch4InterludeSeen', undefined);
+      await context.globalState.update('yourex.ch5InterludeSeen', undefined);
 
       // Re-seat in-memory trackers that don't persist to disk.
       promptPanel.setHintTracker(new HintTracker());
@@ -293,6 +330,7 @@ export function activate(context: vscode.ExtensionContext) {
       leaderboardProvider.dispose();
       codexProvider.dispose();
       ch6InterludeProvider.dispose();
+      chapterInterludeProvider.dispose();
       certificateProvider.dispose();
 
       // Mirror first-launch behavior: refresh sidebar/status bar and pop Welcome.
@@ -362,6 +400,7 @@ export function activate(context: vscode.ExtensionContext) {
       leaderboardProvider.broadcastLocale(targetLocale);
       codexProvider.broadcastLocale(targetLocale);
       ch6InterludeProvider.broadcastLocale(targetLocale);
+      chapterInterludeProvider.broadcastLocale(targetLocale);
       certificateProvider.broadcastLocale(targetLocale);
 
       // Refresh extension-side UI
@@ -433,6 +472,7 @@ export function activate(context: vscode.ExtensionContext) {
       welcomeProvider.dispose();
       leaderboardProvider.dispose();
       ch6InterludeProvider.dispose();
+      chapterInterludeProvider.dispose();
       certificateProvider.dispose();
       statusBar.dispose();
       localeService.dispose();

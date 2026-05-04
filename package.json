@@ -74,6 +74,11 @@
         "category": "YourEx"
       },
       {
+        "command": "yourex.showChapterInterlude",
+        "title": "Show Chapter Interlude",
+        "category": "YourEx"
+      },
+      {
         "command": "yourex.openJourneyCertificate",
         "title": "Generate Journey Certificate",
         "category": "YourEx"

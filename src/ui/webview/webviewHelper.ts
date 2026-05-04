@@ -28,6 +28,8 @@ export function getVisualConfigFromSettings(): VisualConfigPayload {
 export interface WebviewBootContext {
   /** Whether the player has any persisted progress. Drives optional UI like the Welcome reset link. */
   hasProgress?: boolean;
+  /** Chapter ID for chapter interlude screens. */
+  chapterId?: number;
 }
 
 export function getWebviewContent(
