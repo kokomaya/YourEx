@@ -195,6 +195,7 @@ export function activate(context: vscode.ExtensionContext) {
             void context.globalState.update(key, true);
             gameState.startTimer();
             promptPanel.show(levelId);
+            refreshUI();
           });
           return;
         }
@@ -210,6 +211,7 @@ export function activate(context: vscode.ExtensionContext) {
             void context.globalState.update('yourex.ch6InterludeSeen', true);
             gameState.startTimer();
             promptPanel.show(levelId);
+            refreshUI();
           });
           return;
         }
