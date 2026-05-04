@@ -353,6 +353,87 @@
   margin-top: 2px;
 }
 
+/* Manual / Codex page — sci-fi reference card embedded in the certificate
+   right after the mission summary, before per-chapter records. */
+.cert-manual__subtitle {
+  font-size: 11px;
+  color: #7a8aa0;
+  margin: 0 0 14px 0;
+  letter-spacing: 1px;
+}
+
+.cert-manual__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 14px;
+}
+
+.cert-manual__section {
+  border: 1px solid #1f2a44;
+  background: #0b1020;
+  padding: 8px 10px;
+}
+
+.cert-manual__section-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #34f5c5;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  border-bottom: 1px dashed #1f2a44;
+  padding-bottom: 4px;
+}
+
+.cert-manual__section-icon {
+  color: #ffd27a;
+  font-size: 12px;
+}
+
+.cert-manual__section-title { font-weight: 700; }
+
+.cert-manual__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+
+.cert-manual__table td {
+  padding: 2px 4px;
+  vertical-align: top;
+  line-height: 1.45;
+}
+
+.cert-manual__meta {
+  color: #ffd27a;
+  font-family: 'JetBrains Mono', Consolas, 'Courier New', monospace;
+  white-space: nowrap;
+  width: 22%;
+}
+
+.cert-manual__desc {
+  color: #e6edf7;
+  width: 44%;
+}
+
+.cert-manual__example {
+  color: #7a8aa0;
+  font-family: 'JetBrains Mono', Consolas, 'Courier New', monospace;
+  width: 34%;
+  word-break: break-all;
+}
+
+.cert-manual__footer {
+  margin-top: 12px;
+  font-size: 10px;
+  color: #7a8aa0;
+  text-align: right;
+  letter-spacing: 1px;
+  border-top: 1px solid #1f2a44;
+  padding-top: 6px;
+}
+
 .cert-ending {
   text-align: center;
   padding: 60px 30px;

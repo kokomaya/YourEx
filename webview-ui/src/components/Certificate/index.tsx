@@ -7,6 +7,7 @@ import type {
   ChapterJourneyView,
   LevelJourneyView,
 } from '../../types/messages';
+import { SECTIONS as CODEX_SECTIONS } from '../Codex';
 import './Certificate.css';
 
 // Image export: html2canvas snapshots the entire stitched preview (all
@@ -186,6 +187,7 @@ export function Certificate() {
       <div className="cert-preview" ref={previewRef}>
         <CoverPreview data={data} t={t} />
         <OverviewPreview data={data} t={t} />
+        <ManualPreview t={t} />
         {data.chapters.map((ch) => (
           <ChapterPreview key={ch.chapter} chapter={ch} t={t} />
         ))}
@@ -304,6 +306,38 @@ function OverviewPreview({ data, t }: { data: JourneyCertificateData; t: TFn }) 
           <div style={{ color: '#7a8aa0', fontSize: 10, padding: 8 }}>—</div>
         )}
       </div>
+    </div>
+  );
+}
+
+function ManualPreview({ t }: { t: TFn }) {
+  return (
+    <div className="cert-page cert-manual">
+      <div className="cert-page__tag">{'>>'} {t('codex.title')}</div>
+      <div className="cert-page__divider" />
+      <p className="cert-manual__subtitle">{t('codex.subtitle')}</p>
+      <div className="cert-manual__grid">
+        {CODEX_SECTIONS.map((sec, si) => (
+          <section key={si} className="cert-manual__section">
+            <div className="cert-manual__section-header">
+              <span className="cert-manual__section-icon">{sec.icon}</span>
+              <span className="cert-manual__section-title">{t(sec.titleKey)}</span>
+            </div>
+            <table className="cert-manual__table">
+              <tbody>
+                {sec.entries.map((entry, i) => (
+                  <tr key={i}>
+                    <td className="cert-manual__meta">{entry.meta}</td>
+                    <td className="cert-manual__desc">{t(entry.desc)}</td>
+                    <td className="cert-manual__example">{entry.example}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        ))}
+      </div>
+      <div className="cert-manual__footer">{t('codex.footer')}</div>
     </div>
   );
 }

@@ -1,19 +1,19 @@
 import { useTranslation } from '../../i18n';
 import './Codex.css';
 
-interface RegexEntry {
+export interface RegexEntry {
   meta: string;
   desc: string;
   example: string;
 }
 
-interface Section {
+export interface CodexSection {
   titleKey: string;
   icon: string;
   entries: RegexEntry[];
 }
 
-const SECTIONS: Section[] = [
+export const SECTIONS: CodexSection[] = [
   {
     titleKey: 'codex.section.basic',
     icon: '◈',
