@@ -68,6 +68,15 @@ export class PromptPanelProvider {
   }
 
   show(levelId?: string): void {
+    // Pre-resolve the level before reveal so _currentLevel is up-to-date
+    // when onDidChangeViewState fires
+    if (levelId) {
+      const level = getLevelById(levelId);
+      if (level) {
+        this._currentLevel = level;
+      }
+    }
+
     if (this._panel) {
       this._panel.reveal();
     } else {
@@ -94,6 +103,19 @@ export class PromptPanelProvider {
 
       this._panel.webview.onDidReceiveMessage((msg: WebViewMessage) => {
         this.handleMessage(msg);
+      });
+
+      this._panel.onDidChangeViewState(() => {
+        // Re-send current level when panel becomes visible (safety net for
+        // cases where postMessage was sent while panel was hidden/restoring)
+        if (this._panel?.visible && this._currentLevel) {
+          this.postMessage({
+            command: 'loadLevel',
+            level: this._currentLevel,
+            recall: this.buildRecall(this._currentLevel.id),
+          });
+          this.sendHintState(this._currentLevel);
+        }
       });
 
       this._panel.onDidDispose(() => {

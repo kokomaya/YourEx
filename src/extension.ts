@@ -168,7 +168,10 @@ export function activate(context: vscode.ExtensionContext) {
 
     vscode.commands.registerCommand('yourex.startDecryption', () => {
       gameState.startTimer();
-      promptPanel.show();
+      // Auto-load the first level for new users instead of showing an empty panel
+      const allLevels = getAllLevels();
+      const firstLevelId = allLevels.length > 0 ? allLevels[0].id : undefined;
+      promptPanel.show(firstLevelId);
     }),
 
     vscode.commands.registerCommand('yourex.openLevel', (levelId: string) => {
@@ -189,9 +192,9 @@ export function activate(context: vscode.ExtensionContext) {
         const key = `yourex.ch${interludeChapter}InterludeSeen`;
         const seen = context.globalState.get<boolean>(key, false);
         if (!seen) {
-          chapterInterludeProvider.show(interludeChapter);
-          const disposable = chapterInterludeProvider.onDidComplete(() => {
-            disposable.dispose();
+          chapterInterludeProvider.show(interludeChapter, () => {
+            // Direct callback: runs synchronously inside onDidReceiveMessage
+            // before the panel is disposed — no async, no EventEmitter indirection
             void context.globalState.update(key, true);
             gameState.startTimer();
             promptPanel.show(levelId);
@@ -218,6 +221,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
       gameState.startTimer();
       promptPanel.show(levelId);
+      refreshUI();
     }),
 
     vscode.commands.registerCommand('yourex.switchMode', async () => {

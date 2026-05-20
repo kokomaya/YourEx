@@ -9,6 +9,9 @@ export class ChapterInterludeProvider {
   /** Fires with the chapterId when the player clicks the proceed button. */
   readonly onDidComplete = this._onDidComplete.event;
 
+  /** Direct callback invoked when the player clicks proceed (bypasses EventEmitter). */
+  private _directCallback: ((chapterId: number) => void) | undefined;
+
   constructor(private readonly _extensionUri: vscode.Uri) {}
 
   setLocale(locale: Locale): void { this._locale = locale; }
@@ -18,7 +21,14 @@ export class ChapterInterludeProvider {
     this._panel?.webview.postMessage({ command: 'localeChanged', locale });
   }
 
-  show(chapterId: number): void {
+  /**
+   * Show the chapter interlude screen.
+   * @param chapterId Chapter to display
+   * @param onComplete Optional direct callback invoked when user proceeds (more reliable than onDidComplete event)
+   */
+  show(chapterId: number, onComplete?: (chapterId: number) => void): void {
+    this._directCallback = onComplete;
+
     if (this._panel) { this._panel.reveal(); return; }
 
     const titles: Record<number, string> = {
@@ -40,8 +50,15 @@ export class ChapterInterludeProvider {
 
     this._panel.webview.onDidReceiveMessage((message: { command: string; chapterId?: number; locale?: string }) => {
       if (message.command === 'beginChapter') {
+        const resolvedId = message.chapterId ?? chapterId;
+        // Invoke callback BEFORE disposing to avoid any lifecycle issues
+        const cb = this._directCallback;
+        this._directCallback = undefined;
+        if (cb) {
+          cb(resolvedId);
+        }
+        this._onDidComplete.fire(resolvedId);
         this._panel?.dispose();
-        this._onDidComplete.fire(message.chapterId ?? chapterId);
       } else if (message.command === 'switchLanguage' && message.locale) {
         vscode.commands.executeCommand('yourex.switchLanguage', message.locale);
       }
