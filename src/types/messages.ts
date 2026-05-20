@@ -15,6 +15,7 @@ export type WebViewType = 'promptPanel' | 'welcome' | 'leaderboard' | 'scoreDeta
 // WebView → Extension
 export type WebViewMessage =
   | { command: 'executePrompt'; prompt: string; levelId: string }
+  | { command: 'executeRegex'; regex: string; levelId: string }
   | { command: 'manualMode'; levelId: string }
   | { command: 'requestLevel'; levelId: string }
   | { command: 'startDecryption' }

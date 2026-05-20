@@ -213,6 +213,10 @@ export class PromptPanelProvider {
         await this.handleExecutePrompt(msg.prompt, msg.levelId);
         break;
 
+      case 'executeRegex':
+        await this.handleExecuteRegex(msg.regex, msg.levelId);
+        break;
+
       case 'manualMode':
         await this.handleManualMode(msg.levelId);
         break;
@@ -353,6 +357,93 @@ export class PromptPanelProvider {
         if (level) {
           this.sendHintState(level, true);
         }
+      }
+
+      this._onDidUpdate.fire();
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      this.postMessage({ command: 'showError', message: msg });
+      this.postMessage({ command: 'setLoading', loading: false });
+    }
+  }
+
+  private async handleExecuteRegex(rawRegex: string, levelId: string): Promise<void> {
+    if (!this._gameState) return;
+
+    const level = getLevelById(levelId);
+    if (!level) {
+      this.postMessage({ command: 'showError', message: 'Level not found' });
+      return;
+    }
+
+    this.postMessage({ command: 'setLoading', loading: true });
+
+    try {
+      const judgeResult = runManualJudge(rawRegex, level);
+      const feedback = getFeedbackText(judgeResult, level, 'manual');
+      const passed = judgeResult.status === 'perfect' || judgeResult.status === 'pass';
+      const wasAlreadyCompleted = this._gameState.isLevelCompleted(levelId);
+      const attemptNumber = this._gameState.getLevelAttempts(levelId).length + 1;
+
+      const manualAttempt = {
+        levelId,
+        mode: 'manual' as const,
+        regex: rawRegex,
+        judgeResult: { ...judgeResult, regex: null },
+        timestamp: Date.now(),
+        attemptNumber,
+      };
+      this._gameState.recordAttempt(manualAttempt);
+
+      if (passed) {
+        const rewardInfo = this.applySuccessRewards(
+          attemptNumber,
+          'manual',
+          judgeResult.status === 'perfect',
+          0,
+          0,
+          levelId
+        );
+
+        const reward = buildRewardData(
+          this._gameState,
+          level,
+          judgeResult.status === 'perfect',
+          undefined,
+          rewardInfo.xpGained,
+          rewardInfo.combo,
+          rewardInfo.newAchievementIds,
+          wasAlreadyCompleted,
+          manualAttempt,
+        );
+
+        showJudgeFeedback(judgeResult, feedback);
+
+        this.postMessage({
+          command: 'showResult',
+          result: { ...judgeResult, regex: null },
+          feedback,
+          rawRegex,
+          reward,
+        });
+      } else {
+        const newState = resetCombo(this._gameState.state as any);
+        this._gameState.setCombo(newState.combo);
+
+        if (this._hintTracker) {
+          this._hintTracker.recordFail(levelId);
+        }
+
+        showJudgeFeedback(judgeResult, feedback);
+
+        this.postMessage({
+          command: 'showResult',
+          result: { ...judgeResult, regex: null },
+          feedback,
+          rawRegex,
+        });
+
+        this.sendHintState(level, true);
       }
 
       this._onDidUpdate.fire();

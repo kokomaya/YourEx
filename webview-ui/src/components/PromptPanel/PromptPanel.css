@@ -115,6 +115,19 @@
   position: relative;
 }
 
+.regex-input {
+  border-top: 1px solid color-mix(in srgb, var(--scene-accent) 30%, var(--border));
+  padding-top: 16px;
+  margin-top: 4px;
+}
+
+.console-input--regex {
+  resize: none;
+  overflow: hidden;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
 .console-input {
   position: relative;
   background-image:

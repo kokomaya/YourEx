@@ -21,6 +21,7 @@ export function PromptPanel() {
   const visual = useVisualPreferences();
   const [level, setLevel] = useState<Level | null>(null);
   const [prompt, setPrompt] = useState('');
+  const [regexInput, setRegexInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{
     judgeResult: JudgeResult;
@@ -177,6 +178,13 @@ export function PromptPanel() {
     postMessage({ command: 'executePrompt', prompt: prompt.trim(), levelId: level.id });
   };
 
+  const handleExecuteRegex = () => {
+    if (!level || !regexInput.trim() || loading) return;
+    setLoading(true);
+    setResult(null);
+    postMessage({ command: 'executeRegex', regex: regexInput.trim(), levelId: level.id });
+  };
+
   const handleManual = () => {
     postMessage({ command: 'openCodex' });
   };
@@ -275,6 +283,46 @@ export function PromptPanel() {
             </button>
           </div>
         )}
+        <textarea
+          className="console-input"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder={t('promptPanel.placeholder')}
+          rows={3}
+          disabled={loading}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleExecute();
+          }}
+        />
+        <div className="char-count text-muted">
+          {t('promptPanel.charCount', { count: prompt.length })}
+        </div>
+        <div className="action-buttons">
+          <button className={`btn-primary ${scene.buttonClassName}`} onClick={handleExecute} disabled={loading || !prompt.trim()}>
+            {loading ? t('promptPanel.loading') : t('promptPanel.execute')}
+          </button>
+        </div>
+      </section>
+
+      {hintData && (
+        <HintPanel
+          promptHints={hintData.promptHints}
+          totalCount={hintData.totalPromptHints}
+          hasPeeked={hintData.hasPeeked}
+          peekPenalty={hintData.peekPenalty}
+          visible={hintPanelOpen}
+          onPeek={() => {
+            if (level) {
+              postMessage({ command: 'peekHint', levelId: level.id });
+            }
+          }}
+        />
+      )}
+
+      <section className="prompt-input regex-input">
+        <div className="prompt-input__header">
+          <h3>{t('promptPanel.yourRegex')}</h3>
+        </div>
         {recall && recall.mode === 'manual' && (
           <div
             className={`recall-manual ${recallExpanded ? 'recall-manual--open' : ''}`}
@@ -307,44 +355,25 @@ export function PromptPanel() {
           </div>
         )}
         <textarea
-          className="console-input"
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder={t('promptPanel.placeholder')}
-          rows={3}
+          className="console-input console-input--regex"
+          value={regexInput}
+          onChange={(e) => setRegexInput(e.target.value)}
+          placeholder={t('promptPanel.regexPlaceholder')}
+          rows={1}
           disabled={loading}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleExecute();
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleExecuteRegex();
           }}
         />
-        <div className="char-count text-muted">
-          {t('promptPanel.charCount', { count: prompt.length })}
-        </div>
-      </section>
-
-      {hintData && (
-        <HintPanel
-          promptHints={hintData.promptHints}
-          totalCount={hintData.totalPromptHints}
-          hasPeeked={hintData.hasPeeked}
-          peekPenalty={hintData.peekPenalty}
-          visible={hintPanelOpen}
-          onPeek={() => {
-            if (level) {
-              postMessage({ command: 'peekHint', levelId: level.id });
-            }
-          }}
-        />
-      )}
-
         <div className="action-buttons">
-          <button className={`btn-primary ${scene.buttonClassName}`} onClick={handleExecute} disabled={loading || !prompt.trim()}>
-            {loading ? t('promptPanel.loading') : t('promptPanel.execute')}
+          <button className={`btn-secondary ${scene.buttonClassName}`} onClick={handleExecuteRegex} disabled={loading || !regexInput.trim()}>
+            {t('promptPanel.executeRegex')}
           </button>
           <button className={`btn-secondary ${scene.buttonClassName}`} onClick={handleManual} disabled={loading}>
             {t('promptPanel.manual')}
           </button>
         </div>
+      </section>
 
         {result && (
           <section className="result-panel" data-status={result.judgeResult.status}>
