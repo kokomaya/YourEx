@@ -16,12 +16,27 @@ export interface Level {
     onDirectWrite: string;
   };
   judgeConfig?: JudgeConfig;
+  /** Optional per-level hint behaviour overrides. */
+  hintConfig?: HintConfig;
   /**
    * When set, completing this level (subject to requireStatus) unlocks the
    * journey certificate generation entry. The unlock state is data-driven so
    * future chapters can move or duplicate the trigger without code changes.
    */
   certificateTrigger?: CertificateTrigger;
+}
+
+export interface HintConfig {
+  /** Fail count at which the first hint unlocks. Default: 2. */
+  hintStartFail?: number;
+  /** Fail count at which the first promptHint unlocks. Default: 1. */
+  promptHintStartFail?: number;
+  /** Override peek penalty (ignores difficulty-based default). */
+  peekPenalty?: number;
+  /** Whether to append expected values as the last hint. Default: true. */
+  showExpectedInHints?: boolean;
+  /** Whether to append expected values as the last promptHint. Default: true. */
+  showExpectedInPromptHints?: boolean;
 }
 
 export interface CertificateTrigger {

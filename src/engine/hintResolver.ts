@@ -26,18 +26,25 @@ const DIFFICULTY_PEEK_PENALTY: Record<string, number> = {
   hard: 5,
 };
 
-/** Get the peek penalty for a level based on its difficulty */
-export function getPeekPenalty(difficulty: string): number {
-  return DIFFICULTY_PEEK_PENALTY[difficulty] ?? 3;
+/** Get the peek penalty for a level based on its difficulty or hintConfig override */
+export function getPeekPenalty(level: Level): number {
+  if (level.hintConfig?.peekPenalty !== undefined) {
+    return level.hintConfig.peekPenalty;
+  }
+  return DIFFICULTY_PEEK_PENALTY[level.difficulty] ?? 3;
 }
 
 /**
  * Resolve which hints to show based on the level's hint arrays and
  * the player's fail count for that level.
  *
- * hints:       unlocked from fail #2 onward  (index = failCount - 2)
- * promptHints: unlocked from fail #1 onward  (index = failCount - 1)
- *              If peeked, ALL promptHints are revealed regardless of fail count.
+ * Unlock thresholds are configurable via level.hintConfig:
+ *   hintStartFail (default 2):       fail count to unlock the first hint
+ *   promptHintStartFail (default 1):  fail count to unlock the first promptHint
+ *   showExpectedInHints (default true):        append expected as the last hint
+ *   showExpectedInPromptHints (default true):   append expected as the last promptHint
+ *
+ * If peeked, ALL promptHints (including expected) are revealed regardless of fail count.
  */
 export function resolveHints(
   level: Level,
@@ -45,34 +52,52 @@ export function resolveHints(
   previousFailCount?: number,
   peeked: boolean = false,
 ): HintData {
-  const totalHints = level.hints.length;
-  const totalPromptHints = level.promptHints.length;
+  const cfg = level.hintConfig;
+  const hintStartFail = cfg?.hintStartFail ?? 2;
+  const promptHintStartFail = cfg?.promptHintStartFail ?? 1;
+  const showExpectedInHints = cfg?.showExpectedInHints !== false;
+  const showExpectedInPromptHints = cfg?.showExpectedInPromptHints !== false;
 
-  const hintIndex = failCount >= 2
-    ? Math.min(failCount - 2, totalHints - 1)
+  // Build extended arrays: regular items + expected as the final entry
+  const expectedHint = `[Expected] ${level.expected.map(e => `"${e}"`).join(', ')}`;
+  const extendedHints = showExpectedInHints
+    ? [...level.hints, expectedHint]
+    : [...level.hints];
+  const extendedPromptHints = showExpectedInPromptHints
+    ? [...level.promptHints, expectedHint]
+    : [...level.promptHints];
+
+  const totalHints = extendedHints.length;
+  const totalPromptHints = extendedPromptHints.length;
+
+  const hintIndex = failCount >= hintStartFail
+    ? Math.min(failCount - hintStartFail, totalHints - 1)
     : -1;
 
   // If peeked, reveal ALL promptHints; otherwise fail-based unlock
   const promptHintIndex = peeked
     ? totalPromptHints - 1
-    : (failCount >= 1 ? Math.min(failCount - 1, totalPromptHints - 1) : -1);
+    : (failCount >= promptHintStartFail
+      ? Math.min(failCount - promptHintStartFail, totalPromptHints - 1)
+      : -1);
 
-  const prevHintIndex = (previousFailCount ?? failCount) >= 2
-    ? Math.min((previousFailCount ?? failCount) - 2, totalHints - 1)
+  const prevFail = previousFailCount ?? failCount;
+  const prevHintIndex = prevFail >= hintStartFail
+    ? Math.min(prevFail - hintStartFail, totalHints - 1)
     : -1;
 
-  const prevPromptHintIndex = (previousFailCount ?? failCount) >= 1
-    ? Math.min((previousFailCount ?? failCount) - 1, totalPromptHints - 1)
+  const prevPromptHintIndex = prevFail >= promptHintStartFail
+    ? Math.min(prevFail - promptHintStartFail, totalPromptHints - 1)
     : -1;
 
   return {
-    hints: hintIndex >= 0 ? level.hints.slice(0, hintIndex + 1) : [],
-    promptHints: promptHintIndex >= 0 ? level.promptHints.slice(0, promptHintIndex + 1) : [],
+    hints: hintIndex >= 0 ? extendedHints.slice(0, hintIndex + 1) : [],
+    promptHints: promptHintIndex >= 0 ? extendedPromptHints.slice(0, promptHintIndex + 1) : [],
     totalHints,
     totalPromptHints,
     hasNewHint: hintIndex >= 0 && hintIndex > prevHintIndex,
     hasNewPromptHint: promptHintIndex >= 0 && promptHintIndex > prevPromptHintIndex,
     hasPeeked: peeked,
-    peekPenalty: getPeekPenalty(level.difficulty),
+    peekPenalty: getPeekPenalty(level),
   };
 }

@@ -18,6 +18,13 @@ export interface Level {
     onPerfect: string;
     onDirectWrite: string;
   };
+  hintConfig?: {
+    hintStartFail?: number;
+    promptHintStartFail?: number;
+    peekPenalty?: number;
+    showExpectedInHints?: boolean;
+    showExpectedInPromptHints?: boolean;
+  };
 }
 
 export interface JudgeResult {

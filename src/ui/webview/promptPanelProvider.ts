@@ -261,7 +261,7 @@ export class PromptPanelProvider {
     try {
       const attemptNumber = this._gameState.getLevelAttempts(levelId).length + 1;
       const peekPenalty = this._hintTracker?.hasPeeked(levelId)
-        ? getPeekPenalty(level.difficulty)
+        ? getPeekPenalty(level)
         : 0;
 
       // Dev mode: skip AI, fake a perfect result

@@ -232,12 +232,6 @@ export function PromptPanel() {
             </li>
           ))}
         </ul>
-        <div className="expected-label">
-          <span className="text-muted">{t('promptPanel.expected')}</span>
-          {level.expected.map((e, i) => (
-            <code key={i} className="expected-item">"{e}"</code>
-          ))}
-        </div>
       </section>
 
       <section className="prompt-input">
