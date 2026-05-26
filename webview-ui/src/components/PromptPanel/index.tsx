@@ -172,22 +172,26 @@ export function PromptPanel() {
   });
 
   const handleExecute = () => {
-    if (!level || !prompt.trim() || loading) return;
+    if (!level || loading) return;
+    const hasPrompt = prompt.trim().length > 0;
+    const hasRegex = regexInput.trim().length > 0;
+    if (hasPrompt && hasRegex) return; // conflict — blocked
+    if (!hasPrompt && !hasRegex) return; // nothing to submit
     setLoading(true);
     setResult(null);
-    postMessage({ command: 'executePrompt', prompt: prompt.trim(), levelId: level.id });
-  };
-
-  const handleExecuteRegex = () => {
-    if (!level || !regexInput.trim() || loading) return;
-    setLoading(true);
-    setResult(null);
-    postMessage({ command: 'executeRegex', regex: regexInput.trim(), levelId: level.id });
+    if (hasPrompt) {
+      postMessage({ command: 'executePrompt', prompt: prompt.trim(), levelId: level.id });
+    } else {
+      postMessage({ command: 'executeRegex', regex: regexInput.trim(), levelId: level.id });
+    }
   };
 
   const handleManual = () => {
     postMessage({ command: 'openCodex' });
   };
+
+  const hasConflict = prompt.trim().length > 0 && regexInput.trim().length > 0;
+  const hasAnyInput = prompt.trim().length > 0 || regexInput.trim().length > 0;
 
   if (!level) {
     return (
@@ -297,11 +301,6 @@ export function PromptPanel() {
         <div className="char-count text-muted">
           {t('promptPanel.charCount', { count: prompt.length })}
         </div>
-        <div className="action-buttons">
-          <button className={`btn-primary ${scene.buttonClassName}`} onClick={handleExecute} disabled={loading || !prompt.trim()}>
-            {loading ? t('promptPanel.loading') : t('promptPanel.execute')}
-          </button>
-        </div>
       </section>
 
       {hintData && (
@@ -362,18 +361,25 @@ export function PromptPanel() {
           rows={1}
           disabled={loading}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleExecuteRegex();
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleExecute();
           }}
         />
+      </section>
+
+      {hasConflict && (
+        <div className="conflict-warning">
+          {t('promptPanel.conflictWarning')}
+        </div>
+      )}
+
         <div className="action-buttons">
-          <button className={`btn-secondary ${scene.buttonClassName}`} onClick={handleExecuteRegex} disabled={loading || !regexInput.trim()}>
-            {t('promptPanel.executeRegex')}
+          <button className={`btn-primary ${scene.buttonClassName}`} onClick={handleExecute} disabled={loading || !hasAnyInput || hasConflict}>
+            {loading ? t('promptPanel.loading') : t('promptPanel.execute')}
           </button>
           <button className={`btn-secondary ${scene.buttonClassName}`} onClick={handleManual} disabled={loading}>
             {t('promptPanel.manual')}
           </button>
         </div>
-      </section>
 
         {result && (
           <section className="result-panel" data-status={result.judgeResult.status}>
