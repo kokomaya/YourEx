@@ -95,6 +95,8 @@ export interface TutorialStep {
     | { kind: 'waitFor'; event: 'executePrompt'; hint: string };
   placement?: 'top' | 'bottom' | 'left' | 'right' | 'auto';
   blockingNext?: boolean;
+  /** When true, overlay auto-advances after ~1.6s. Used by degraded path. */
+  autoSkip?: boolean;
 }
 
 export interface TutorialUiText {
@@ -242,7 +244,7 @@ export interface LevelRecall {
 
 // Extension → WebView
 export type ExtensionMessage =
-  | { command: 'loadLevel'; level: Level; recall?: LevelRecall }
+  | { command: 'loadLevel'; level: Level; recall?: LevelRecall; aiAvailable: boolean }
   | { command: 'showResult'; result: JudgeResult; score?: PromptScore; feedback: string; rawRegex?: string; reward?: LevelRewardData; suppressAutoAdvance?: boolean }
   | { command: 'showError'; message: string }
   | { command: 'setLoading'; loading: boolean }

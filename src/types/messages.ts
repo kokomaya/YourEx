@@ -49,6 +49,12 @@ export interface TutorialStep {
   placement?: 'top' | 'bottom' | 'left' | 'right' | 'auto';
   /** If true, Next button is hidden — advance must come from action or runtime. */
   blockingNext?: boolean;
+  /**
+   * If true, the overlay auto-advances ~1.6s after this step shows. Used by
+   * the degraded (Copilot-unavailable) tutorial path to skim past steps that
+   * have no actionable target.
+   */
+  autoSkip?: boolean;
 }
 
 export interface AchievementInfo {
@@ -132,7 +138,7 @@ export interface LevelRecall {
 
 // Extension → WebView
 export type ExtensionMessage =
-  | { command: 'loadLevel'; level: Level; recall?: LevelRecall }
+  | { command: 'loadLevel'; level: Level; recall?: LevelRecall; aiAvailable: boolean }
   | { command: 'showResult'; result: JudgeResult; score?: PromptScore; feedback: string; rawRegex?: string; reward?: LevelRewardData; suppressAutoAdvance?: boolean }
   | { command: 'showError'; message: string }
   | { command: 'setLoading'; loading: boolean }

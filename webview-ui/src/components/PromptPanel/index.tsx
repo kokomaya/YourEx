@@ -41,6 +41,10 @@ export function PromptPanel() {
   const [tutorialSteps, setTutorialSteps] = useState<TutorialStep[] | null>(null);
   const [tutorialUiText, setTutorialUiText] = useState<TutorialUiText | null>(null);
   const [tutorialForcedStep, setTutorialForcedStep] = useState<string | null>(null);
+  // Probed by the extension at activation and forwarded via every loadLevel.
+  // When false, the prompt textarea is disabled with a grey hint and the
+  // player is steered onto the manual-regex path.
+  const [aiAvailable, setAiAvailable] = useState(true);
 
   const stateHint = loading
     ? 'loading'
@@ -71,6 +75,7 @@ export function PromptPanel() {
     switch (data.command) {
       case 'loadLevel':
         setLevel(data.level);
+        setAiAvailable(data.aiAvailable ?? true);
         setReward(null);
         setSignalFragment(null);
         setHintData(null);
@@ -217,6 +222,10 @@ export function PromptPanel() {
 
   const hasConflict = prompt.trim().length > 0 && regexInput.trim().length > 0;
   const hasAnyInput = prompt.trim().length > 0 || regexInput.trim().length > 0;
+  // If Copilot is down, a non-empty prompt is guaranteed to fail. Block the
+  // submit so the player doesn't sink time into a known-bad request — the
+  // regex path stays open.
+  const promptBlockedByAi = !aiAvailable && prompt.trim().length > 0;
 
   if (!level) {
     return (
@@ -316,13 +325,18 @@ export function PromptPanel() {
           className="console-input"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder={t('promptPanel.placeholder')}
+          placeholder={aiAvailable ? t('promptPanel.placeholder') : t('promptPanel.aiUnavailablePlaceholder')}
           rows={3}
-          disabled={loading}
+          disabled={loading || !aiAvailable}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleExecute();
           }}
         />
+        {!aiAvailable && (
+          <div className="ai-unavailable-hint">
+            {t('promptPanel.aiUnavailableHint')}
+          </div>
+        )}
         <div className="char-count text-muted">
           {t('promptPanel.charCount', { count: prompt.length })}
         </div>
@@ -398,7 +412,7 @@ export function PromptPanel() {
       )}
 
         <div className="action-buttons">
-          <button className={`btn-primary ${scene.buttonClassName}`} onClick={handleExecute} disabled={loading || !hasAnyInput || hasConflict}>
+          <button className={`btn-primary ${scene.buttonClassName}`} onClick={handleExecute} disabled={loading || !hasAnyInput || hasConflict || promptBlockedByAi}>
             {loading ? t('promptPanel.loading') : t('promptPanel.execute')}
           </button>
           <button className={`btn-secondary ${scene.buttonClassName}`} onClick={handleManual} disabled={loading}>

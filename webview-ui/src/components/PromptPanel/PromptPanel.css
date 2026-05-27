@@ -162,6 +162,17 @@
   margin-top: 4px;
 }
 
+.ai-unavailable-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--text-muted) 8%, transparent);
+  border-left: 2px solid color-mix(in srgb, var(--text-muted) 50%, transparent);
+  padding: 4px 10px;
+  margin-top: 4px;
+  border-radius: 0 4px 4px 0;
+  line-height: 1.5;
+}
+
 .prompt-input__header {
   display: flex;
   align-items: center;

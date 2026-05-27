@@ -123,6 +123,14 @@ export function activate(context: vscode.ExtensionContext) {
     advanceLevel: () => promptPanel.triggerNextLevel(),
   });
   promptPanel.setTutorialController(tutorialController);
+  // Probe Copilot availability once at activation. Result is cached on the
+  // PromptPanel + TutorialController so the prompt input + first-time tutorial
+  // can switch to the manual-regex degraded path when no LLM is reachable
+  // (no Copilot extension / not signed in / quota exhausted at boot).
+  void aiProvider.isAvailable().then((available) => {
+    promptPanel.setAiAvailability(available);
+    tutorialController.setAiAvailability(available);
+  });
   // Sidebar interceptor returns true while the wizard is in any active area.
   // When that's the case, the cleanup callback runs first to skip-and-tear-down
   // the wizard so the player's click actually lands on the requested level.

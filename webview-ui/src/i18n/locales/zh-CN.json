@@ -26,6 +26,8 @@
   "promptPanel.expected": "Expected: ",
   "promptPanel.yourPrompt": "✍️ 你的指令（提示词）",
   "promptPanel.placeholder": "向解码协助系统下达指令……",
+  "promptPanel.aiUnavailablePlaceholder": "Copilot 暂不可用，请直接在下方填写正则。",
+  "promptPanel.aiUnavailableHint": "⚠ 未检测到可用的 GitHub Copilot 模型（未登录 / 被限额 / 扩展未安装）。提示词路径已停用，请使用下方的正则输入框。",
   "promptPanel.charCount": "{count} 字符",
   "promptPanel.loading": "🔄 解析中…",
   "promptPanel.execute": "▶ Execute",

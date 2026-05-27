@@ -55,6 +55,8 @@ function unionRect(selector: string | null): Rect | null {
   return acc;
 }
 
+const TIP_GAP = 22;
+
 function placeTooltip(
   rect: Rect | null,
   preferred: TutorialStep['placement'],
@@ -71,16 +73,16 @@ function placeTooltip(
     : (vh - rect.bottom > tipH + 16 ? 'bottom' : (rect.top > tipH + 16 ? 'top' : 'bottom'));
   let left: number, top: number;
   if (place === 'bottom') {
-    top = rect.bottom + 14;
+    top = rect.bottom + TIP_GAP;
     left = (rect.left + rect.right) / 2 - tipW / 2;
   } else if (place === 'top') {
-    top = rect.top - tipH - 14;
+    top = rect.top - tipH - TIP_GAP;
     left = (rect.left + rect.right) / 2 - tipW / 2;
   } else if (place === 'right') {
-    left = rect.right + 14;
+    left = rect.right + TIP_GAP;
     top = (rect.top + rect.bottom) / 2 - tipH / 2;
   } else {
-    left = rect.left - tipW - 14;
+    left = rect.left - tipW - TIP_GAP;
     top = (rect.top + rect.bottom) / 2 - tipH / 2;
   }
   left = Math.max(8, Math.min(vw - tipW - 8, left));
@@ -118,6 +120,7 @@ export function TutorialOverlay({ steps, uiText, forcedStepId, loading, onEvent,
   onEventRef.current = onEvent;
   const rectRef = useRef<Rect | null>(null);
   const tipPosRef = useRef(tipPos);
+  const tipRef = useRef<HTMLDivElement | null>(null);
 
   const step = steps[idx];
 
@@ -128,7 +131,13 @@ export function TutorialOverlay({ steps, uiText, forcedStepId, loading, onEvent,
       rectRef.current = r;
       setRect(r);
     }
-    const p = placeTooltip(r, step.placement);
+    // Feed the tooltip's real rendered size into placement so taller cards
+    // (e.g. steps with extra action buttons) don't overlap their spotlit
+    // anchor. Falls back to defaults on the very first frame.
+    const tipBox = tipRef.current?.getBoundingClientRect();
+    const tipW = tipBox && tipBox.width > 0 ? tipBox.width : 320;
+    const tipH = tipBox && tipBox.height > 0 ? tipBox.height : 180;
+    const p = placeTooltip(r, step.placement, tipW, tipH);
     if (p.left !== tipPosRef.current.left || p.top !== tipPosRef.current.top) {
       tipPosRef.current = p;
       setTipPos(p);
@@ -174,6 +183,22 @@ export function TutorialOverlay({ steps, uiText, forcedStepId, loading, onEvent,
   useEffect(() => {
     onEventRef.current('ready');
   }, []);
+
+  // Degraded path: steps tagged `autoSkip` advance themselves after a short
+  // beat. Skips when the step still has an action waiting (e.g. fillPrompt /
+  // waitFor), so blockingNext steps remain blocking even if mis-tagged. The
+  // player can still hit Next / Skip manually during the wait.
+  useEffect(() => {
+    if (!step?.autoSkip) return;
+    if (step.action) return;
+    if (step.blockingNext) return;
+    const isLastStep = idx === steps.length - 1;
+    if (isLastStep) return;
+    const timer = setTimeout(() => {
+      setIdx(i => Math.min(steps.length - 1, i + 1));
+    }, 1600);
+    return () => clearTimeout(timer);
+  }, [step, idx, steps.length]);
 
   // External advance (cross-IPC, e.g. after Execute submission). We apply
   // each forcedStepId value at most once — otherwise it would keep snapping
@@ -245,6 +270,7 @@ export function TutorialOverlay({ steps, uiText, forcedStepId, loading, onEvent,
       ))}
       {spotStyle && <div className="tut-spot" style={spotStyle} />}
       <div
+        ref={tipRef}
         className="tut-tip"
         style={{ left: tipPos.left, top: tipPos.top }}
         role="dialog"

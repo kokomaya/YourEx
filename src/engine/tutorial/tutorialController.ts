@@ -26,11 +26,17 @@ export class TutorialController implements ITutorialController {
   private _area: TutorialArea = null;
   /** Tracks which prompt-area step is current, so notifyExecuted can advance only when relevant. */
   private _currentPromptStepId: string | null = null;
+  /** Cached by extension.ts at boot. Drives the degraded tutorial branch. */
+  private _aiAvailable = true;
 
   constructor(
     private readonly _gameState: GameStateManager,
     private readonly _dispatcher: TutorialDispatcher,
   ) {}
+
+  setAiAvailability(available: boolean): void {
+    this._aiAvailable = available;
+  }
 
   shouldStart(levelId: string): boolean {
     if (levelId !== 'level_01') return false;
@@ -49,7 +55,7 @@ export class TutorialController implements ITutorialController {
       this._currentPromptStepId = STEP_IDS.storyArchive;
     }
     this._dispatcher.startPromptArea({
-      steps: buildPromptPanelSteps(),
+      steps: buildPromptPanelSteps(this._aiAvailable),
       uiText: buildUiText(),
     });
   }
@@ -72,17 +78,21 @@ export class TutorialController implements ITutorialController {
       this._currentPromptStepId = STEP_IDS.result;
       return;
     }
-    // Final step: the player filled the regex on `regexDirect` then was asked
-    // on `regexDirectExecute` to actually press Execute themselves. Once the
-    // submission lands a pass/perfect result we tear the wizard down and
-    // advance to level_02 via the normal pipeline — skipping the map area
-    // entirely. On a fail we leave the wizard up so the player can retry.
+    // Final prompt-panel step: the player filled the regex on `regexDirect`
+    // then was asked on `regexDirectExecute` to actually press Execute. On a
+    // pass we (1) tear the prompt overlay down, (2) advance to level_02 via
+    // the normal pipeline, (3) hand off to the sidebar wizard so the player
+    // discovers the mission map before being left alone on level_02. On a
+    // fail we leave the wizard up so the player can retry.
     if (this._currentPromptStepId === STEP_IDS.regexDirectExecute && passed) {
-      this._area = null;
+      this._area = 'map';
       this._currentPromptStepId = null;
-      this._gameState.markTutorialCompleted();
       this._dispatcher.endPromptArea();
       this._dispatcher.advanceLevel();
+      this._dispatcher.startMapArea({
+        steps: buildMissionMapSteps(),
+        uiText: buildUiText(),
+      });
     }
   }
 
@@ -113,8 +123,9 @@ export class TutorialController implements ITutorialController {
     this._currentPromptStepId = null;
     this._gameState.markTutorialCompleted();
     this._dispatcher.endMapArea();
-    // Advance to level_02 via the normal pipeline (chapter unlocks etc.).
-    this._dispatcher.advanceLevel();
+    // No advanceLevel here: by the time the player reaches the map wizard
+    // they're already on level_02 (advanced when leaving the prompt-area
+    // regex-execute step). Triggering it again would skip level_02.
   }
 
   /** Drop in-memory wizard state without touching GameState. Use after reset. */

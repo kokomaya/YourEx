@@ -3,6 +3,7 @@ import { GameStateManager } from '../../src/state/gameState';
 import { TutorialController } from '../../src/engine/tutorial/tutorialController';
 import { STEP_IDS } from '../../src/engine/tutorial/tutorialSteps';
 import type { TutorialDispatcher } from '../../src/engine/tutorial/tutorialController';
+import type { TutorialStep } from '../../src/types/messages';
 
 interface DispatcherCalls {
   startPrompt: number;
@@ -11,6 +12,7 @@ interface DispatcherCalls {
   endPrompt: number;
   endMap: number;
   advanceLevel: number;
+  lastPromptSteps: TutorialStep[] | null;
 }
 
 function makeDispatcher(): { dispatcher: TutorialDispatcher; calls: DispatcherCalls } {
@@ -21,9 +23,10 @@ function makeDispatcher(): { dispatcher: TutorialDispatcher; calls: DispatcherCa
     endPrompt: 0,
     endMap: 0,
     advanceLevel: 0,
+    lastPromptSteps: null,
   };
   const dispatcher: TutorialDispatcher = {
-    startPromptArea: () => { calls.startPrompt++; },
+    startPromptArea: (p) => { calls.startPrompt++; calls.lastPromptSteps = p.steps; },
     startMapArea: () => { calls.startMap++; },
     advancePromptArea: (id) => { calls.advancePromptTo.push(id); },
     endPromptArea: () => { calls.endPrompt++; },
@@ -81,7 +84,7 @@ describe('TutorialController', () => {
     expect(calls.advancePromptTo).toEqual([STEP_IDS.result]);
   });
 
-  it('notifyExecuted on regexDirectExecute step completes wizard and advances level on pass', () => {
+  it('notifyExecuted on regexDirectExecute step hands off to map area and advances level on pass', () => {
     const { dispatcher, calls } = makeDispatcher();
     const ctrl = new TutorialController(gsm, dispatcher);
     ctrl.start();
@@ -90,15 +93,18 @@ describe('TutorialController', () => {
     // Failed submission: wizard stays open, no advance.
     ctrl.notifyExecuted(false);
     expect(calls.endPrompt).toBe(0);
+    expect(calls.startMap).toBe(0);
     expect(calls.advanceLevel).toBe(0);
     expect(gsm.isTutorialCompleted()).toBe(false);
 
-    // Pass submission: wizard tears down + level advances + flag flips.
+    // Pass submission: prompt overlay closes, level advances to level_02,
+    // sidebar map wizard starts. tutorialCompleted flips later, on finish().
     ctrl.notifyExecuted(true);
     expect(calls.endPrompt).toBe(1);
     expect(calls.advanceLevel).toBe(1);
-    expect(gsm.isTutorialCompleted()).toBe(true);
-    expect(ctrl.getActiveArea()).toBeNull();
+    expect(calls.startMap).toBe(1);
+    expect(gsm.isTutorialCompleted()).toBe(false);
+    expect(ctrl.getActiveArea()).toBe('map');
   });
 
   it('notifyExecuted on regexDirect (fill-only) step does NOT complete on pass', () => {
@@ -136,7 +142,9 @@ describe('TutorialController', () => {
     expect(ctrl.getActiveArea()).toBeNull();
   });
 
-  it('finish from map area marks completed and advances the level', () => {
+  it('finish from map area marks completed but does NOT re-advance the level', () => {
+    // Level advance now happens when leaving the prompt-area regex-execute
+    // step. Doing it again on finish would skip past level_02.
     const { dispatcher, calls } = makeDispatcher();
     const ctrl = new TutorialController(gsm, dispatcher);
     ctrl.start();
@@ -144,7 +152,7 @@ describe('TutorialController', () => {
     ctrl.finish();
     expect(gsm.isTutorialCompleted()).toBe(true);
     expect(calls.endMap).toBe(1);
-    expect(calls.advanceLevel).toBe(1);
+    expect(calls.advanceLevel).toBe(0);
   });
 
   it('finish is a no-op when called outside the map area', () => {
@@ -185,6 +193,39 @@ describe('TutorialController', () => {
     ctrl.start();
     expect(calls.startPrompt).toBe(1); // not re-emitted
     expect(ctrl.getActiveArea()).toBe('map');
+  });
+
+  it('start with aiAvailable=false emits 8 steps but tags promptInput/execute/result with autoSkip', () => {
+    const { dispatcher, calls } = makeDispatcher();
+    const ctrl = new TutorialController(gsm, dispatcher);
+    ctrl.setAiAvailability(false);
+    ctrl.start();
+    const steps = calls.lastPromptSteps;
+    expect(steps).not.toBeNull();
+    expect(steps!.length).toBe(8);
+    const find = (id: string) => steps!.find(s => s.id === id);
+    expect(find(STEP_IDS.promptInput)?.autoSkip).toBe(true);
+    expect(find(STEP_IDS.execute)?.autoSkip).toBe(true);
+    expect(find(STEP_IDS.result)?.autoSkip).toBe(true);
+    // The execute step in degraded mode must not block Next, otherwise the
+    // autoSkip path can't actually advance past it.
+    expect(find(STEP_IDS.execute)?.blockingNext).toBeFalsy();
+    // The regex-direct steps still require user action — never auto-skipped.
+    expect(find(STEP_IDS.regexDirect)?.autoSkip).toBeFalsy();
+    expect(find(STEP_IDS.regexDirectExecute)?.autoSkip).toBeFalsy();
+  });
+
+  it('notifyExecuted on execute step is harmless when wizard is in degraded mode', () => {
+    // Defensive: even if the player somehow stays on the execute step in the
+    // aiAvailable=false branch (e.g. autoSkip racing), an inbound notifyExecuted
+    // must not crash and should still advance to result.
+    const { dispatcher, calls } = makeDispatcher();
+    const ctrl = new TutorialController(gsm, dispatcher);
+    ctrl.setAiAvailability(false);
+    ctrl.start();
+    ctrl.noteCurrentPromptStep(STEP_IDS.execute);
+    ctrl.notifyExecuted(true);
+    expect(calls.advancePromptTo).toEqual([STEP_IDS.result]);
   });
 
   it('shouldSuppressAutoAdvance is true whenever wizard is active', () => {

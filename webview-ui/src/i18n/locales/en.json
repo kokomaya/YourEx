@@ -26,6 +26,8 @@
   "promptPanel.expected": "Expected: ",
   "promptPanel.yourPrompt": "✍️ Your Instructions (prompt)",
   "promptPanel.placeholder": "Issue instructions to the decoding assist system…",
+  "promptPanel.aiUnavailablePlaceholder": "Copilot unavailable — write the regex directly below.",
+  "promptPanel.aiUnavailableHint": "⚠ No GitHub Copilot model detected (not signed in / quota exhausted / extension missing). The prompt path is disabled — use the regex input below.",
   "promptPanel.charCount": "{count} chars",
   "promptPanel.loading": "🔄 Parsing…",
   "promptPanel.execute": "▶ Execute",

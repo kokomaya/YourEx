@@ -29,6 +29,12 @@ export class PromptPanelProvider {
   private _hintTracker: IHintTracker | undefined;
   private _tutorialController: TutorialController | undefined;
   private _devMode = false;
+  /**
+   * Whether the active AI provider is usable. Probed once at extension
+   * activation and forwarded to every `loadLevel` so the webview can degrade
+   * the prompt textarea + adapt the tutorial.
+   */
+  private _aiAvailable = true;
   private _locale: Locale = 'zh-CN';
   private _onDidUpdate = new vscode.EventEmitter<void>();
   readonly onDidUpdate = this._onDidUpdate.event;
@@ -72,6 +78,7 @@ export class PromptPanelProvider {
           command: 'loadLevel',
           level: reloaded,
           recall: this.buildRecall(reloaded.id),
+          aiAvailable: this._aiAvailable,
         });
       }
     }
@@ -85,6 +92,10 @@ export class PromptPanelProvider {
 
   setDevMode(devMode: boolean): void {
     this._devMode = devMode;
+  }
+
+  setAiAvailability(available: boolean): void {
+    this._aiAvailable = available;
   }
 
   show(levelId?: string): void {
@@ -133,6 +144,7 @@ export class PromptPanelProvider {
             command: 'loadLevel',
             level: this._currentLevel,
             recall: this.buildRecall(this._currentLevel.id),
+            aiAvailable: this._aiAvailable,
           });
           this.sendHintState(this._currentLevel);
         }
@@ -152,7 +164,7 @@ export class PromptPanelProvider {
     const level = getLevelById(levelId);
     if (!level) return;
     this._currentLevel = level;
-    this.postMessage({ command: 'loadLevel', level, recall: this.buildRecall(levelId) });
+    this.postMessage({ command: 'loadLevel', level, recall: this.buildRecall(levelId), aiAvailable: this._aiAvailable });
     this.sendHintState(level);
     this.maybeStartTutorial(levelId);
   }
@@ -235,6 +247,7 @@ export class PromptPanelProvider {
             command: 'loadLevel',
             level: this._currentLevel,
             recall: this.buildRecall(this._currentLevel.id),
+            aiAvailable: this._aiAvailable,
           });
           this.sendHintState(this._currentLevel);
           // Webview is mounted now — safe to launch the wizard if eligible.
