@@ -47,8 +47,11 @@ export class Ch6InterludeProvider {
 
     this._panel.webview.onDidReceiveMessage((message: { command: string; locale?: string }) => {
       if (message.command === 'beginAdaptation') {
-        this._panel?.dispose();
+        // Fire BEFORE disposing so listeners see the event even if the panel
+        // teardown shifts focus to a sibling webview first (parity with
+        // ChapterInterludeProvider).
         this._onDidComplete.fire();
+        this._panel?.dispose();
       } else if (message.command === 'switchLanguage' && message.locale) {
         vscode.commands.executeCommand('yourex.switchLanguage', message.locale);
       }

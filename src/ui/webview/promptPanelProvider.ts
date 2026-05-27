@@ -80,6 +80,9 @@ export class PromptPanelProvider {
           recall: this.buildRecall(reloaded.id),
           aiAvailable: this._aiAvailable,
         });
+        // The loadLevel handler resets hintData to null; without this the
+        // SIGNAL GUIDANCE (eye) button stays disabled after a language switch.
+        this.sendHintState(reloaded);
       }
     }
   }
