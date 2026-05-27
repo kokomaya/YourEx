@@ -18,6 +18,8 @@ import { getRexSignal } from '../../story/dialogues';
 import { buildRewardData } from '../../engine/rewardBuilder';
 import type { IHintTracker } from '../../engine/hintTracker';
 import { resolveHints, getPeekPenalty } from '../../engine/hintResolver';
+import type { TutorialController } from '../../engine/tutorial/tutorialController';
+import type { TutorialStep, TutorialUiText } from '../../types/messages';
 
 export class PromptPanelProvider {
   private _panel: vscode.WebviewPanel | undefined;
@@ -25,6 +27,7 @@ export class PromptPanelProvider {
   private _aiProvider: IAIProvider | undefined;
   private _gameState: GameStateManager | undefined;
   private _hintTracker: IHintTracker | undefined;
+  private _tutorialController: TutorialController | undefined;
   private _devMode = false;
   private _locale: Locale = 'zh-CN';
   private _onDidUpdate = new vscode.EventEmitter<void>();
@@ -34,6 +37,23 @@ export class PromptPanelProvider {
 
   setHintTracker(tracker: IHintTracker): void {
     this._hintTracker = tracker;
+  }
+
+  setTutorialController(controller: TutorialController): void {
+    this._tutorialController = controller;
+  }
+
+  /** Called by TutorialController to begin / advance / end the wizard. */
+  startTutorial(payload: { steps: TutorialStep[]; uiText: TutorialUiText }): void {
+    this.postMessage({ command: 'startTutorial', steps: payload.steps, uiText: payload.uiText });
+  }
+
+  advanceTutorial(toStepId: string): void {
+    this.postMessage({ command: 'advanceTutorial', toStepId });
+  }
+
+  endTutorial(): void {
+    this.postMessage({ command: 'endTutorial' });
   }
 
   setLocale(locale: Locale): void {
@@ -134,6 +154,21 @@ export class PromptPanelProvider {
     this._currentLevel = level;
     this.postMessage({ command: 'loadLevel', level, recall: this.buildRecall(levelId) });
     this.sendHintState(level);
+    this.maybeStartTutorial(levelId);
+  }
+
+  private maybeStartTutorial(levelId: string): void {
+    if (!this._tutorialController) return;
+    if (!this._tutorialController.shouldStart(levelId)) return;
+    // Defer so the webview has time to mount the React tree from the
+    // preceding loadLevel message. start() is safely re-emittable, so even
+    // if the very first call races the webview boot the next `case 'ready'`
+    // will trigger another start() and the overlay still appears.
+    setTimeout(() => {
+      if (!this._tutorialController) return;
+      if (!this._tutorialController.shouldStart(levelId)) return;
+      this._tutorialController.start();
+    }, 120);
   }
 
   /**
@@ -202,6 +237,8 @@ export class PromptPanelProvider {
             recall: this.buildRecall(this._currentLevel.id),
           });
           this.sendHintState(this._currentLevel);
+          // Webview is mounted now — safe to launch the wizard if eligible.
+          this.maybeStartTutorial(this._currentLevel.id);
         }
         break;
 
@@ -248,7 +285,41 @@ export class PromptPanelProvider {
       case 'openJourneyCertificate':
         vscode.commands.executeCommand('yourex.openJourneyCertificate');
         break;
+
+      case 'tutorialEvent':
+        this.handleTutorialEvent(msg.type, msg.stepId);
+        break;
     }
+  }
+
+  private handleTutorialEvent(
+    type: 'ready' | 'skip' | 'finish' | 'requestSidebar' | 'stepShown',
+    stepId?: string,
+  ): void {
+    if (!this._tutorialController) return;
+    switch (type) {
+      case 'ready':
+        // webview has mounted the overlay; nothing to do here (start() already
+        // fired the steps message).
+        break;
+      case 'stepShown':
+        if (stepId) this._tutorialController.noteCurrentPromptStep(stepId);
+        break;
+      case 'requestSidebar':
+        this._tutorialController.handOff();
+        break;
+      case 'skip':
+        this._tutorialController.skip();
+        break;
+      case 'finish':
+        this._tutorialController.finish();
+        break;
+    }
+  }
+
+  /** True when wizard is active and we should suppress the auto-advance timer. */
+  private isTutorialActive(): boolean {
+    return this._tutorialController?.getActiveArea() != null;
   }
 
   private async handleExecutePrompt(prompt: string, levelId: string): Promise<void> {
@@ -325,6 +396,7 @@ export class PromptPanelProvider {
 
         showJudgeFeedback(result.judgeResult, feedback);
 
+        const suppressAutoAdvance = this.isTutorialActive();
         this.postMessage({
           command: 'showResult',
           result: { ...result.judgeResult, regex: null },
@@ -332,7 +404,11 @@ export class PromptPanelProvider {
           feedback,
           rawRegex: result.rawRegex,
           reward,
+          suppressAutoAdvance,
         });
+        // Wizard step 5 (`execute`) waits for a real submission; advance once
+        // the result has been delivered to the webview.
+        this._tutorialController?.notifyExecuted(true);
       } else {
         // reset combo on fail
         const newState = resetCombo(this._gameState.state as any);
@@ -351,7 +427,12 @@ export class PromptPanelProvider {
           score: result.promptScore,
           feedback,
           rawRegex: result.rawRegex,
+          suppressAutoAdvance: this.isTutorialActive(),
         });
+        // Advance wizard step even on fail — the player still saw the
+        // result panel render. (Tutorial uses MockProvider/dev shortcut on
+        // level_01 so this branch is unlikely, but keep parity.)
+        this._tutorialController?.notifyExecuted(false);
 
         // send updated hints after fail
         if (level) {
@@ -419,13 +500,16 @@ export class PromptPanelProvider {
 
         showJudgeFeedback(judgeResult, feedback);
 
+        const suppressAutoAdvance = this.isTutorialActive();
         this.postMessage({
           command: 'showResult',
           result: { ...judgeResult, regex: null },
           feedback,
           rawRegex,
           reward,
+          suppressAutoAdvance,
         });
+        this._tutorialController?.notifyExecuted(true);
       } else {
         const newState = resetCombo(this._gameState.state as any);
         this._gameState.setCombo(newState.combo);
@@ -441,7 +525,9 @@ export class PromptPanelProvider {
           result: { ...judgeResult, regex: null },
           feedback,
           rawRegex,
+          suppressAutoAdvance: this.isTutorialActive(),
         });
+        this._tutorialController?.notifyExecuted(false);
 
         this.sendHintState(level, true);
       }
@@ -452,6 +538,11 @@ export class PromptPanelProvider {
       this.postMessage({ command: 'showError', message: msg });
       this.postMessage({ command: 'setLoading', loading: false });
     }
+  }
+
+  /** Public helper used by TutorialController.advanceLevel(). */
+  triggerNextLevel(): void {
+    this.handleNextLevel();
   }
 
   private handleNextLevel(): void {

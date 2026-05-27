@@ -1,7 +1,8 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useVSCode, useMessageListener } from '../../hooks/useVSCode';
 import { useTranslation } from '../../i18n';
-import type { Level, JudgeResult, PromptScore, LevelRewardData, HintData, ExtensionMessage, LevelRecall } from '../../types/messages';
+import type { Level, JudgeResult, PromptScore, LevelRewardData, HintData, ExtensionMessage, LevelRecall, TutorialStep, TutorialUiText } from '../../types/messages';
+import { TutorialOverlay } from '../Tutorial/TutorialOverlay';
 import { RewardOverlay } from '../Reward';
 import { useVisualScene } from '../../visual/hooks/useVisualScene';
 import { VisualScene } from '../../visual/components/VisualScene';
@@ -37,6 +38,9 @@ export function PromptPanel() {
   const [recallDismissed, setRecallDismissed] = useState(false);
   const [recallExpanded, setRecallExpanded] = useState(false);
   const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [tutorialSteps, setTutorialSteps] = useState<TutorialStep[] | null>(null);
+  const [tutorialUiText, setTutorialUiText] = useState<TutorialUiText | null>(null);
+  const [tutorialForcedStep, setTutorialForcedStep] = useState<string | null>(null);
 
   const stateHint = loading
     ? 'loading'
@@ -79,6 +83,10 @@ export function PromptPanel() {
         setRecallDismissed(false);
         setRecallExpanded(false);
         setPrompt(data.recall?.mode === 'prompt' ? (data.recall.prompt ?? '') : '');
+        // Always reset the regex textarea — recall never pre-fills it, and
+        // leaving leftover text from a previous level (e.g. the tutorial's
+        // auto-filled answer) would mislead the player on the new level.
+        setRegexInput('');
         // Restore the result panel from recall so revisiting a cleared
         // level still shows score breakdown + matches + feedback exactly
         // as it appeared on clear. Without recall (= never cleared, or
@@ -115,6 +123,10 @@ export function PromptPanel() {
           if (r.isChapterComplete || r.isGameComplete || r.isOriginComplete) {
             // Major milestone: show full reward overlay
             setReward(r);
+          } else if (data.suppressAutoAdvance) {
+            // Tutorial is active — let the wizard take over the post-pass UX.
+            // No signal fragment, no auto-advance timer; the controller will
+            // trigger nextLevel after Finish.
           } else {
             // Normal level pass: show signal fragment + auto-advance
             setSignalFragment(pickSignalFragment(r.chapter, r.levelId));
@@ -138,6 +150,19 @@ export function PromptPanel() {
         break;
       case 'updateHints':
         setHintData(data.hintData);
+        break;
+      case 'startTutorial':
+        setTutorialSteps(data.steps);
+        setTutorialUiText(data.uiText);
+        setTutorialForcedStep(null);
+        break;
+      case 'advanceTutorial':
+        setTutorialForcedStep(data.toStepId);
+        break;
+      case 'endTutorial':
+        setTutorialSteps(null);
+        setTutorialUiText(null);
+        setTutorialForcedStep(null);
         break;
     }
   }, []));
@@ -432,6 +457,38 @@ export function PromptPanel() {
 
         {reward && (
           <RewardOverlay reward={reward} onDismiss={() => setReward(null)} />
+        )}
+
+        {tutorialSteps && tutorialUiText && (
+          <TutorialOverlay
+            steps={tutorialSteps}
+            uiText={tutorialUiText}
+            forcedStepId={tutorialForcedStep}
+            loading={loading}
+            onEvent={(type, stepId) => {
+              postMessage({ command: 'tutorialEvent', type, stepId });
+            }}
+            onFillPrompt={(text) => {
+              setPrompt(text);
+              setRegexInput('');
+            }}
+            onFillRegex={(text) => {
+              setPrompt('');
+              setRegexInput(text);
+            }}
+            onSubmitFromWizard={(fallbackText) => {
+              if (!level || loading) return;
+              const trimmed = prompt.trim();
+              const text = trimmed.length > 0 ? trimmed : fallbackText;
+              if (text.length === 0) return;
+              // Reflect into the textarea so the player sees what was sent.
+              if (trimmed.length === 0) setPrompt(fallbackText);
+              setRegexInput('');
+              setLoading(true);
+              setResult(null);
+              postMessage({ command: 'executePrompt', prompt: text, levelId: level.id });
+            }}
+          />
         )}
 
         {signalFragment && !reward && (

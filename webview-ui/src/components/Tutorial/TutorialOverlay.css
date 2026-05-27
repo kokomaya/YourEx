@@ -1,0 +1,168 @@
+.tut-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+}
+.tut-mask {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.68);
+  pointer-events: all;
+  transition: left 180ms, top 180ms, width 180ms, height 180ms;
+}
+.tut-spot {
+  position: fixed;
+  border: 1px solid #22d3ee;
+  border-radius: 8px;
+  box-shadow: 0 0 28px rgba(34, 211, 238, 0.55), inset 0 0 14px rgba(34, 211, 238, 0.3);
+  pointer-events: none;
+  transition: top 220ms, left 220ms, width 220ms, height 220ms;
+  z-index: 10000;
+  animation: tutSpotPulse 2.4s ease-in-out infinite;
+}
+@keyframes tutSpotPulse {
+  0%, 100% { box-shadow: 0 0 24px rgba(34, 211, 238, 0.45), inset 0 0 12px rgba(34, 211, 238, 0.28); }
+  50%      { box-shadow: 0 0 36px rgba(34, 211, 238, 0.7),  inset 0 0 16px rgba(34, 211, 238, 0.4); }
+}
+.tut-tip {
+  position: fixed;
+  width: min(320px, calc(100vw - 32px));
+  background: linear-gradient(180deg, #0a1620 0%, #07111a 100%);
+  border: 1px solid #22d3ee;
+  border-radius: 10px;
+  padding: 12px 14px 14px 14px;
+  color: #cce8ee;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.55;
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.6), 0 0 26px rgba(34, 211, 238, 0.16);
+  pointer-events: all;
+  z-index: 10001;
+  transition: top 220ms, left 220ms;
+}
+.tut-tip__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10.5px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #67e8f9;
+  margin-bottom: 8px;
+}
+.tut-tip__counter { flex: 1; }
+.tut-tip__close {
+  background: transparent;
+  border: none;
+  color: #67e8f9;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 6px;
+  line-height: 1;
+}
+.tut-tip__close:hover { color: #ff8fa3; }
+.tut-tip__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.tut-tip__body { color: #c0d8de; font-size: 12.5px; }
+.tut-tip__body code {
+  background: rgba(34, 211, 238, 0.14);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: #67e8f9;
+  font-size: 12px;
+}
+.tut-tip__body strong { color: #ffd97a; font-weight: 600; }
+.tut-tip__hint {
+  margin-top: 10px;
+  font-size: 11px;
+  color: #fbbf24;
+  font-style: italic;
+  animation: tutBlink 1.6s ease-in-out infinite;
+}
+@keyframes tutBlink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+.tut-tip__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  align-items: center;
+}
+.tut-tip__skip {
+  background: transparent;
+  border: 1px solid rgba(255, 92, 122, 0.4);
+  color: #ff8fa3;
+  font-family: inherit;
+  font-size: 10.5px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.tut-tip__skip:hover { background: rgba(255, 92, 122, 0.14); }
+.tut-tip__spacer { flex: 1; }
+.tut-tip__btn {
+  background: rgba(34, 211, 238, 0.14);
+  border: 1px solid #22d3ee;
+  color: #cffafe;
+  font-family: inherit;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.6px;
+}
+.tut-tip__btn:hover { background: rgba(34, 211, 238, 0.28); }
+.tut-tip__btn--primary {
+  background: #22d3ee;
+  color: #02141a;
+  font-weight: 600;
+}
+.tut-tip__btn--primary:hover { background: #67e8f9; }
+.tut-tip__btn--fill {
+  display: block;
+  margin: 10px 0 0 0;
+  width: 100%;
+  text-align: center;
+}
+.tut-tip__btn:disabled,
+.tut-tip__skip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.tut-tip__loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 8px 10px;
+  border: 1px dashed rgba(34, 211, 238, 0.45);
+  border-radius: 4px;
+  background: rgba(34, 211, 238, 0.07);
+  color: #cffafe;
+  font-size: 11.5px;
+  letter-spacing: 0.4px;
+}
+.tut-tip__spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(34, 211, 238, 0.3);
+  border-top-color: #22d3ee;
+  animation: tutSpin 0.9s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes tutSpin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tut-mask, .tut-spot, .tut-tip { transition: none !important; animation: none !important; }
+  .tut-tip__hint { animation: none !important; }
+  .tut-tip__spinner { animation: none !important; }
+}

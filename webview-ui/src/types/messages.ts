@@ -80,7 +80,32 @@ export type WebViewMessage =
   | { command: 'generateCertificateImage'; imageBytes: number[]; fileName: string }
   | { command: 'setCertificatePlayerName'; name: string }
   | { command: 'closeCertificate' }
+  | { command: 'tutorialEvent'; type: 'ready' | 'skip' | 'finish' | 'requestSidebar' | 'stepShown'; stepId?: string }
   | { command: 'ready' };
+
+/** A single step in the first-time tutorial wizard. Mirror of src/types/messages.ts */
+export interface TutorialStep {
+  id: string;
+  anchor: string | null;
+  title: string;
+  body: string;
+  action?:
+    | { kind: 'fillPrompt'; label: string; text: string }
+    | { kind: 'fillRegex'; label: string; text: string }
+    | { kind: 'waitFor'; event: 'executePrompt'; hint: string };
+  placement?: 'top' | 'bottom' | 'left' | 'right' | 'auto';
+  blockingNext?: boolean;
+}
+
+export interface TutorialUiText {
+  skip: string;
+  next: string;
+  prev: string;
+  finish: string;
+  stepCounter: string;
+  waitForExecute: string;
+  waitingForLlm: string;
+}
 
 export interface AchievementInfo {
   id: string;
@@ -218,7 +243,7 @@ export interface LevelRecall {
 // Extension → WebView
 export type ExtensionMessage =
   | { command: 'loadLevel'; level: Level; recall?: LevelRecall }
-  | { command: 'showResult'; result: JudgeResult; score?: PromptScore; feedback: string; rawRegex?: string; reward?: LevelRewardData }
+  | { command: 'showResult'; result: JudgeResult; score?: PromptScore; feedback: string; rawRegex?: string; reward?: LevelRewardData; suppressAutoAdvance?: boolean }
   | { command: 'showError'; message: string }
   | { command: 'setLoading'; loading: boolean }
   | { command: 'showScoreDetail'; levelTitle: string; attempts: LevelAttemptView[]; bestScore?: PromptScore }
@@ -227,4 +252,7 @@ export type ExtensionMessage =
   | { command: 'localeChanged'; locale: string }
   | { command: 'loadCertificateData'; data: JourneyCertificateData }
   | { command: 'certificateSaved'; filePath: string }
-  | { command: 'certificateSaveFailed'; error: string };
+  | { command: 'certificateSaveFailed'; error: string }
+  | { command: 'startTutorial'; steps: TutorialStep[]; uiText: TutorialUiText }
+  | { command: 'advanceTutorial'; toStepId: string }
+  | { command: 'endTutorial' };

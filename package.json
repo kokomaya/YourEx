@@ -87,6 +87,11 @@
         "command": "yourex.resetProgress",
         "title": "Reset Game Progress",
         "category": "YourEx"
+      },
+      {
+        "command": "yourex.restartTutorial",
+        "title": "Restart Tutorial (Developer)",
+        "category": "YourEx"
       }
     ],
     "configuration": {

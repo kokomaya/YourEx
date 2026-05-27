@@ -26,6 +26,7 @@ import { initTranslations, t } from './i18n/t';
 import { setDialogueLocale } from './story/dialogues';
 import { setAchievementLocale } from './engine/achievementManager';
 import { HintTracker } from './engine/hintTracker';
+import { TutorialController } from './engine/tutorial/tutorialController';
 import { type Locale, SUPPORTED_LOCALES, LOCALE_LABELS } from './i18n/types';
 
 function resolveDataRoot(extensionRoot: string): string {
@@ -111,6 +112,27 @@ export function activate(context: vscode.ExtensionContext) {
   promptPanel.setDependencies(aiProvider, gameState, isDevMode);
   promptPanel.setLocale(initialLocale);
   promptPanel.setHintTracker(new HintTracker());
+
+  // First-time tutorial: dispatcher wires the controller to both webviews.
+  const tutorialController = new TutorialController(gameState, {
+    startPromptArea: (p) => promptPanel.startTutorial(p),
+    advancePromptArea: (id) => promptPanel.advanceTutorial(id),
+    endPromptArea: () => promptPanel.endTutorial(),
+    startMapArea: (p) => missionMapProvider.startTutorial(p),
+    endMapArea: () => missionMapProvider.endTutorial(),
+    advanceLevel: () => promptPanel.triggerNextLevel(),
+  });
+  promptPanel.setTutorialController(tutorialController);
+  // Sidebar interceptor returns true while the wizard is in any active area.
+  // When that's the case, the cleanup callback runs first to skip-and-tear-down
+  // the wizard so the player's click actually lands on the requested level.
+  missionMapProvider.setSelectInterceptor(() => tutorialController.getActiveArea() !== null);
+  missionMapProvider.setSidebarNavCleanup(() => tutorialController.skip());
+  missionMapProvider.onDidTutorialEvent((evt) => {
+    if (evt.type === 'skip') tutorialController.skip();
+    else if (evt.type === 'finish') tutorialController.finish();
+    // 'ready' / 'stepShown' on the sidebar are informational only.
+  });
 
   const welcomeProvider = new WelcomeProvider(context.extensionUri);
   welcomeProvider.setLocale(initialLocale);
@@ -282,6 +304,17 @@ export function activate(context: vscode.ExtensionContext) {
       }
     }),
 
+    vscode.commands.registerCommand('yourex.restartTutorial', () => {
+      if (getEffectiveMode(modeService.getMode()) !== 'developer') {
+        vscode.window.showInformationMessage(t('tutorial.restartDevOnly'));
+        return;
+      }
+      tutorialController.hardResetInMemory();
+      gameState.resetTutorial();
+      // Always load level_01 — wizard is built for it specifically.
+      vscode.commands.executeCommand('yourex.openLevel', 'level_01');
+    }),
+
     vscode.commands.registerCommand('yourex.resetProgress', async (arg?: { skipConfirm?: boolean }) => {
       // Sidebar invokes with skipConfirm=true after its own hold-to-purge gesture
       // already provided deliberate confirmation. Command Palette / Welcome link
@@ -328,6 +361,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       // Re-seat in-memory trackers that don't persist to disk.
       promptPanel.setHintTracker(new HintTracker());
+      tutorialController.hardResetInMemory();
 
       // Tear down any open game webviews so their React state can't reference
       // the now-stale data — they will re-create cleanly when reopened.

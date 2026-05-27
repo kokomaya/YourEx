@@ -29,7 +29,27 @@ export type WebViewMessage =
   | { command: 'generateCertificateImage'; imageBytes: number[]; fileName: string }
   | { command: 'setCertificatePlayerName'; name: string }
   | { command: 'closeCertificate' }
+  | { command: 'tutorialEvent'; type: 'ready' | 'skip' | 'finish' | 'requestSidebar' | 'stepShown'; stepId?: string }
   | { command: 'ready' };
+
+/** A single step in the first-time tutorial wizard. */
+export interface TutorialStep {
+  id: string;
+  /** Comma-separated CSS selectors (anchor is union bounding box). null = centered viewport. */
+  anchor: string | null;
+  /** Localized title text (resolved on extension side). */
+  title: string;
+  /** Localized body text (supports inline `code` markers). */
+  body: string;
+  /** Optional action under the body. */
+  action?:
+    | { kind: 'fillPrompt'; label: string; text: string }
+    | { kind: 'fillRegex'; label: string; text: string }
+    | { kind: 'waitFor'; event: 'executePrompt'; hint: string };
+  placement?: 'top' | 'bottom' | 'left' | 'right' | 'auto';
+  /** If true, Next button is hidden — advance must come from action or runtime. */
+  blockingNext?: boolean;
+}
 
 export interface AchievementInfo {
   id: string;
@@ -113,7 +133,7 @@ export interface LevelRecall {
 // Extension → WebView
 export type ExtensionMessage =
   | { command: 'loadLevel'; level: Level; recall?: LevelRecall }
-  | { command: 'showResult'; result: JudgeResult; score?: PromptScore; feedback: string; rawRegex?: string; reward?: LevelRewardData }
+  | { command: 'showResult'; result: JudgeResult; score?: PromptScore; feedback: string; rawRegex?: string; reward?: LevelRewardData; suppressAutoAdvance?: boolean }
   | { command: 'showError'; message: string }
   | { command: 'setLoading'; loading: boolean }
   | { command: 'showScoreDetail'; levelTitle: string; attempts: Omit<LevelAttempt, 'judgeResult'> & { judgeResult: Omit<JudgeResult, 'regex'> }[]; bestScore?: PromptScore }
@@ -122,4 +142,19 @@ export type ExtensionMessage =
   | { command: 'localeChanged'; locale: string }
   | { command: 'loadCertificateData'; data: JourneyCertificateData }
   | { command: 'certificateSaved'; filePath: string }
-  | { command: 'certificateSaveFailed'; error: string };
+  | { command: 'certificateSaveFailed'; error: string }
+  | { command: 'startTutorial'; steps: TutorialStep[]; uiText: TutorialUiText }
+  | { command: 'advanceTutorial'; toStepId: string }
+  | { command: 'endTutorial' };
+
+/** UI text needed by the in-webview wizard (translated extension-side). */
+export interface TutorialUiText {
+  skip: string;
+  next: string;
+  prev: string;
+  finish: string;
+  stepCounter: string;
+  waitForExecute: string;
+  /** Shown inside the tooltip while an executePrompt request is in flight. */
+  waitingForLlm: string;
+}

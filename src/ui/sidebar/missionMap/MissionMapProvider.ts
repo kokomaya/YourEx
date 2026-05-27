@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import type { IMapDataSource } from './IMapDataSource';
 import type { MapWebviewToExt } from './mapMessages';
 import { t } from '../../../i18n/t';
+import type { TutorialStep, TutorialUiText } from '../../../types/messages';
 
 export class MissionMapProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'yourex-levels';
@@ -11,11 +12,36 @@ export class MissionMapProvider implements vscode.WebviewViewProvider {
   private _activeLevelId: string | null = null;
   private _onDidSelectLevel = new vscode.EventEmitter<string>();
   readonly onDidSelectLevel = this._onDidSelectLevel.event;
+  private _onDidTutorialEvent = new vscode.EventEmitter<{ type: 'skip' | 'finish' | 'ready' | 'stepShown'; stepId?: string }>();
+  readonly onDidTutorialEvent = this._onDidTutorialEvent.event;
+  /** True while the prompt-area wizard runs so selectLevel can be intercepted. */
+  private _shouldInterceptSelect: () => boolean = () => false;
+  /** Called when sidebar nav happens mid-wizard so the controller can clean up. */
+  private _onSidebarNavDuringWizard: () => void = () => {};
 
   constructor(private readonly _extensionUri: vscode.Uri) {}
 
+  setSelectInterceptor(predicate: () => boolean): void {
+    this._shouldInterceptSelect = predicate;
+  }
+
+  setSidebarNavCleanup(cb: () => void): void {
+    this._onSidebarNavDuringWizard = cb;
+  }
+
   setDataSource(ds: IMapDataSource): void {
     this._dataSource = ds;
+  }
+
+  /** Start the sidebar wizard. Called by TutorialController.handOff(). */
+  startTutorial(payload: { steps: TutorialStep[]; uiText: TutorialUiText }): void {
+    this._view?.webview.postMessage({ command: 'startTutorial', steps: payload.steps, uiText: payload.uiText });
+    // Make sure the sidebar is visible so the user can see the wizard.
+    void vscode.commands.executeCommand('workbench.view.extension.yourex-sidebar');
+  }
+
+  endTutorial(): void {
+    this._view?.webview.postMessage({ command: 'endTutorial' });
   }
 
   refresh(): void {
@@ -63,6 +89,11 @@ export class MissionMapProvider implements vscode.WebviewViewProvider {
           this.refresh();
           break;
         case 'selectLevel':
+          // Wizard may be active. Tear it down quietly first so the navigation
+          // succeeds and the player isn't trapped behind a stale overlay.
+          if (this._shouldInterceptSelect()) {
+            this._onSidebarNavDuringWizard();
+          }
           this._onDidSelectLevel.fire(msg.levelId);
           break;
         case 'openJourneyCertificate':
@@ -71,6 +102,9 @@ export class MissionMapProvider implements vscode.WebviewViewProvider {
         case 'resetProgress':
           // Sidebar already enforced its own hold-to-confirm; skip the modal.
           vscode.commands.executeCommand('yourex.resetProgress', { skipConfirm: true });
+          break;
+        case 'tutorialEvent':
+          this._onDidTutorialEvent.fire({ type: msg.type, stepId: msg.stepId });
           break;
       }
     });
@@ -116,6 +150,7 @@ export class MissionMapProvider implements vscode.WebviewViewProvider {
       <div class="reset-footer__status" aria-live="polite"></div>
     </div>
   </div>
+  <div id="tutorial-root" hidden></div>
 </div>
 <script nonce="${nonce}">${MAP_JS}</script>
 </body>
@@ -585,6 +620,107 @@ body {
   #reset-footer-btn[data-state="charging"] .reset-footer__chevron { animation: none; }
   #reset-footer-btn .reset-footer__scanline { transition: none; }
 }
+
+/* ── First-time tutorial overlay (sidebar) ── */
+#tutorial-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+}
+#tutorial-root[hidden] { display: none !important; }
+.tut-mask {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.62);
+  pointer-events: all;
+  transition: left 180ms, top 180ms, width 180ms, height 180ms;
+}
+.tut-spot {
+  position: fixed;
+  border: 1px solid #22d3ee;
+  border-radius: 6px;
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.6), inset 0 0 12px rgba(34, 211, 238, 0.35);
+  pointer-events: none;
+  transition: top 220ms, left 220ms, width 220ms, height 220ms;
+  z-index: 10000;
+}
+.tut-tip {
+  position: fixed;
+  width: min(280px, calc(100vw - 24px));
+  background: linear-gradient(180deg, #0a1620 0%, #07111a 100%);
+  border: 1px solid #22d3ee;
+  border-radius: 8px;
+  padding: 10px 12px 12px 12px;
+  color: #cce8ee;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 11.5px;
+  line-height: 1.5;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55), 0 0 20px rgba(34, 211, 238, 0.18);
+  pointer-events: all;
+  z-index: 10001;
+  transition: top 220ms, left 220ms;
+}
+.tut-tip__head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #67e8f9;
+  margin-bottom: 6px;
+}
+.tut-tip__counter { flex: 1; }
+.tut-tip__close {
+  background: transparent;
+  border: none;
+  color: #67e8f9;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+.tut-tip__title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+.tut-tip__body { color: #b6d7de; }
+.tut-tip__body code { background: rgba(34,211,238,0.12); padding: 1px 4px; border-radius: 3px; color: #67e8f9; }
+.tut-tip__hint { margin-top: 8px; font-size: 10.5px; color: #fbbf24; font-style: italic; }
+.tut-tip__actions { display: flex; gap: 6px; margin-top: 10px; align-items: center; }
+.tut-tip__skip {
+  background: transparent;
+  border: 1px solid rgba(255, 92, 122, 0.4);
+  color: #ff8fa3;
+  font-family: inherit;
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.tut-tip__skip:hover { background: rgba(255,92,122,0.12); }
+.tut-tip__spacer { flex: 1; }
+.tut-tip__btn {
+  background: rgba(34, 211, 238, 0.14);
+  border: 1px solid #22d3ee;
+  color: #cffafe;
+  font-family: inherit;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  letter-spacing: 0.6px;
+}
+.tut-tip__btn:hover { background: rgba(34, 211, 238, 0.28); }
+.tut-tip__btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+.tut-tip__btn--primary {
+  background: #22d3ee;
+  color: #02141a;
+  font-weight: 600;
+}
+.tut-tip__btn--primary:hover { background: #67e8f9; }
+@media (prefers-reduced-motion: reduce) {
+  .tut-mask, .tut-spot, .tut-tip { transition: none !important; }
+}
 `;
 
 /* ─── Inline JS ─── */
@@ -746,8 +882,215 @@ const MAP_JS = `
       case 'highlightLevel':
         highlightActiveLevel(msg.levelId);
         break;
+      case 'startTutorial':
+        Tutorial.start(msg.steps, msg.uiText);
+        break;
+      case 'endTutorial':
+        Tutorial.stop();
+        break;
     }
   });
+
+  /* ─ First-time tutorial runtime (sidebar) ────────────────────────────── */
+  const Tutorial = (function() {
+    const root = document.getElementById('tutorial-root');
+    let steps = [];
+    let ui = null;
+    let idx = -1;
+    let maskParts = [];
+    let spot = null;
+    let tip = null;
+    let resizeRaf = 0;
+    let observer = null;
+
+    function start(s, u) {
+      stop();
+      steps = Array.isArray(s) ? s : [];
+      ui = u || {};
+      idx = 0;
+      if (!root || steps.length === 0) return;
+      root.hidden = false;
+      maskParts = [];
+      for (let i = 0; i < 4; i++) {
+        const m = document.createElement('div');
+        m.className = 'tut-mask';
+        root.appendChild(m);
+        maskParts.push(m);
+      }
+      spot = document.createElement('div');
+      spot.className = 'tut-spot';
+      tip = document.createElement('div');
+      tip.className = 'tut-tip';
+      root.appendChild(spot);
+      root.appendChild(tip);
+      window.addEventListener('resize', onResize);
+      vscode.postMessage({ command: 'tutorialEvent', type: 'ready' });
+      render();
+    }
+
+    function stop() {
+      window.removeEventListener('resize', onResize);
+      if (observer) { observer.disconnect(); observer = null; }
+      if (root) {
+        root.hidden = true;
+        root.innerHTML = '';
+      }
+      steps = []; ui = null; idx = -1;
+      maskParts = []; spot = null; tip = null;
+    }
+
+    function onResize() {
+      cancelAnimationFrame(resizeRaf);
+      resizeRaf = requestAnimationFrame(render);
+    }
+
+    function applyMaskRect(i, left, top, width, height) {
+      const m = maskParts[i];
+      if (!m) return;
+      m.style.left = left + 'px';
+      m.style.top = top + 'px';
+      m.style.width = width + 'px';
+      m.style.height = height + 'px';
+    }
+
+    function unionRect(selector) {
+      if (!selector) return null;
+      const parts = selector.split(',').map(s => s.trim()).filter(Boolean);
+      let acc = null;
+      for (const sel of parts) {
+        const elems = document.querySelectorAll(sel);
+        elems.forEach(el => {
+          const r = el.getBoundingClientRect();
+          if (r.width === 0 && r.height === 0) return;
+          if (!acc) acc = { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+          else {
+            acc.left = Math.min(acc.left, r.left);
+            acc.top = Math.min(acc.top, r.top);
+            acc.right = Math.max(acc.right, r.right);
+            acc.bottom = Math.max(acc.bottom, r.bottom);
+          }
+        });
+      }
+      return acc;
+    }
+
+    function render() {
+      if (idx < 0 || idx >= steps.length || !tip || !spot || maskParts.length === 0) return;
+      const step = steps[idx];
+      const rect = step.anchor ? unionRect(step.anchor) : null;
+
+      // Spotlight position + 4-rect surround mask (avoids clip-path pointer-event quirks).
+      const pad = 6;
+      const vw = window.innerWidth, vh = window.innerHeight;
+      if (rect) {
+        spot.style.display = 'block';
+        spot.style.left = (rect.left - pad) + 'px';
+        spot.style.top = (rect.top - pad) + 'px';
+        spot.style.width = (rect.right - rect.left + pad * 2) + 'px';
+        spot.style.height = (rect.bottom - rect.top + pad * 2) + 'px';
+        const x1 = Math.max(0, rect.left - pad), y1 = Math.max(0, rect.top - pad);
+        const x2 = Math.min(vw, rect.right + pad), y2 = Math.min(vh, rect.bottom + pad);
+        applyMaskRect(0, 0, 0, vw, y1);
+        applyMaskRect(1, 0, y2, vw, Math.max(0, vh - y2));
+        applyMaskRect(2, 0, y1, x1, y2 - y1);
+        applyMaskRect(3, x2, y1, Math.max(0, vw - x2), y2 - y1);
+      } else {
+        spot.style.display = 'none';
+        applyMaskRect(0, 0, 0, vw, vh);
+        applyMaskRect(1, 0, 0, 0, 0);
+        applyMaskRect(2, 0, 0, 0, 0);
+        applyMaskRect(3, 0, 0, 0, 0);
+      }
+
+      // Tooltip content
+      const counter = (ui.stepCounter || 'STEP {n}/{total}').replace('{n}', String(idx + 1)).replace('{total}', String(steps.length));
+      const isLast = idx === steps.length - 1;
+      const nextLabel = isLast ? (ui.finish || 'Finish') : (ui.next || 'Next');
+      tip.innerHTML =
+        '<div class="tut-tip__head">' +
+          '<span class="tut-tip__counter">' + escHtml(counter) + '</span>' +
+          '<button class="tut-tip__close" type="button" aria-label="' + escAttr(ui.skip || 'Skip') + '">×</button>' +
+        '</div>' +
+        '<div class="tut-tip__title">' + escHtml(step.title) + '</div>' +
+        '<div class="tut-tip__body">' + formatBody(step.body) + '</div>' +
+        '<div class="tut-tip__actions">' +
+          '<button class="tut-tip__skip" type="button">' + escHtml(ui.skip || 'Skip') + '</button>' +
+          '<span class="tut-tip__spacer"></span>' +
+          (idx > 0 ? '<button class="tut-tip__btn" data-act="prev" type="button">' + escHtml(ui.prev || 'Prev') + '</button>' : '') +
+          (step.blockingNext ? '' : '<button class="tut-tip__btn tut-tip__btn--primary" data-act="next" type="button">' + escHtml(nextLabel) + '</button>') +
+          (isLast && step.blockingNext ? '<button class="tut-tip__btn tut-tip__btn--primary" data-act="finish" type="button">' + escHtml(ui.finish || 'Finish') + '</button>' : '') +
+        '</div>';
+
+      // Position tooltip
+      positionTip(rect, step.placement || 'auto');
+
+      tip.querySelector('.tut-tip__close').onclick = () => emit('skip');
+      tip.querySelector('.tut-tip__skip').onclick = () => emit('skip');
+      const prevBtn = tip.querySelector('[data-act="prev"]');
+      const nextBtn = tip.querySelector('[data-act="next"]');
+      const finishBtn = tip.querySelector('[data-act="finish"]');
+      if (prevBtn) prevBtn.onclick = () => advance(-1);
+      if (nextBtn) nextBtn.onclick = () => isLast ? emit('finish') : advance(1);
+      if (finishBtn) finishBtn.onclick = () => emit('finish');
+
+      vscode.postMessage({ command: 'tutorialEvent', type: 'stepShown', stepId: step.id });
+    }
+
+    function positionTip(rect, placement) {
+      if (!tip) return;
+      const vw = window.innerWidth, vh = window.innerHeight;
+      const tipRect = { w: 280, h: 140 };
+      let left, top;
+      if (!rect) {
+        left = (vw - tipRect.w) / 2;
+        top = (vh - tipRect.h) / 2;
+      } else {
+        // Auto: pick the side with most room
+        const spaceBottom = vh - rect.bottom;
+        const spaceTop = rect.top;
+        const place = placement === 'auto'
+          ? (spaceBottom > tipRect.h + 16 ? 'bottom' : (spaceTop > tipRect.h + 16 ? 'top' : 'bottom'))
+          : placement;
+        if (place === 'bottom') {
+          top = rect.bottom + 12;
+          left = Math.max(8, Math.min(vw - tipRect.w - 8, (rect.left + rect.right) / 2 - tipRect.w / 2));
+        } else if (place === 'top') {
+          top = rect.top - tipRect.h - 12;
+          left = Math.max(8, Math.min(vw - tipRect.w - 8, (rect.left + rect.right) / 2 - tipRect.w / 2));
+        } else if (place === 'right') {
+          left = rect.right + 12;
+          top = Math.max(8, Math.min(vh - tipRect.h - 8, (rect.top + rect.bottom) / 2 - tipRect.h / 2));
+        } else {
+          left = rect.left - tipRect.w - 12;
+          top = Math.max(8, Math.min(vh - tipRect.h - 8, (rect.top + rect.bottom) / 2 - tipRect.h / 2));
+        }
+        if (left < 8) left = 8;
+        if (left + tipRect.w > vw - 8) left = vw - tipRect.w - 8;
+        if (top < 8) top = 8;
+      }
+      tip.style.left = left + 'px';
+      tip.style.top = top + 'px';
+    }
+
+    function formatBody(text) {
+      if (!text) return '';
+      let html = escHtml(text);
+      html = html.replace(/\`([^\`]+)\`/g, '<code>$1</code>');
+      html = html.replace(/\\n/g, '<br/>');
+      return html;
+    }
+
+    function advance(delta) {
+      idx = Math.max(0, Math.min(steps.length - 1, idx + delta));
+      render();
+    }
+
+    function emit(type) {
+      vscode.postMessage({ command: 'tutorialEvent', type: type });
+    }
+
+    return { start: start, stop: stop };
+  })();
 
   function renderTabs() {
     tabsEl.innerHTML = '';

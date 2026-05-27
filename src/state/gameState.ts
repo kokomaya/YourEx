@@ -145,6 +145,24 @@ export class GameStateManager {
     this.save();
   }
 
+  // --- Tutorial ---
+
+  isTutorialCompleted(): boolean {
+    return this._state.tutorialCompleted === true;
+  }
+
+  markTutorialCompleted(): void {
+    if (this._state.tutorialCompleted) return;
+    this._state.tutorialCompleted = true;
+    this.save();
+  }
+
+  resetTutorial(): void {
+    if (!this._state.tutorialCompleted) return;
+    this._state.tutorialCompleted = false;
+    this.save();
+  }
+
   // --- Timer ---
 
   startTimer(): void {
@@ -196,9 +214,21 @@ export class GameStateManager {
     const unlocked = new Set(state.unlockedChapters);
     unlocked.add(1);
 
+    // Existing players who already have progress should not be forced
+    // through the first-time tutorial. Only treat the flag as "false"
+    // when the save looks brand new (no completed levels AND no startTime).
+    const looksFresh =
+      Object.keys(state.completedLevels ?? {}).length === 0 &&
+      state.startTime == null;
+    const tutorialCompleted =
+      typeof state.tutorialCompleted === 'boolean'
+        ? state.tutorialCompleted
+        : !looksFresh;
+
     return {
       ...state,
       unlockedChapters: Array.from(unlocked).sort((a, b) => a - b),
+      tutorialCompleted,
     };
   }
 }

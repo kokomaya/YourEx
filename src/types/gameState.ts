@@ -17,6 +17,12 @@ export interface GameState {
   certificateId?: string;
   /** Custom display name for the certificate. Falls back to OS username if absent. */
   certificatePlayerName?: string;
+  /**
+   * Whether the first-time tutorial has been completed (Skip or Finish).
+   * Reset to false by gameState.reset(). The tutorial only auto-launches
+   * when this is false AND the player loads level_01.
+   */
+  tutorialCompleted: boolean;
 }
 
 export const DEFAULT_GAME_STATE: GameState = {
@@ -31,4 +37,5 @@ export const DEFAULT_GAME_STATE: GameState = {
   totalAttempts: 0,
   startTime: null,
   certificateUnlocked: false,
+  tutorialCompleted: false,
 };
