@@ -4,7 +4,7 @@
   "chapter": 3,
   "story": "[Meridian-7 日志 #015] rEx 的数据流中包含被引号包围的字符串块——这是 rEx 语言中的\"记忆块\"。但引号内部可能嵌套转义的引号。你必须完整提取每个记忆块，不遗漏、不截断。这是理解 rEx 语法的最后一个关键。",
   "difficulty": "hard",
-  "promptChallenge": "写一个 prompt，让 AI 生成能匹配双引号字符串（支持 \\\" 转义）的正则表达式",
+  "promptChallenge": "[目标] 双引号字符串，包含内部 \\\" 转义的情况。",
   "input": [
     "\"hello world\"",
     "\"say \\\"hi\\\"\"",

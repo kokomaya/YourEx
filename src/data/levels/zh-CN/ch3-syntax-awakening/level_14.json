@@ -4,7 +4,7 @@
   "chapter": 3,
   "story": "[Meridian-7 日志 #014] rEx 的通信协议支持多种传输格式。你在数据中发现了类似人类 URL 的资源定位符——以 http:// 或 https:// 开头。rEx 也使用超文本？还是它学习了你的协议？无论如何，提取所有合法的资源链接。",
   "difficulty": "hard",
-  "promptChallenge": "写一个 prompt，让 AI 生成能匹配 http:// 或 https:// 开头的 URL 的正则表达式",
+  "promptChallenge": "[目标] 以 http:// 或 https:// 起始的 URL。",
   "input": [
     "http://example.com",
     "https://rex.signal.org/data",

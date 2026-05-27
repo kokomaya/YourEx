@@ -4,7 +4,7 @@
   "chapter": 1,
   "story": "[Meridian-7 Log #003] Signal analysis has yielded a new discovery — coordinate identifiers are embedded in the data stream. Their format resembles human email addresses: an identifier, a locator symbol @, and a domain marker. This could be rEx's spatial positioning system. Extract all valid coordinate identifiers.",
   "difficulty": "medium",
-  "promptChallenge": "Write a prompt to have AI generate a regex that precisely matches valid email addresses",
+  "promptChallenge": "[Target] Valid email addresses. Filter out the malformed entries in the stream.",
   "input": [
     "test@example.com",
     "bad@@example",

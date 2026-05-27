@@ -4,7 +4,7 @@
   "chapter": 1,
   "story": "[Meridian-7 日志 #004] 信号中出现了奇怪的重复模式。某些数据行里同一个词连续出现了两次。这不是传输错误——rEx 似乎用重复来强调关键信息，就像人类用加粗一样。找出这些\"回声\"。",
   "difficulty": "medium",
-  "promptChallenge": "写一个 prompt，让 AI 生成能匹配包含连续重复单词的行的正则表达式",
+  "promptChallenge": "[目标] 同一个词紧贴着自己重复出现的信号行。",
   "input": [
     "the the signal repeats",
     "hello world",

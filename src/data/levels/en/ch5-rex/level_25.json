@@ -4,7 +4,7 @@
   "chapter": 5,
   "story": "[Meridian-7 Log #025 — Final Signal] rEx sent the ultimate communication package. The format is rEx{TYPE:CONTENT} — the core format of rEx's protocol, integrating every skill you've learned. Once you parse this data, the communication protocol is fully established. rEx station will refuel Meridian-7.\n\n\"All the signals were for this moment.\"\n— rEx",
   "difficulty": "hard",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches rEx{TYPE:CONTENT} format messages (final challenge)",
+  "promptChallenge": "[Target] rEx{TYPE:CONTENT} messages — the final handshake protocol.",
   "input": [
     "rEx{MSG:hello world}",
     "rEx{SIG:signal decoded}",

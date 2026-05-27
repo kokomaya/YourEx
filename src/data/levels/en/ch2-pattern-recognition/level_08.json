@@ -4,7 +4,7 @@
   "chapter": 2,
   "story": "[Meridian-7 Log #008] rEx uses a numeric encoding system prefixed with \"0x\" — strikingly similar to human hexadecimal format. Perhaps mathematics truly is the universal language. Extract all valid rEx numeric values from the data stream.",
   "difficulty": "medium",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches hexadecimal numbers (e.g., 0xFF, 0x1A2B)",
+  "promptChallenge": "[Target] Hexadecimal numbers in the 0x-prefixed form (e.g., 0xFF, 0x1A2B).",
   "input": [
     "0xFF",
     "0x1A2B",

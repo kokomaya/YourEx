@@ -4,7 +4,7 @@
   "chapter": 3,
   "story": "[Meridian-7 Log #014] rEx's communication protocol supports multiple transmission formats. You've discovered resource locators in the data that resemble human URLs — starting with http:// or https://. Does rEx also use hypertext? Or has it learned your protocols? Either way, extract all valid resource links.",
   "difficulty": "hard",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches URLs starting with http:// or https://",
+  "promptChallenge": "[Target] URLs that begin with http:// or https://.",
   "input": [
     "http://example.com",
     "https://rex.signal.org/data",

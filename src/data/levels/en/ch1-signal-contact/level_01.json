@@ -4,7 +4,7 @@
   "chapter": 1,
   "story": "[Meridian-7 Log #001] Sensors detected a faint repeating signal amid white noise. Among the flood of interference data, the same word keeps appearing — \"hello\". Is this some kind of greeting? You need to pinpoint this word in the noise.",
   "difficulty": "easy",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches lines containing \"hello\"",
+  "promptChallenge": "[Target] Lines carrying the keyword \"hello\" from the noise stream.",
   "input": [
     "hello world",
     "say hello to rEx",

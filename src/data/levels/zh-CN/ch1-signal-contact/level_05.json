@@ -4,7 +4,7 @@
   "chapter": 1,
   "story": "[Meridian-7 日志 #005] 信号开始减弱了。在最后一批可解析的数据中，你发现有些行以 \".signal\" 结尾——这像是 rEx 通信的签名标记，类似人类信件的落款。如果你不能在信号彻底消失前完成解析……抓紧时间。",
   "difficulty": "medium",
-  "promptChallenge": "写一个 prompt，让 AI 生成能匹配以 \".signal\" 结尾的行的正则表达式",
+  "promptChallenge": "[目标] 以 \".signal\" 收尾的信号传输。",
   "input": [
     "data.signal",
     "noise.txt",

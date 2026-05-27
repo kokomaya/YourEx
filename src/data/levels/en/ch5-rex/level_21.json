@@ -4,7 +4,7 @@
   "chapter": 5,
   "story": "[Meridian-7 Log #021] rEx's response has arrived. The first batch of data is strange — some words are immediately followed by numbers, like some kind of tagging system. rEx says you need to \"look ahead\" to understand: extract all words that are immediately followed by a number. This is an advanced feature of rEx's language.",
   "difficulty": "hard",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches words immediately followed by a number (without including the number itself)",
+  "promptChallenge": "[Target] Words that are immediately followed by a number — capture the word only.",
   "input": [
     "version3",
     "signal 42",

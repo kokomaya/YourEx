@@ -4,7 +4,7 @@
   "chapter": 3,
   "story": "[Meridian-7 Log #011] rEx has sent a set of timestamps in HH:MM format (24-hour). What do these time points mean? Perhaps they mark rEx's civilization's daily cycle, or perhaps a designated communication window. First extract all valid times — accurate reading is the prerequisite for understanding meaning.",
   "difficulty": "medium",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches 24-hour format times (HH:MM, e.g., 09:30, 23:59)",
+  "promptChallenge": "[Target] Wall-clock time in 24-hour HH:MM form (e.g., 09:30, 23:59).",
   "input": [
     "09:30",
     "23:59",

@@ -4,7 +4,7 @@
   "chapter": 5,
   "story": "[Meridian-7 Log #022] rEx sent a set of access credentials, but their strength needs verification. Only passwords meeting the requirements can activate the encrypted communication channel: at least 8 characters, containing uppercase letters, lowercase letters, and digits. rEx says: \"Security is the prerequisite for trust.\"",
   "difficulty": "hard",
-  "promptChallenge": "Write a prompt to have AI generate a regex that validates password strength (at least 8 characters, containing uppercase, lowercase, and digits)",
+  "promptChallenge": "[Target] Strong passwords: at least 8 characters, mixing uppercase, lowercase, and digits.",
   "input": [
     "Passw0rd",
     "abcdefgh",

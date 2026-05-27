@@ -4,7 +4,7 @@
   "chapter": 2,
   "story": "[Meridian-7 Log #007] Structured identifiers have begun appearing in rEx's data. Some start with a letter or underscore, followed by alphanumeric combinations — these resemble \"variable names\" in rEx's language. But many invalid formats are mixed in. You need to learn to distinguish them.",
   "difficulty": "easy",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches valid variable names (starting with a letter or underscore)",
+  "promptChallenge": "[Target] Valid identifiers — names that start with a letter or underscore.",
   "input": [
     "_init",
     "var1",

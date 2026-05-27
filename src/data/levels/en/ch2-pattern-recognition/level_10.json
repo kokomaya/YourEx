@@ -4,7 +4,7 @@
   "chapter": 2,
   "story": "[Meridian-7 Log #010] rEx's encoding includes a repetition protocol: certain signals consist of the same character repeated 3-5 times. Is this a compression format, or a form of emotional expression? Either way, you need to extract these repeating patterns precisely from the data. This is rEx's final test for you.",
   "difficulty": "hard",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches strings composed of the same letter repeated 3-5 times",
+  "promptChallenge": "[Target] Strings made of a single letter repeated 3 to 5 times.",
   "input": [
     "aaa",
     "BBBBB",

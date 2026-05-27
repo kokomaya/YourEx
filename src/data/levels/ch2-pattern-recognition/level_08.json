@@ -4,7 +4,7 @@
   "chapter": 2,
   "story": "[Meridian-7 日志 #008] rEx 使用一种以 \"0x\" 开头的数字编码系统——和人类的十六进制格式惊人地相似。也许数学真的是宇宙通用语言。从数据流中提取所有合法的 rEx 数值。",
   "difficulty": "medium",
-  "promptChallenge": "写一个 prompt，让 AI 生成能匹配十六进制数（如 0xFF, 0x1A2B）的正则表达式",
+  "promptChallenge": "[目标] 以 0x 开头的十六进制数（如 0xFF, 0x1A2B）。",
   "input": [
     "0xFF",
     "0x1A2B",

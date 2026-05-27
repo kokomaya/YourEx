@@ -4,7 +4,7 @@
   "chapter": 1,
   "story": "[Meridian-7 Log #004] Strange repeating patterns have appeared in the signal. In some data lines, the same word appears consecutively twice. This isn't a transmission error — rEx seems to use repetition to emphasize key information, like how humans use bold text. Find these \"echoes\".",
   "difficulty": "medium",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches lines containing consecutive repeated words",
+  "promptChallenge": "[Target] Lines where a word appears twice in a row.",
   "input": [
     "the the signal repeats",
     "hello world",

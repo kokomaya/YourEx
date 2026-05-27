@@ -4,7 +4,7 @@
   "chapter": 1,
   "story": "[Meridian-7 Log #002] Signal volume has increased. The data stream is a mix of text and numbers, but you notice a pattern: all lines containing digits originate from the same source. Numbers seem to be the foundational structure of rEx's communication — filter them from the noise.",
   "difficulty": "easy",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches lines containing at least one digit",
+  "promptChallenge": "[Target] Lines carrying at least one digit in the noise.",
   "input": [
     "signal received at 0800",
     "no data here",

@@ -4,7 +4,7 @@
   "chapter": 4,
   "story": "[Meridian-7 Log #017] rEx replied with a set of key-value pair data — this is its information exchange format. key=value, where key consists of lowercase letters, and value is either a number or a quoted string. You need to parse each pair accurately to understand the parameters rEx sent.",
   "difficulty": "medium",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches key=value pairs (key is lowercase letters, value is a number or quoted string)",
+  "promptChallenge": "[Target] key=value pairs. The key is lowercase letters; the value is a number or a quoted string.",
   "input": [
     "name=\"rEx\"",
     "version=42",

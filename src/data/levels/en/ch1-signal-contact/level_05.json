@@ -4,7 +4,7 @@
   "chapter": 1,
   "story": "[Meridian-7 Log #005] The signal is fading. In the last batch of parseable data, you notice some lines end with \".signal\" — this appears to be rEx's communication signature, like the closing of a human letter. If you can't finish parsing before the signal disappears entirely... hurry.",
   "difficulty": "medium",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches lines ending with \".signal\"",
+  "promptChallenge": "[Target] Transmissions whose tail ends with \".signal\".",
   "input": [
     "data.signal",
     "noise.txt",

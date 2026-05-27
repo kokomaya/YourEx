@@ -4,7 +4,7 @@
   "chapter": 3,
   "story": "[Meridian-7 Log #013] rEx's data uses an encapsulation format, similar to self-closing container tags: starting with < and ending with />. Some are paired open/close tags (containing content), while others are self-closing (standalone data packets). You need to extract all self-closing packets — they are independent, complete units of information.",
   "difficulty": "medium",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches HTML self-closing tags (e.g., <br/>, <img src='x'/>)",
+  "promptChallenge": "[Target] HTML self-closing tags (e.g., <br/>, <img src='x'/>).",
   "input": [
     "<br/>",
     "<img src='photo.jpg'/>",

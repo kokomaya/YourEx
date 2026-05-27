@@ -4,7 +4,7 @@
   "chapter": 3,
   "story": "[Meridian-7 Log #012] Coordinate pairs have appeared in the signal — in (number, number) format. Is rEx telling you its location? Or guiding you somewhere? Numbers can be integers or decimals, and precision seems important. Extract all valid coordinates.",
   "difficulty": "medium",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches the coordinate format (number, number), where numbers can be integers or decimals",
+  "promptChallenge": "[Target] Coordinate pairs in (number, number) form. Numbers may be integer or decimal.",
   "input": [
     "(3, 4)",
     "(12.5, 99.9)",

@@ -4,7 +4,7 @@
   "chapter": 4,
   "story": "[Meridian-7 Log #018] rEx sent an instruction sequence — nested structures in function call format. send(42), decode(\"signal\"), process(100)... Is rEx telling you what to do? Or testing whether you can execute its commands? First, accurately parse all valid instructions.",
   "difficulty": "hard",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches function call format funcName(args)",
+  "promptChallenge": "[Target] Function-call expressions in funcName(args) form.",
   "input": [
     "send(42)",
     "decode(\"signal\")",

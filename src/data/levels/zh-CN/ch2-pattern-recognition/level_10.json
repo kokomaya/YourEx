@@ -4,7 +4,7 @@
   "chapter": 2,
   "story": "[Meridian-7 日志 #010] rEx 的编码中有一种重复协议：某些信号由同一个字符重复 3-5 次组成。这是某种压缩格式，还是一种情感表达？无论如何，你需要从数据中精确提取这些重复模式。这是 rEx 对你的最后一项测试。",
   "difficulty": "hard",
-  "promptChallenge": "写一个 prompt，让 AI 生成能匹配由同一字母重复 3-5 次组成的字符串的正则表达式",
+  "promptChallenge": "[目标] 同一个字母连续重复 3 到 5 次构成的字符串。",
   "input": [
     "aaa",
     "BBBBB",

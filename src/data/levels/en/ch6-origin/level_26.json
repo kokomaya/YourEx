@@ -4,7 +4,7 @@
   "chapter": 6,
   "story": "[Meridian-7 Log #026 — Final Log] rEx station left behind a startup trace from the alien engine core, but the ship's human systems can only see a jumble of sample blocks, sync notes, corrupted beacons, and false markers. Somewhere inside the noise is one valid rEx beacon frame. Extract it, finish the signal mapping, and let the human ship synchronize with the alien engine. This is the last step before going home.",
   "difficulty": "hard",
-  "promptChallenge": "Write a prompt to have AI generate a regex that strictly matches the only valid rEx Beacon Frame in the hexdump by raw hex bytes, either as address+data or data-only, while ignoring the right-side ASCII preview and excluding corrupted/fake frames.",
+  "promptChallenge": "[Target] The single intact rEx Beacon Frame inside the hexdump. Match raw hex bytes — accept either address+data or data-only lines, ignore the right-hand ASCII preview, and reject corrupted or counterfeit frames.",
   "input": [
     "00000000  4C 4F 47 46 4D 54 00 53 54 41 52 48 4F 4C 44 5F  LOGFMT.STARHOLD_",
     "00000010  54 52 41 43 45 5F 56 32 00 00 74 72 61 63 65 2E  TRACE_V2..trace.",

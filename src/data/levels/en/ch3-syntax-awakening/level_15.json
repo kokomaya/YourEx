@@ -4,7 +4,7 @@
   "chapter": 3,
   "story": "[Meridian-7 Log #015] rEx's data stream contains string blocks surrounded by quotation marks — these are \"memory blocks\" in rEx's language. But escaped quotes may be nested inside the quotes. You must extract each memory block completely, without omission or truncation. This is the last key to understanding rEx's syntax.",
   "difficulty": "hard",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches double-quoted strings (supporting \\\" escapes)",
+  "promptChallenge": "[Target] Double-quoted strings, including ones with \\\" escapes inside.",
   "input": [
     "\"hello world\"",
     "\"say \\\"hi\\\"\"",

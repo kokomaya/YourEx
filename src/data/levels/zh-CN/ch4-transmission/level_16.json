@@ -4,7 +4,7 @@
   "chapter": 4,
   "story": "[Meridian-7 日志 #016] 正式通信开始了。每条消息必须带有标准头部：[TYPE-CODE] 格式。TYPE 是消息类型（大写字母），CODE 是编号（数字）。你发出的第一条消息必须格式正确，否则 rEx 不会响应。",
   "difficulty": "medium",
-  "promptChallenge": "写一个 prompt，让 AI 生成能匹配 [TYPE-CODE] 格式（如 [ERR-404], [MSG-001]）的消息头的正则表达式",
+  "promptChallenge": "[目标] 形如 [TYPE-CODE] 的消息头（如 [ERR-404], [MSG-001]）。",
   "input": [
     "[ERR-404] Not Found",
     "[MSG-001] Hello",

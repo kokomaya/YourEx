@@ -4,7 +4,7 @@
   "chapter": 4,
   "story": "[Meridian-7 Log #020] Final step: reconstruct the complete communication log. Each log entry follows the format [HH:MM:SS] LEVEL: message, where LEVEL is INFO/WARN/ERROR. You need to extract all valid log entries from the damaged data, reconstruct the communication record, then package it as a distress signal to send to rEx. This is the decisive step.",
   "difficulty": "hard",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches log format [HH:MM:SS] LEVEL: message",
+  "promptChallenge": "[Target] Log lines shaped as [HH:MM:SS] LEVEL: message.",
   "input": [
     "[12:30:45] INFO: System started",
     "[23:59:59] ERROR: Connection lost",

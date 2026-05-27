@@ -4,7 +4,7 @@
   "chapter": 4,
   "story": "[Meridian-7 Log #016] Formal communication has begun. Every message must carry a standard header in [TYPE-CODE] format. TYPE is the message type (uppercase letters), CODE is the number (digits). Your first message must be correctly formatted, or rEx will not respond.",
   "difficulty": "medium",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches message headers in [TYPE-CODE] format (e.g., [ERR-404], [MSG-001])",
+  "promptChallenge": "[Target] Message headers shaped as [TYPE-CODE] (e.g., [ERR-404], [MSG-001]).",
   "input": [
     "[ERR-404] Not Found",
     "[MSG-001] Hello",

@@ -4,7 +4,7 @@
   "chapter": 1,
   "story": "[Meridian-7 日志 #002] 信号量增加了。数据流中混杂着文字和数字，但你注意到一个规律：所有包含数字的行都来自同一个源头。数字似乎是 rEx 通信的基础结构——从噪声中筛选出它们。",
   "difficulty": "easy",
-  "promptChallenge": "写一个 prompt，让 AI 生成能匹配包含至少一个数字的行的正则表达式",
+  "promptChallenge": "[目标] 噪声流中至少携带一个数字的信号行。",
   "input": [
     "signal received at 0800",
     "no data here",

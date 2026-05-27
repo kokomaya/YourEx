@@ -4,7 +4,7 @@
   "chapter": 2,
   "story": "[Meridian-7 Log #006] The signal surged. rEx has sent a new data stream, more structured than before. You notice 8-character codes scattered throughout — composed of uppercase letters and digits. These look like rEx's authentication tokens. Perhaps you need to prove you \"understand\" before the conversation can continue.",
   "difficulty": "easy",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches exactly 8-character strings composed of uppercase letters and digits",
+  "promptChallenge": "[Target] Eight-character codes built only from uppercase letters and digits.",
   "input": [
     "TOKEN: AB12CD34",
     "token: ab12cd34",

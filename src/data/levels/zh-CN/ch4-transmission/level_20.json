@@ -4,7 +4,7 @@
   "chapter": 4,
   "story": "[Meridian-7 日志 #020] 最后一步：重建完整的通信日志。每条日志格式为 [HH:MM:SS] LEVEL: message，LEVEL 是 INFO/WARN/ERROR。你需要从残损数据中提取所有合法的日志条目，重建通信记录，然后打包成求救信号发送给 rEx。这是决定性的一步。",
   "difficulty": "hard",
-  "promptChallenge": "写一个 prompt，让 AI 生成能匹配日志格式 [HH:MM:SS] LEVEL: message 的正则表达式",
+  "promptChallenge": "[目标] 形如 [HH:MM:SS] LEVEL: message 的日志行。",
   "input": [
     "[12:30:45] INFO: System started",
     "[23:59:59] ERROR: Connection lost",

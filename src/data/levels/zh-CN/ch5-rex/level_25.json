@@ -4,7 +4,7 @@
   "chapter": 5,
   "story": "[Meridian-7 日志 #025 — 最终信号] rEx 发来了终极通信包。格式为 rEx{TYPE:CONTENT}——这是 rEx 协议的核心格式，集成了你学过的所有技能。解析完这些数据，通信协议就完全建立了。rEx 空间站将为 Meridian-7 补充燃料。\n\n\"所有的信号，都是为了这一刻。\"\n—— rEx",
   "difficulty": "hard",
-  "promptChallenge": "写一个 prompt，让 AI 生成能匹配 rEx{TYPE:CONTENT} 格式消息的正则表达式（最终挑战）",
+  "promptChallenge": "[目标] rEx{TYPE:CONTENT} 形式的消息——最终的握手协议。",
   "input": [
     "rEx{MSG:hello world}",
     "rEx{SIG:signal decoded}",

@@ -4,7 +4,7 @@
   "chapter": 1,
   "story": "[Meridian-7 日志 #001] 传感器在白噪声中捕获到一段微弱的重复信号。在大量杂波数据中，同一个词反复出现——\"hello\"。这是某种打招呼的方式吗？你需要从噪声中精确定位这个词。",
   "difficulty": "easy",
-  "promptChallenge": "写一个 prompt，让 AI 生成能匹配包含 \"hello\" 的行的正则表达式",
+  "promptChallenge": "[目标] 从噪声流中识别携带 \"hello\" 关键字的信号行。",
   "input": [
     "hello world",
     "say hello to rEx",

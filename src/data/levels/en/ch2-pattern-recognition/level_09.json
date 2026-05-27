@@ -4,7 +4,7 @@
   "chapter": 2,
   "story": "[Meridian-7 Log #009] Timestamps have appeared in the data packets, formatted as YYYY-MM-DD. Does rEx use a calendar similar to humans? Or... are these timestamps formatted so you can understand them? Not all data that looks like dates is valid — you must filter out corrupted entries.",
   "difficulty": "medium",
-  "promptChallenge": "Write a prompt to have AI generate a regex that matches dates in YYYY-MM-DD format (month 01-12, day 01-31)",
+  "promptChallenge": "[Target] Calendar dates in YYYY-MM-DD form. Reject impossible months and days.",
   "input": [
     "2024-01-15",
     "2023-12-31",

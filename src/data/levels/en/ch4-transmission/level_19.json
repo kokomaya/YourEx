@@ -4,7 +4,7 @@
   "chapter": 4,
   "story": "[Meridian-7 Log #019] The communication channel is unstable. Some data packets were corrupted during transmission. You need to extract valid IPv4 addresses — four groups of 0-255 numbers separated by dots. Corrupted data contains out-of-range values that must be precisely filtered. Meridian-7's network module needs these addresses to establish relay links.",
   "difficulty": "hard",
-  "promptChallenge": "Write a prompt to have AI generate a regex that precisely matches IPv4 addresses (each segment 0-255)",
+  "promptChallenge": "[Target] Valid IPv4 addresses — each segment must stay within 0–255.",
   "input": [
     "192.168.1.1",
     "10.0.0.1",
