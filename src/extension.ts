@@ -238,9 +238,7 @@ export function activate(context: vscode.ExtensionContext) {
       if (levelId === 'level_26') {
         const seen = context.globalState.get<boolean>('yourex.ch6InterludeSeen', false);
         if (!seen) {
-          ch6InterludeProvider.show();
-          const disposable = ch6InterludeProvider.onDidComplete(() => {
-            disposable.dispose();
+          ch6InterludeProvider.show(() => {
             void context.globalState.update('yourex.ch6InterludeSeen', true);
             gameState.startTimer();
             promptPanel.show(levelId);
@@ -303,15 +301,7 @@ export function activate(context: vscode.ExtensionContext) {
     }),
 
     vscode.commands.registerCommand('yourex.showCh6Interlude', () => {
-      ch6InterludeProvider.show();
-      // BEGIN ADAPTATION should always land on level_26, regardless of which
-      // entry point opened the interlude (command palette, or in-app
-      // re-watch). Without this the panel just disposes and the prompt panel
-      // re-surfaces on whatever level the player was previously viewing
-      // (typically level_25), since onDidChangeViewState re-broadcasts the
-      // cached _currentLevel when the panel becomes visible again.
-      const disposable = ch6InterludeProvider.onDidComplete(() => {
-        disposable.dispose();
+      ch6InterludeProvider.show(() => {
         void context.globalState.update('yourex.ch6InterludeSeen', true);
         if (!accessPolicy.canOpenLevel('level_26')) {
           vscode.window.showWarningMessage('[YourEx] level_26 is locked in User Mode.');

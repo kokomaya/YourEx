@@ -155,7 +155,10 @@ export function RewardOverlay({ reward, onDismiss }: RewardOverlayProps) {
           {t('reward.leaderboard')}
         </button>
         {reward.isGameComplete && !reward.isOriginComplete && (
-          <p className="reward-hint">{t('reward.originHint')}</p>
+          <div className="reward-origin-teaser">
+            <p className="reward-origin-teaser__quote">{t('reward.originHint')}</p>
+            <p className="reward-origin-teaser__condition">{t('reward.originHintSub')}</p>
+          </div>
         )}
       </div>
 

@@ -14,13 +14,23 @@ export function getFeedbackText(result: JudgeResult, level: Level, mode: 'prompt
   }
 }
 
+function showAutoCloseNotification(message: string, timeoutMs = 3000): void {
+  vscode.window.withProgress(
+    { location: vscode.ProgressLocation.Notification, cancellable: false },
+    async (progress) => {
+      progress.report({ message });
+      await new Promise(resolve => setTimeout(resolve, timeoutMs));
+    },
+  );
+}
+
 export function showJudgeFeedback(result: JudgeResult, feedback: string): void {
   if (result.status === 'perfect' || result.status === 'pass') {
-    vscode.window.showInformationMessage(`✅ ${feedback}`);
+    showAutoCloseNotification(`✅ ${feedback}`);
   } else if (result.status === 'error') {
     vscode.window.showErrorMessage(`🚫 ${feedback}`);
   } else {
-    vscode.window.showWarningMessage(`❌ ${feedback}`);
+    showAutoCloseNotification(`❌ ${feedback}`);
   }
 }
 

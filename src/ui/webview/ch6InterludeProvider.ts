@@ -8,6 +8,9 @@ export class Ch6InterludeProvider {
   private _onDidComplete = new vscode.EventEmitter<void>();
   readonly onDidComplete = this._onDidComplete.event;
 
+  /** Direct callback invoked when the player clicks begin (bypasses EventEmitter). */
+  private _directCallback: (() => void) | undefined;
+
   constructor(private readonly _extensionUri: vscode.Uri) {}
 
   setLocale(locale: Locale): void {
@@ -19,7 +22,9 @@ export class Ch6InterludeProvider {
     this._panel?.webview.postMessage({ command: 'localeChanged', locale });
   }
 
-  show(): void {
+  show(onComplete?: () => void): void {
+    this._directCallback = onComplete;
+
     if (this._panel) {
       this._panel.reveal();
       return;
@@ -47,9 +52,13 @@ export class Ch6InterludeProvider {
 
     this._panel.webview.onDidReceiveMessage((message: { command: string; locale?: string }) => {
       if (message.command === 'beginAdaptation') {
-        // Fire BEFORE disposing so listeners see the event even if the panel
-        // teardown shifts focus to a sibling webview first (parity with
-        // ChapterInterludeProvider).
+        // Invoke callback BEFORE disposing to avoid any lifecycle issues
+        // (same pattern as ChapterInterludeProvider)
+        const cb = this._directCallback;
+        this._directCallback = undefined;
+        if (cb) {
+          cb();
+        }
         this._onDidComplete.fire();
         this._panel?.dispose();
       } else if (message.command === 'switchLanguage' && message.locale) {
