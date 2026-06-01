@@ -2,7 +2,7 @@
   "name": "urex",
   "displayName": "YourEx Game",
   "description": "Your little game of rEgular eXpression — Match the pattern. Understand the language.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "kokoma",
   "engines": {
     "vscode": "^1.85.0"

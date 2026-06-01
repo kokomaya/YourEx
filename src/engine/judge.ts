@@ -16,7 +16,7 @@ export function judge(
   expected: string[]
 ): JudgeResult {
   try {
-    const matched = input.filter(line => regex.test(line));
+    const matched = input.filter(line => testFresh(regex, line));
     const status = determineStatus(matched, expected);
 
     return {

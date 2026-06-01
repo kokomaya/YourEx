@@ -31,7 +31,8 @@
   "hints": [
     "[Hint] Start anchor: frame byte 0 must be 19. Marker bytes 2-4 must be 00 00 01.",
     "[Hint] Fault and operation are linked. Use the exact mapping table, not just any known operation bytes.",
-    "[Hint] End anchor: byte 15 must be 7E. Several near-miss frames fail only one rule."
+    "[Hint] End anchor: byte 15 must be 7E. Several near-miss frames fail only one rule.",
+    "[Hint] The data stream is multi-line. Your regex needs the gm flags: m makes ^/$ match each line boundary, g finds all valid frames."
   ],
   "promptHints": [
     "Ask the AI to match raw hex bytes only, with strict positional constraints on key byte groups.",
