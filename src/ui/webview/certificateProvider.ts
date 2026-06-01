@@ -105,6 +105,11 @@ export class CertificateProvider {
       case 'generateCertificateImage':
         await this.handleSaveRequest(message);
         return;
+
+      case 'openHiddenChapter':
+        this._panel?.dispose();
+        vscode.commands.executeCommand('yourex.openLevel', 'level_26');
+        return;
     }
   }
 
@@ -183,7 +188,8 @@ type WebViewIncoming =
   | { command: 'closeCertificate' }
   | { command: 'switchLanguage'; locale?: string }
   | { command: 'setCertificatePlayerName'; name?: string }
-  | { command: 'generateCertificateImage'; imageBytes?: number[]; fileName?: string };
+  | { command: 'generateCertificateImage'; imageBytes?: number[]; fileName?: string }
+  | { command: 'openHiddenChapter' };
 
 /**
  * Resolve a user-friendly Documents directory across platforms.

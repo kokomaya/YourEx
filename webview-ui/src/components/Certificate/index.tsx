@@ -138,6 +138,10 @@ export function Certificate() {
     }
   }, [nameDraft, data?.playerName, postMessage]);
 
+  const handleOpenHiddenChapter = useCallback(() => {
+    postMessage({ command: 'openHiddenChapter' });
+  }, [postMessage]);
+
   if (!data) {
     return (
       <div className="cert-root">
@@ -172,6 +176,16 @@ export function Certificate() {
           >
             {saveStatus.kind === 'rendering' ? t('certificate.exportRendering') : t('certificate.exportImageButton')}
           </button>
+          {!data.isOriginComplete && (
+            <button
+              className={`cert-btn ${data.isOriginUnlocked ? 'cert-btn--accent' : 'cert-btn--ghost'}`}
+              onClick={data.isOriginUnlocked ? handleOpenHiddenChapter : undefined}
+              disabled={!data.isOriginUnlocked}
+              title={data.isOriginUnlocked ? undefined : t('certificate.originTeaserCondition')}
+            >
+              {data.isOriginUnlocked ? t('certificate.openHiddenChapter') : t('certificate.hiddenChapterLocked')}
+            </button>
+          )}
         </div>
       </header>
 
@@ -460,6 +474,14 @@ function EndingPreview({ data, t }: { data: JourneyCertificateData; t: TFn }) {
         <div className="cert-ending__line" style={{ color: '#ffd27a', marginTop: 14 }}>
           {t('certificate.welcomeHome')}
         </div>
+
+        {!data.isOriginComplete && (
+          <div className="cert-ending__origin-teaser">
+            <div className="cert-ending__origin-signal">{t('certificate.originTeaser')}</div>
+            <div className="cert-ending__origin-condition">{t('certificate.originTeaserCondition')}</div>
+          </div>
+        )}
+
         <div className="cert-ending__footer">
           CERT: {data.certificateId} · {t('certificate.brandFooter')}
         </div>

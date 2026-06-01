@@ -34,7 +34,8 @@
 
 .cert-toolbar {
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 8px 10px;
   align-items: center;
 }
 
@@ -48,6 +49,7 @@
   letter-spacing: 1px;
   cursor: pointer;
   transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .cert-btn:hover:not(:disabled) {
@@ -70,6 +72,17 @@
 .cert-btn--ghost {
   border-color: #1f2a44;
   color: #7a8aa0;
+}
+
+.cert-btn--accent {
+  background: rgba(79, 195, 247, 0.15);
+  border-color: rgba(79, 195, 247, 0.6);
+  color: #4fc3f7;
+  font-weight: 600;
+}
+.cert-btn--accent:hover {
+  background: rgba(79, 195, 247, 0.25);
+  border-color: #4fc3f7;
 }
 
 .cert-name-input {
@@ -461,6 +474,32 @@
   margin-top: 30px;
   font-size: 10px;
   color: #7a8aa0;
+}
+
+.cert-ending__origin-teaser {
+  margin-top: 24px;
+  padding: 12px 16px;
+  border: 1px solid rgba(79, 195, 247, 0.2);
+  border-left: 3px solid rgba(79, 195, 247, 0.6);
+  background: rgba(79, 195, 247, 0.04);
+  border-radius: 4px;
+  text-align: left;
+  max-width: 360px;
+}
+
+.cert-ending__origin-signal {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+
+.cert-ending__origin-condition {
+  font-size: 10px;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  color: rgba(79, 195, 247, 0.7);
+  letter-spacing: 0.5px;
 }
 
 .cert-empty {

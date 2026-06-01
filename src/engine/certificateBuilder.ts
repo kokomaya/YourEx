@@ -98,8 +98,7 @@ export function buildJourneyCertificateData(
   }));
 
   const originChapter = chapters.find(c => c.chapter === HIDDEN_CHAPTER);
-  const isOriginUnlocked = (state.completedLevels[originChapter?.levels[0]?.levelId ?? ''] ?? []).length > 0
-    || (originChapter?.levels.some(l => l.status !== 'skipped') ?? false);
+  const isOriginUnlocked = totalCompletedStandardLevels >= totalStandardLevels && totalStandardLevels > 0;
   const isOriginComplete = originChapter?.isComplete ?? false;
 
   return {
