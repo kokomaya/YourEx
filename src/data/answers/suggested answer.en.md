@@ -171,5 +171,5 @@ Below are the suggested answers organized by level. Each entry contains three pa
 ### Level 26 - Fault Bus
 
 - Suggested Answer: Generate a regex to match valid repair fault frames in hex dump data. Frame rules: byte 0 is `19`, bytes 2-4 are `00 00 01`, byte 15 is `7E`; fault code and repair action must match the lookup table (F1 0A→A0 11, F2 1C→B4 02, E9 7D→C8 3F).
-- Expected Regex: `/^19 [0-9A-Fa-f]{2} 00 00 01 (?:F1 0A A0 11|F2 1C B4 02|E9 7D C8 3F)(?: [0-9A-Fa-f]{2}){6} 7E$/`
-- Explanation: Fixed header `19` + any byte + `00 00 01`; alternation `|` enumerates the three valid fault-code→action mappings; 6 arbitrary bytes in the middle; trailer `7E`.
+- Expected Regex: `/^19 [0-9A-Fa-f]{2} 00 00 01 (?:F1 0A A0 11|F2 1C B4 02|E9 7D C8 3F)(?: [0-9A-Fa-f]{2}){6} 7E$/gm`
+- Explanation: Fixed header `19` + any byte + `00 00 01`; alternation `|` enumerates the three valid fault-code→action mappings; 6 arbitrary bytes in the middle; trailer `7E`. The `gm` flags are required: the judge merges all input lines into a single newline-joined string, so `m` makes `^`/`$` match per-line boundaries instead of the full string, and `g` collects every matching frame.
